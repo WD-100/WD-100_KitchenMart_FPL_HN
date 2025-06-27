@@ -9,14 +9,17 @@ import ChangePassword from "./Components/Account/ForgotPassword/ChangePassword";
 
 /* Main Page */
 import Home from './Components/Home/Home';
-
 /* User Page */
 import Profile from './Components/Profile/Profile';
-
 import NotFound from "./Components/Shared/Error/Error404";
 import ComingSoon from "./Components/Shared/ComingSoon/ComingSoon";
 
-
+/* Admin Page */
+import Dashboard from './Components/AdminApp/Dashboard/Dashboard';
+/* Admin User */
+import ListUser from './Components/AdminApp/Users/ListUser/ListUser';
+import CreateUser from './Components/AdminApp/Users/CreateUser/CreateUser';
+import UpdateUser from './Components/AdminApp/Users/UpdateUser/UpdateUser';
 
 /**
  * This component renders the routes for the public part of the application.
@@ -38,11 +41,14 @@ function Public() {
                 <Route path='/coming-soon' element={<ComingSoon/>}/>
                 {/* Client Page */}
                 <Route path='/' element={<Home/>}/>
-                
                 {/* Client Auth Page */}
                 <Route path='/profile' element={<Profile/>}/>
-                
-                            </Routes>
+                <Route path='/admin/dashboard' element={<Dashboard/>}/>
+                {/* Admin Users */}
+                <Route path='/admin/users/list' element={<ListUser/>}/>
+                <Route path='/admin/users/create' element={<CreateUser/>}/>
+                <Route path='/admin/users/detail/:id' element={<UpdateUser/>}/>``
+            </Routes>
         </div>
     )
 }
