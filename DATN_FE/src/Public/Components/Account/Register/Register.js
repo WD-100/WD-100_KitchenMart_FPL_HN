@@ -1,134 +1,134 @@
-import { Button, Form, Input, message } from 'antd';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import accountService from '../../Service/AccountService';
-import "./Register.scss";
+import {Link} from 'react-router-dom';
+import authService from '../../Service/AuthService';
+import $ from "jquery";
+import {Form} from 'antd';
+import Css from "../../Shared/Admin/Lib/StyleSheet";
+import Script from "../../Shared/Admin/Lib/Script";
 
 function Register() {
-
-    const navigate = useNavigate();
-    const onFinish = async (values) => {
-        let data = {
-            username: values.username,
-            email: values.email,
-            password: values.password
+    function checkPhone() {
+        $('.message_error').addClass('d-none');
+        let val = $('#phone').val()
+        if (!$.isNumeric(val)) {
+            val = val.replace(/\D/g, '');
+            $('#phone').val(val);
         }
-        await accountService.registerAccount(data)
+    }
+
+    function isVietnamesePhoneNumber(number) {
+        return /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(number);
+    }
+
+    const onFinish = async () => {
+        $('.needs-validation').addClass('was-validated');
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let password = document.getElementById('password').value;
+
+        $('#btnRegister').prop('disabled', true).text('Đang đăng ký...');
+
+        let data = {
+            full_name: name,
+            email: email,
+            password: password,
+        }
+        await authService.registerAccount(data)
             .then((res) => {
-                console.log("register", res.data)
-                message.success("Create account success!")
-                navigate("/login")
+                alert(`Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục...`);
+                window.location.href = '/login';
             })
             .catch((err) => {
-                console.log(err)
-                message.error("Create error")
+                console.log(err);
+                alert(`Đăng ký thất bại! ` + err?.response?.data?.message);
+                $('#btnRegister').prop('disabled', false).text('Đăng ký');
             })
     };
 
     return (
-        <div div id='register-page'>
-            <link
-                rel="stylesheet"
-                href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-                integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-                crossOrigin="anonymous"
-            />
-            <section className="login">
-                <div className="login_box">
-                    <div className="left">
-                        <div className="top_link">
-                            <Link to="/">
-                                <img
-                                    src="https://drive.google.com/u/0/uc?id=16U__U5dJdaTfNGobB_OpwAJ73vM50rPV&export=download"
-                                    alt=""
-                                />
-                                Return home
-                            </Link>
-                        </div>
-                        <div className="contact">
-                            <Form
-                                onFinish={onFinish}
-                                autoComplete="off"
-                            >
-                                <h3>SIGN IN</h3>
-                                <div>
-                                    <label>USER NAME</label>
-                                    <Form.Item
-                                        name="username"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please input your username!',
-                                            },
-                                        ]}
-                                        hasFeedback
-                                    >
-                                        <Input allowClear style={{ width: "120%", height: "40px" }} />
-                                    </Form.Item>
-                                </div>
-                                <div>
-                                    <label>EMAIL</label>
-                                    <Form.Item
-                                        name="email"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please input your E-mail!',
-                                            },
-                                            {
-                                                type: "email",
-                                                message: "Invalid E-mail!"
-                                            }
-                                        ]}
-                                        hasFeedback
-                                    >
-                                        <Input allowClear style={{ width: "120%", height: "40px" }} />
-                                    </Form.Item>
-                                </div>
-                                <div>
-                                    <label>PASSWORD</label>
-                                    <Form.Item
-                                        name="password"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please input your password!',
-                                            }
-                                        ]}
-                                        hasFeedback
-                                    >
-                                        <Input.Password allowClear style={{ width: "120%", height: "40px" }} />
-                                    </Form.Item>
-                                </div>
-                                <div>
-                                    <Button htmlType='submit' type='primary' >
-                                        Register
-                                    </Button>
-                                </div>
-                                <div>
-                                    <Link to="/login">
-                                        Already a account? Login
-                                    </Link>
-                                </div>
-                            </Form>
-                        </div>
-                    </div>
-                    <div className="right">
-                        <div className="right-text">
-                            <h2>LONYX</h2>
-                            <h5>A UX BASED CREATIVE AGENCEY</h5>
-                        </div>
-                        <div className="right-inductor">
-                            <img
-                                src="https://lh3.googleusercontent.com/fife/ABSRlIoGiXn2r0SBm7bjFHea6iCUOyY0N2SrvhNUT-orJfyGNRSMO2vfqar3R-xs5Z4xbeqYwrEMq2FXKGXm-l_H6QAlwCBk9uceKBfG-FjacfftM0WM_aoUC_oxRSXXYspQE3tCMHGvMBlb2K1NAdU6qWv3VAQAPdCo8VwTgdnyWv08CmeZ8hX_6Ty8FzetXYKnfXb0CTEFQOVF4p3R58LksVUd73FU6564OsrJt918LPEwqIPAPQ4dMgiH73sgLXnDndUDCdLSDHMSirr4uUaqbiWQq-X1SNdkh-3jzjhW4keeNt1TgQHSrzW3maYO3ryueQzYoMEhts8MP8HH5gs2NkCar9cr_guunglU7Zqaede4cLFhsCZWBLVHY4cKHgk8SzfH_0Rn3St2AQen9MaiT38L5QXsaq6zFMuGiT8M2Md50eS0JdRTdlWLJApbgAUqI3zltUXce-MaCrDtp_UiI6x3IR4fEZiCo0XDyoAesFjXZg9cIuSsLTiKkSAGzzledJU3crgSHjAIycQN2PH2_dBIa3ibAJLphqq6zLh0qiQn_dHh83ru2y7MgxRU85ithgjdIk3PgplREbW9_PLv5j9juYc1WXFNW9ML80UlTaC9D2rP3i80zESJJY56faKsA5GVCIFiUtc3EewSM_C0bkJSMiobIWiXFz7pMcadgZlweUdjBcjvaepHBe8wou0ZtDM9TKom0hs_nx_AKy0dnXGNWI1qftTjAg=w1920-h979-ft"
-                                alt=""
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <>
+            <Css/>
+            <main>
+                <div className="container">
 
+                    <section
+                        className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+                        <div className="container">
+                            <div className="row justify-content-center">
+                                <div
+                                    className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                                    <div className="d-flex justify-content-center py-4">
+                                        <a href="/" className="logo d-flex align-items-center w-auto">
+                                            <img src="/assets/admin/img/logo.png" alt=""></img>
+                                            <span className="d-none d-lg-block">KitchenMart</span>
+                                        </a>
+                                    </div>
+
+                                    <div className="card mb-3">
+
+                                        <div className="card-body">
+
+                                            <div className="pt-4 pb-2">
+                                                <h5 className="card-title text-center pb-0 fs-4">Tạo một tài khoản</h5>
+                                                <p className="text-center small">Nhập thông tin cá nhân của bạn để tạo
+                                                    tài khoản</p>
+                                            </div>
+
+                                            <Form className="row g-3 needs-validation" onFinish={onFinish}>
+                                                <div className="col-12">
+                                                    <label htmlFor="name" className="form-label">Tên</label>
+                                                    <input type="text" name="name" className="form-control"
+                                                           id="name" required/>
+                                                    <div className="invalid-feedback">Vui lòng chọn tên.</div>
+                                                </div>
+
+                                                <div className="col-12">
+                                                    <label htmlFor="email" className="form-label">Email của
+                                                        bạn</label>
+                                                    <input type="email" name="email" className="form-control"
+                                                           id="email"
+                                                           required></input>
+                                                    <div className="invalid-feedback">Vui lòng nhập địa chỉ Email hợp
+                                                        lệ!
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-12">
+                                                    <label htmlFor="password" className="form-label">Mật khẩu</label>
+                                                    <input type="password" name="password" className="form-control"
+                                                           id="password" required></input>
+                                                    <div className="invalid-feedback">Vui lòng nhập mật khẩu!</div>
+                                                </div>
+
+                                                <div className="col-12">
+                                                    <button id="btnRegister" className="btn btn-primary w-100"
+                                                            type="submit">Đăng ký
+                                                    </button>
+                                                </div>
+                                                <div className="col-12">
+                                                    <p className="small mb-0">Bạn đã có tài khoản <a
+                                                        href="/login">Đăng nhập ngay</a></p>
+                                                </div>
+                                            </Form>
+
+                                        </div>
+                                    </div>
+
+                                    <div className="credits">
+                                        Thiết kế bởi <Link to="#">KitchenMart Developer Team</Link>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                </div>
+            </main>
+            <Script/>
+        </>
     )
 }
 
