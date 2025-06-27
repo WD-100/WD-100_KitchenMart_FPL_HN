@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
+import adminUserRoutes from "./routes/admin/user.route";
+import adminRoleRoutes from "./routes/admin/role.route";
 import uploadRoutes from "./routes/upload.route";
 import { connectDB } from "./config/db";
 import cors from "cors";
@@ -30,7 +32,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 /* User routes */
 app.use("/api/user", userRoutes);
-
+/* Admin routes */
+app.use("/api/admin/role", adminRoleRoutes);
+app.use("/api/admin/user", adminUserRoutes);
 
 connectDB().then(async () => {
   await initRoles();
