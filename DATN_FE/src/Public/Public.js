@@ -11,11 +11,18 @@ import ChangePassword from "./Components/Account/ForgotPassword/ChangePassword";
 import Home from './Components/Home/Home';
 /* User Page */
 import Profile from './Components/Profile/Profile';
+
 import NotFound from "./Components/Shared/Error/Error404";
 import ComingSoon from "./Components/Shared/ComingSoon/ComingSoon";
 
 /* Admin Page */
 import Dashboard from './Components/AdminApp/Dashboard/Dashboard';
+/* Admin Category */
+import ListCategory from './Components/AdminApp/Category/ListCategory/ListCategory';
+import CreateCategory from './Components/AdminApp/Category/CreateCategory/CreateCategory';
+import DetailCategory from './Components/AdminApp/Category/DetailCategory/DetailCategory';
+import UpdateCategory from './Components/AdminApp/Category/UpdateCategory/UpdateCategory';
+
 /* Admin User */
 import ListUser from './Components/AdminApp/Users/ListUser/ListUser';
 import CreateUser from './Components/AdminApp/Users/CreateUser/CreateUser';
@@ -41,13 +48,23 @@ function Public() {
                 <Route path='/coming-soon' element={<ComingSoon/>}/>
                 {/* Client Page */}
                 <Route path='/' element={<Home/>}/>
+                
                 {/* Client Auth Page */}
                 <Route path='/profile' element={<Profile/>}/>
+                
+                {/* Admin Page */}
                 <Route path='/admin/dashboard' element={<Dashboard/>}/>
+                {/* Admin Category */}
+                <Route path='/admin/categories/list' element={<ListCategory/>}/>
+                <Route path='/admin/categories/create' element={<CreateCategory/>}/>
+                <Route path='/admin/categories/detail/:id' element={<DetailCategory/>}/>
+                <Route path='/admin/categories/update/:id' element={<UpdateCategory/>}/>
+               
                 {/* Admin Users */}
                 <Route path='/admin/users/list' element={<ListUser/>}/>
                 <Route path='/admin/users/create' element={<CreateUser/>}/>
-                <Route path='/admin/users/detail/:id' element={<UpdateUser/>}/>``
+                <Route path='/admin/users/detail/:id' element={<UpdateUser/>}/>
+                
             </Routes>
         </div>
     )
