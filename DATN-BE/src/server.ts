@@ -4,10 +4,13 @@ import authRoutes from "./routes/auth.route";
 
 import userRoutes from "./routes/user.route";
 
+import contactsRoutes from "./routes/contacts.route";
+
 import adminProductRoutes from "./routes/admin/product.route";
 import adminUserRoutes from "./routes/admin/user.route";
 
 import adminCategoriesRoutes from "./routes/admin/categories.route";
+import adminContactsRoutes from "./routes/admin/contacts.route";
 
 import adminDiscountRoutes from "./routes/admin/discount.route";
 
@@ -42,15 +45,17 @@ app.use("/api/upload", uploadRoutes);
 
 app.use("/api/user", userRoutes);
 
+app.use("/api/contacts", contactsRoutes);
+
 /* Admin routes */
 app.use("/api/admin/role", adminRoleRoutes);
 app.use("/api/admin/product", adminProductRoutes);
 app.use("/api/admin/user", adminUserRoutes);
 
 app.use("/api/admin/categories", adminCategoriesRoutes);
+app.use("/api/admin/contacts", adminContactsRoutes);
 
 app.use("/api/admin/discount", adminDiscountRoutes);
-
 
 connectDB().then(async () => {
   await initRoles();
