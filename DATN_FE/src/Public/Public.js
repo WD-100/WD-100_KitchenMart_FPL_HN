@@ -33,10 +33,16 @@ import ListProduct from './Components/AdminApp/Product/ListProduct/ListProduct';
 import CreateProduct from './Components/AdminApp/Product/CreateProduct/CreateProduct';
 import DetailProduct from './Components/AdminApp/Product/DetailProduct/DetailProduct';
 import UpdateProduct from "./Components/AdminApp/Product/UpdateProduct/UpdateProduct";
+
 /* Admin User */
 import ListUser from './Components/AdminApp/Users/ListUser/ListUser';
 import CreateUser from './Components/AdminApp/Users/CreateUser/CreateUser';
 import UpdateUser from './Components/AdminApp/Users/UpdateUser/UpdateUser';
+/* Admin Coupons */
+import ListCoupon from './Components/AdminApp/Coupons/ListCoupon/ListCoupon';
+import CreateCoupon from './Components/AdminApp/Coupons/CreateCoupon/CreateCoupon';
+import DetailCoupon from './Components/AdminApp/Coupons/DetailCoupon/DetailCoupon';
+
 
 /**
  * This component renders the routes for the public part of the application.
@@ -58,8 +64,10 @@ function Public() {
                 <Route path='/coming-soon' element={<ComingSoon/>}/>
                 {/* Client Page */}
                 <Route path='/' element={<Home/>}/>
+                
                 {/* Client Auth Page */}
                 <Route path='/profile' element={<Profile/>}/>
+               
                 {/* Admin Page */}
                 <Route path='/admin/dashboard' element={<Dashboard/>}/>
                 {/* Admin Category */}
@@ -72,10 +80,16 @@ function Public() {
                 <Route path='/admin/products/create' element={<CreateProduct/>}/>
                 <Route path='/admin/products/detail/:id' element={<DetailProduct/>}/>
                 <Route path='/admin/products/update/:id' element={<UpdateProduct/>}/>
+              
                 {/* Admin Users */}
                 <Route path='/admin/users/list' element={<ListUser/>}/>
                 <Route path='/admin/users/create' element={<CreateUser/>}/>
                 <Route path='/admin/users/detail/:id' element={<UpdateUser/>}/>
+                {/* Admin Coupons */}
+                <Route path='/admin/coupons/list' element={<ListCoupon/>}/>
+                <Route path='/admin/coupons/create' element={<CreateCoupon/>}/>
+                <Route path='/admin/coupons/detail/:id' element={<DetailCoupon/>}/>
+                
             </Routes>
         </div>
     )
