@@ -9,9 +9,15 @@ import ChangePassword from "./Components/Account/ForgotPassword/ChangePassword";
 
 /* Main Page */
 import Home from './Components/Home/Home';
+
 /* User Page */
 import Profile from './Components/Profile/Profile';
-
+/* My Order */
+import ListMyOrder from './Components/Profile/MyOrder/ListOrder/ListOrder';
+import DetailMyOrder from './Components/Profile/MyOrder/DetailOrder/DetailOrder';
+/* My Coupon */
+import ListMyCoupon from './Components/Profile/MyCoupons/ListCoupon/ListCoupon';
+/* Error Page */
 import NotFound from "./Components/Shared/Error/Error404";
 import ComingSoon from "./Components/Shared/ComingSoon/ComingSoon";
 
@@ -22,7 +28,11 @@ import ListCategory from './Components/AdminApp/Category/ListCategory/ListCatego
 import CreateCategory from './Components/AdminApp/Category/CreateCategory/CreateCategory';
 import DetailCategory from './Components/AdminApp/Category/DetailCategory/DetailCategory';
 import UpdateCategory from './Components/AdminApp/Category/UpdateCategory/UpdateCategory';
-
+/* Admin Product */
+import ListProduct from './Components/AdminApp/Product/ListProduct/ListProduct';
+import CreateProduct from './Components/AdminApp/Product/CreateProduct/CreateProduct';
+import DetailProduct from './Components/AdminApp/Product/DetailProduct/DetailProduct';
+import UpdateProduct from "./Components/AdminApp/Product/UpdateProduct/UpdateProduct";
 /* Admin User */
 import ListUser from './Components/AdminApp/Users/ListUser/ListUser';
 import CreateUser from './Components/AdminApp/Users/CreateUser/CreateUser';
@@ -48,10 +58,8 @@ function Public() {
                 <Route path='/coming-soon' element={<ComingSoon/>}/>
                 {/* Client Page */}
                 <Route path='/' element={<Home/>}/>
-                
                 {/* Client Auth Page */}
                 <Route path='/profile' element={<Profile/>}/>
-                
                 {/* Admin Page */}
                 <Route path='/admin/dashboard' element={<Dashboard/>}/>
                 {/* Admin Category */}
@@ -59,12 +67,15 @@ function Public() {
                 <Route path='/admin/categories/create' element={<CreateCategory/>}/>
                 <Route path='/admin/categories/detail/:id' element={<DetailCategory/>}/>
                 <Route path='/admin/categories/update/:id' element={<UpdateCategory/>}/>
-               
+                {/* Admin Products */}
+                <Route path='/admin/products/list' element={<ListProduct/>}/>
+                <Route path='/admin/products/create' element={<CreateProduct/>}/>
+                <Route path='/admin/products/detail/:id' element={<DetailProduct/>}/>
+                <Route path='/admin/products/update/:id' element={<UpdateProduct/>}/>
                 {/* Admin Users */}
                 <Route path='/admin/users/list' element={<ListUser/>}/>
                 <Route path='/admin/users/create' element={<CreateUser/>}/>
                 <Route path='/admin/users/detail/:id' element={<UpdateUser/>}/>
-                
             </Routes>
         </div>
     )
