@@ -4,11 +4,12 @@ import authRoutes from "./routes/auth.route";
 
 import userRoutes from "./routes/user.route";
 
-
 import adminProductRoutes from "./routes/admin/product.route";
 import adminUserRoutes from "./routes/admin/user.route";
 
 import adminCategoriesRoutes from "./routes/admin/categories.route";
+
+import adminDiscountRoutes from "./routes/admin/discount.route";
 
 import adminRoleRoutes from "./routes/admin/role.route";
 import uploadRoutes from "./routes/upload.route";
@@ -47,6 +48,8 @@ app.use("/api/admin/product", adminProductRoutes);
 app.use("/api/admin/user", adminUserRoutes);
 
 app.use("/api/admin/categories", adminCategoriesRoutes);
+
+app.use("/api/admin/discount", adminDiscountRoutes);
 
 
 connectDB().then(async () => {
