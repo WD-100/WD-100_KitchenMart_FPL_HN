@@ -1,10 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
-
 import userRoutes from "./routes/user.route";
-
 import contactsRoutes from "./routes/contacts.route";
+import transactionRoutes from "./routes/transaction.routes";
 import adminProductRoutes from "./routes/admin/product.route";
 import adminUserRoutes from "./routes/admin/user.route";
 import adminCategoriesRoutes from "./routes/admin/categories.route";
@@ -42,6 +41,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/contacts", contactsRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/transaction", transactionRoutes);
 /* Admin routes */
 app.use("/api/admin/role", adminRoleRoutes);
 app.use("/api/admin/product", adminProductRoutes);
