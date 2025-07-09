@@ -11,7 +11,6 @@ import ChangePassword from "./Components/Account/ForgotPassword/ChangePassword";
 import Home from './Components/Home/Home';
 import Contact from './Components/Contact/Contact';
 import About from './Components/AboutUs/About';
-import Coupons from './Components/Coupons/Coupons';
 /* User Page */
 import Profile from './Components/Profile/Profile';
 /* Error Page */

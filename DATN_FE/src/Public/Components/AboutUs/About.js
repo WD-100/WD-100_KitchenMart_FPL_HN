@@ -1,6 +1,8 @@
 import React from 'react';
 import Header from "../Shared/Client/Header/Header";
 import Footer from "../Shared/Client/Footer/Footer";
+import {Autoplay, Navigation, Pagination} from "swiper/modules";
+import {Swiper, SwiperSlide} from "swiper/react";
 
 function About() {
     return (<div className="site-wrap">
@@ -20,7 +22,7 @@ function About() {
                     <div className="col-md-6">
                         <div className="block-16">
                             <figure>
-                                <img src="/assets/clients/images/blog_1.jpg" alt="Image placeholder"
+                                <img src="/assets/clients/images/image_banner_v1.jpg" alt="Image placeholder"
                                      className="img-fluid rounded"/>
                                 <a href="https://vimeo.com/channels/staffpicks/93951774"
                                    className="play-button popup-vimeo d-flex align-items-center justify-content-center">
@@ -36,42 +38,41 @@ function About() {
                     <div className="col-md-1"></div>
                     <div className="col-md-5">
                         <div className="site-section-heading pt-3 mb-4">
-                            <h2 className="text-black">Men Fashion - Tôn vinh phong cách đàn ông</h2>
+                            <h2 className="text-black">KitchenMart - Giải pháp đa dụng cho cuộc sống tiện nghi</h2>
                         </div>
-                        <p>Men Fashion là nơi hội tụ những xu hướng thời trang nam mới nhất, từ trang phục công sở
-                            thanh lịch đến phong cách đường phố cá tính. Chúng tôi cam kết mang đến cho bạn những
-                            sản phẩm chất lượng, giúp bạn tự tin thể hiện phong cách riêng biệt.</p>
 
-                        <p>Với Men Fashion, thời trang không chỉ là phong cách mà còn là tuyên ngôn cá nhân. Tại
-                            đây, chúng tôi cung cấp các bộ sưu tập đa dạng, phù hợp với mọi phong cách từ cổ điển
-                            đến hiện đại, đáp ứng mọi nhu cầu thời trang của phái mạnh.
-                        </p>
+                        <p>KitchenMart là nơi hội tụ các sản phẩm đa dụng, từ dụng cụ nhà bếp thông minh đến đồ gia dụng
+                            tiện ích. Chúng tôi cam kết mang đến cho bạn những sản phẩm chất lượng, giúp tối ưu hóa
+                            không gian sống và công việc nội trợ hàng ngày.</p>
+
+                        <p>Với KitchenMart, sự tiện nghi không chỉ là nhu cầu mà còn là phong cách sống. Tại đây, bạn sẽ
+                            tìm thấy những giải pháp hiện đại, thiết kế thông minh và đa dạng, phù hợp với mọi gia đình,
+                            giúp cuộc sống trở nên dễ dàng và thoải mái hơn.</p>
                     </div>
                 </div>
 
                 <div className="row mb-5">
                     <div className="col-md-5">
-
-
                         <div className="site-section-heading pt-3 mb-4">
-                            <h2 className="text-black">Men Fashion - Đẳng cấp của sự lịch lãm</h2>
+                            <h2 className="text-black">KitchenMart - Đẳng cấp của sự tiện nghi</h2>
                         </div>
+
                         <p>
-                            Men Fashion là điểm đến lý tưởng cho những ai muốn làm mới phong cách bản thân. Với bộ sưu
-                            tập đa dạng và chất lượng cao, chúng tôi mong muốn giúp bạn tự tin, lịch lãm trong mọi
-                            khoảnh khắc.
+                            KitchenMart là điểm đến lý tưởng cho những ai mong muốn nâng tầm không gian sống. Với bộ sưu
+                            tập sản phẩm đa dạng, chất lượng cao và thiết kế thông minh, chúng tôi mang đến giải pháp
+                            tiện ích giúp bạn tối ưu hóa cuộc sống hàng ngày.
                         </p>
                         <p>
-                            Bước vào thế giới thời trang của Men Fashion, bạn sẽ tìm thấy những trang phục được thiết kế
-                            tinh xảo, giúp bạn tỏa sáng trong mọi hoàn cảnh. Phong cách của chúng tôi giúp bạn xây dựng
-                            một hình ảnh sang trọng và đầy tự tin.
+                            Bước vào thế giới sản phẩm của KitchenMart, bạn sẽ khám phá những món đồ không chỉ hữu dụng
+                            mà còn tinh tế về mặt thẩm mỹ. Chúng tôi giúp bạn tạo dựng một không gian sống hiện đại,
+                            sang trọng và đầy tiện nghi – nơi mọi chi tiết đều phục vụ sự thoải mái và hiệu quả.
                         </p>
                     </div>
                     <div className="col-md-1"></div>
                     <div className="col-md-6">
                         <div className="block-16">
                             <figure>
-                                <img src="/assets/clients/images/bg-image-01.jpg" alt="Image placeholder"
+                                <img src="/assets/clients/images/image_banner_v2.jpg" alt="Image placeholder"
                                      className="img-fluid rounded"/>
                                 <a href="https://vimeo.com/channels/staffpicks/93951774"
                                    className="play-button popup-vimeo d-flex align-items-center justify-content-center">
@@ -96,89 +97,134 @@ function About() {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-md-6 col-lg-3">
-
-                        <div className="block-38 text-center">
-                            <div className="block-38-img">
-                                <div className="block-38-header">
-                                    <img src="/assets/admin/img/profile-img.jpg" alt="Image placeholder"
-                                         className="mb-4"/>
-                                    <h3 className="block-38-heading h4">Tester</h3>
-                                    <p className="block-38-subheading">Trưởng nhóm</p>
-                                </div>
-                                <div className="block-38-body">
-                                    <p>
-                                        Là Trưởng nhóm, tôi chịu trách nhiệm định hướng và hỗ trợ các thành viên nhằm
-                                        đạt được mục tiêu chung. Với tinh thần làm việc đội nhóm và sự thấu hiểu từng cá
-                                        nhân, tôi xây dựng môi trường khuyến khích sáng tạo, chia sẻ kiến thức và phát
-                                        triển kỹ năng, đảm bảo mỗi thành viên đều đóng góp giá trị vào sự thành công của
-                                        dự án.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-3">
-                        <div className="block-38 text-center">
-                            <div className="block-38-img">
-                                <div className="block-38-header">
-                                    <img src="/assets/admin/img/messages-1.jpg" alt="Image placeholder"
-                                         className="mb-4"/>
-                                    <h3 className="block-38-heading h4">Dev Fullstack</h3>
-                                    <p className="block-38-subheading">Thành viên chính</p>
-                                </div>
-                                <div className="block-38-body">
-                                    <p>
-                                        Với niềm đam mê công nghệ và sự kiên trì, tôi đảm nhận các nhiệm vụ kỹ thuật
-                                        nhằm đảm bảo tính ổn định và hiệu suất của dự án. Từng dòng mã và giải pháp đều
-                                        được tôi thực hiện với sự cẩn trọng, luôn sẵn sàng học hỏi và chia sẻ để phát
-                                        triển bản thân và đội ngũ.
-                                    </p>
+                    <Swiper
+                        slidesPerView={3}
+                        autoplay={{
+                            delay: 2500,
+                            disableOnInteraction: false,
+                        }}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        navigation={true}
+                        modules={[Autoplay, Pagination, Navigation]}
+                        className="mySwiper2"
+                    >
+                        <SwiperSlide>
+                            <div className="">
+                                <div className="block-38 text-center">
+                                    <div className="block-38-img">
+                                        <div className="block-38-header">
+                                            <img src="/assets/admin/img/profile-img.jpg" alt="Image placeholder"
+                                                 className="mb-4"/>
+                                            <h3 className="block-38-heading h4">Tester</h3>
+                                            <p className="block-38-subheading">Trưởng nhóm</p>
+                                        </div>
+                                        <div className="block-38-body">
+                                            <p>
+                                                Là Trưởng nhóm, tôi chịu trách nhiệm định hướng và hỗ trợ các thành viên nhằm
+                                                đạt được mục tiêu chung. Với tinh thần làm việc đội nhóm và sự thấu hiểu từng cá
+                                                nhân, tôi xây dựng môi trường khuyến khích sáng tạo, chia sẻ kiến thức và phát
+                                                triển kỹ năng, đảm bảo mỗi thành viên đều đóng góp giá trị vào sự thành công của
+                                                dự án.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-3">
-                        <div className="block-38 text-center">
-                            <div className="block-38-img">
-                                <div className="block-38-header">
-                                    <img src="/assets/admin/img/messages-2.jpg" alt="Image placeholder"
-                                         className="mb-4"/>
-                                    <h3 className="block-38-heading h4">Dev Frontend</h3>
-                                    <p className="block-38-subheading">Thành viên chính</p>
-                                </div>
-                                <div className="block-38-body">
-                                    <p>
-                                        Tôi chịu trách nhiệm về mặt sáng tạo trong nhóm, mang lại các ý tưởng mới mẻ và
-                                        độc đáo để làm nổi bật dự án. Tôi yêu thích việc kết hợp giữa thẩm mỹ và hiệu
-                                        quả, góp phần tạo nên những sản phẩm vừa cuốn hút vừa đáp ứng nhu cầu người
-                                        dùng.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-3">
-                        <div className="block-38 text-center">
-                            <div className="block-38-img">
-                                <div className="block-38-header">
-                                    <img src="/assets/admin/img/messages-3.jpg" alt="Image placeholder"
-                                         className="mb-4"/>
-                                    <h3 className="block-38-heading h4">Dev Backend</h3>
-                                    <p className="block-38-subheading">Thành viên chính</p>
-                                </div>
-                                <div className="block-38-body">
-                                    <p className="">
-                                        Là người phụ trách phân tích, tôi tập trung vào việc thu thập và đánh giá dữ
-                                        liệu
-                                        để đưa ra những thông tin có giá trị giúp định hướng chiến lược của dự án. Khả
-                                        năng nhìn nhận vấn đề từ nhiều góc độ và kỹ năng phân tích chuyên sâu giúp tôi
-                                        hỗ trợ đội ngũ đưa ra các quyết định sáng suốt.
-                                    </p>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="">
+                                <div className="block-38 text-center">
+                                    <div className="block-38-img">
+                                        <div className="block-38-header">
+                                            <img src="/assets/admin/img/messages-1.jpg" alt="Image placeholder"
+                                                 className="mb-4"/>
+                                            <h3 className="block-38-heading h4">Dev Fullstack</h3>
+                                            <p className="block-38-subheading">Thành viên chính</p>
+                                        </div>
+                                        <div className="block-38-body">
+                                            <p>
+                                                Với niềm đam mê công nghệ và sự kiên trì, tôi đảm nhận các nhiệm vụ kỹ thuật
+                                                nhằm đảm bảo tính ổn định và hiệu suất của dự án. Từng dòng mã và giải pháp đều
+                                                được tôi thực hiện với sự cẩn trọng, luôn sẵn sàng học hỏi và chia sẻ để phát
+                                                triển bản thân và đội ngũ.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="">
+                                <div className="block-38 text-center">
+                                    <div className="block-38-img">
+                                        <div className="block-38-header">
+                                            <img src="/assets/admin/img/messages-2.jpg" alt="Image placeholder"
+                                                 className="mb-4"/>
+                                            <h3 className="block-38-heading h4">Dev Frontend</h3>
+                                            <p className="block-38-subheading">Thành viên chính</p>
+                                        </div>
+                                        <div className="block-38-body">
+                                            <p>
+                                                Tôi chịu trách nhiệm về mặt sáng tạo trong nhóm, mang lại các ý tưởng mới mẻ và
+                                                độc đáo để làm nổi bật dự án. Tôi yêu thích việc kết hợp giữa thẩm mỹ và hiệu
+                                                quả, góp phần tạo nên những sản phẩm vừa cuốn hút vừa đáp ứng nhu cầu người
+                                                dùng.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="">
+                                <div className="block-38 text-center">
+                                    <div className="block-38-img">
+                                        <div className="block-38-header">
+                                            <img src="/assets/admin/img/messages-3.jpg" alt="Image placeholder"
+                                                 className="mb-4"/>
+                                            <h3 className="block-38-heading h4">Dev Backend</h3>
+                                            <p className="block-38-subheading">Thành viên chính</p>
+                                        </div>
+                                        <div className="block-38-body">
+                                            <p className="">
+                                                Là người phụ trách phân tích, tôi tập trung vào việc thu thập và đánh giá dữ
+                                                liệu
+                                                để đưa ra những thông tin có giá trị giúp định hướng chiến lược của dự án. Khả
+                                                năng nhìn nhận vấn đề từ nhiều góc độ và kỹ năng phân tích chuyên sâu giúp tôi
+                                                hỗ trợ đội ngũ đưa ra các quyết định sáng suốt.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <div className="">
+                                <div className="block-38 text-center">
+                                    <div className="block-38-img">
+                                        <div className="block-38-header">
+                                            <img src="/assets/admin/img/messages-3.jpg" alt="Image placeholder"
+                                                 className="mb-4"/>
+                                            <h3 className="block-38-heading h4">Tester</h3>
+                                            <p className="block-38-subheading">Thành viên chính</p>
+                                        </div>
+                                        <div className="block-38-body">
+                                            <p className="">
+                                                Là người đảm nhận vai trò kiểm thử, tôi tập trung vào việc kiểm tra và đánh giá
+                                                chất lượng phần mềm nhằm đảm bảo sản phẩm hoạt động ổn định và đáp ứng đúng yêu
+                                                cầu.
+                                                Khả năng quan sát chi tiết, tư duy logic và kỹ năng phân tích lỗi giúp tôi phát
+                                                hiện các vấn đề tiềm ẩn, từ đó hỗ trợ đội ngũ phát triển cải thiện sản phẩm và
+                                                mang lại trải nghiệm tốt nhất cho người dùng.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
                 </div>
             </div>
         </div>
@@ -194,7 +240,7 @@ function About() {
                         <div className="text">
                             <h2 className="text-uppercase">Miễn phí giao hàng</h2>
                             <p>
-                                Với MenFashion, mua sắm chưa bao giờ dễ dàng đến thế! Dù bạn ở bất cứ đâu, chỉ cần
+                                Với KitchenMart, mua sắm chưa bao giờ dễ dàng đến thế! Dù bạn ở bất cứ đâu, chỉ cần
                                 chọn sản phẩm, chúng tôi sẽ giao tận tay bạn mà không tốn thêm bất kỳ chi phí
                                 nào.
                             </p>
@@ -220,7 +266,7 @@ function About() {
                         <div className="text">
                             <h2 className="text-uppercase">Hỗ trợ khách hàng</h2>
                             <p>
-                                Đội ngũ chăm sóc khách hàng của MenFashion luôn sẵn sàng lắng nghe và hỗ trợ mọi thắc
+                                Đội ngũ chăm sóc khách hàng của KitchenMart luôn sẵn sàng lắng nghe và hỗ trợ mọi thắc
                                 mắc của bạn 24/7. Chúng tôi đảm bảo bạn được mua
                                 sắm thoải mái và hoàn toàn hài lòng.
                             </p>
