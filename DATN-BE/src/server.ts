@@ -1,7 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route";
+import productRoutes from "./routes/product.route";
 import userRoutes from "./routes/user.route";
+import categoriesRoutes from "./routes/categories.route";
 import contactsRoutes from "./routes/contacts.route";
 import transactionRoutes from "./routes/transaction.routes";
 import adminProductRoutes from "./routes/admin/product.route";
@@ -38,7 +40,9 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 /* User routes */
+app.use("/api/product", productRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/categories", categoriesRoutes);
 app.use("/api/contacts", contactsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/transaction", transactionRoutes);
@@ -49,7 +53,6 @@ app.use("/api/admin/user", adminUserRoutes);
 app.use("/api/admin/categories", adminCategoriesRoutes);
 app.use("/api/admin/contacts", adminContactsRoutes);
 app.use("/api/admin/discount", adminDiscountRoutes);
-
 connectDB().then(async () => {
     await initRoles();
 });
