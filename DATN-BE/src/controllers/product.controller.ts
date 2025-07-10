@@ -1,6 +1,5 @@
 import { Product } from "../models/product.model";
 import { Categories } from "../models/categories.model";
-import { Feedback } from "../models/feedback.model";
 
 export const list = async (req: any, res: any) => {
   try {
@@ -140,10 +139,6 @@ export const getBySlug = async (req: any, res: any) => {
       });
     }
 
-    const feedbacks = await Feedback.find({
-      product_id: product.id,
-      is_deleted: false,
-    });
 
     const categories = await Categories.findById({
       _id: product.categories_id,
@@ -152,7 +147,7 @@ export const getBySlug = async (req: any, res: any) => {
 
     return res.status(200).json({
       message: "Product fetched successfully",
-      data: { product, feedbacks, categories },
+      data: { product, categories },
       statusCode: 200,
     });
   } catch (error) {

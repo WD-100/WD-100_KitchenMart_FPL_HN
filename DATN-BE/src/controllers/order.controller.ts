@@ -1,6 +1,5 @@
 import {Order} from "../models/order.model";
 import {Product} from "../models/product.model";
-import {Report} from "../models/report.model";
 import {User} from "../models/user.model";
 
 export const create = async (req: any, res: any) => {
@@ -136,10 +135,8 @@ export const status = async (req: any, res: any) => {
         });
         order.status = statusMap[type];
         if (type === "approve") {
-            await Report.create({
-                product_id,
-                amount: responseProduct?.price,
-            });
+        
+
         }
 
         await order.save();
