@@ -5,11 +5,13 @@ import productRoutes from "./routes/product.route";
 import userRoutes from "./routes/user.route";
 import categoriesRoutes from "./routes/categories.route";
 import contactsRoutes from "./routes/contacts.route";
+import orderRoutes from "./routes/order.route";
 import transactionRoutes from "./routes/transaction.routes";
 import adminProductRoutes from "./routes/admin/product.route";
 import adminUserRoutes from "./routes/admin/user.route";
 import adminCategoriesRoutes from "./routes/admin/categories.route";
 import adminContactsRoutes from "./routes/admin/contacts.route";
+import adminOrderRoutes from "./routes/admin/order.route";
 import adminDiscountRoutes from "./routes/admin/discount.route";
 import adminRoleRoutes from "./routes/admin/role.route";
 import cartRoutes from "./routes/cart.route";
@@ -45,6 +47,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/contacts", contactsRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
 app.use("/api/transaction", transactionRoutes);
 /* Admin routes */
 app.use("/api/admin/role", adminRoleRoutes);
@@ -52,7 +55,9 @@ app.use("/api/admin/product", adminProductRoutes);
 app.use("/api/admin/user", adminUserRoutes);
 app.use("/api/admin/categories", adminCategoriesRoutes);
 app.use("/api/admin/contacts", adminContactsRoutes);
+app.use("/api/admin/order", adminOrderRoutes);
 app.use("/api/admin/discount", adminDiscountRoutes);
+
 connectDB().then(async () => {
     await initRoles();
 });
