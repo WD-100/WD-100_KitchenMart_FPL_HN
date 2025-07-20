@@ -8,8 +8,9 @@ import ConvertCurrency from "../../Shared/Utils/ConvertCurrency";
 import ECharts from "echarts";
 import * as echarts from 'echarts';
 import $ from "jquery";
-// import revenueService from "../../Service/RevenueService";
+import revenueService from "../../Service/RevenueService";
 import {Table} from "antd";
+import dayjs from "dayjs";
 
 function Dashboard() {
     const [loading, setLoading] = useState(true);
@@ -63,20 +64,20 @@ function Dashboard() {
 
     const filterRevenueChart = async () => {
         let type = $('#type').val();
-        // await revenueService.adminDataChartRevenue(type)
-        //     .then((res) => {
-        //         if (res.status === 200) {
-        //             console.log("data", res.data)
-        //             let result = res.data.data;
-        //             let xData = result.x_data;
-        //             let yData = result.y_data;
-        //             chartRevenus(xData, yData);
-        //             setTotal(result.total);
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //     })
+        await revenueService.adminDataChartRevenue(type)
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("data", res.data)
+                    let result = res.data.data;
+                    let xData = result.x_data;
+                    let yData = result.y_data;
+                    chartRevenus(xData, yData);
+                    setTotal(result.total);
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const charts = (dataChart) => {
@@ -153,9 +154,6 @@ function Dashboard() {
                 let dataChart = [
                     {value: data.canceled, name: 'Đã huỷ'},
                     {value: data.completed, name: 'Đã hoàn thành'},
-                    // {value: data.shipping, name: 'Đang giao hàng'},
-                    // {value: data.delivered, name: 'Giao hàng thành công'},
-                    // {value: data.process, name: 'Đang xử lý'}
                 ];
 
                 charts(dataChart);
@@ -178,17 +176,7 @@ function Dashboard() {
             title: 'Thời gian',
             dataIndex: 'created_at',
             width: '60%',
-            render: (text) => {
-                const date = new Date(text);
-                return date.toLocaleString('vi-VN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                });
-            },
+            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
         },
         {
             title: 'Tổng tiền ',
@@ -206,20 +194,20 @@ function Dashboard() {
     ];
 
     const getListRevenue = async () => {
-        // await revenueService.adminListRevenue('', '', '')
-        //     .then((res) => {
-        //         if (res.status === 200) {
-        //             console.log("data", res.data)
-        //             setRevenue(res.data.data)
-        //             setLoading(false)
-        //         } else {
-        //             setLoading(false)
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         setLoading(false)
-        //         console.log(err)
-        //     })
+        await revenueService.adminListRevenue('', '', '')
+            .then((res) => {
+                if (res.status === 200) {
+                    console.log("data", res.data)
+                    setRevenue(res.data.data)
+                    setLoading(false)
+                } else {
+                    setLoading(false)
+                }
+            })
+            .catch((err) => {
+                setLoading(false)
+                console.log(err)
+            })
     }
 
     const loadFn = async () => {
@@ -443,7 +431,7 @@ function Dashboard() {
                                                     <th scope="col">Hình ảnh</th>
                                                     <th scope="col">Tên sản phẩm</th>
                                                     <th scope="col">Giá mới</th>
-                                                    <th scope="col">Số lượt</th>
+                                                    <th scope="col">Số lượng đã mua</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -451,9 +439,9 @@ function Dashboard() {
                                                     return (
                                                         <tr key={index}>
                                                             <th scope="row"><img
-                                                                src={item.thumbnail}
+                                                                src={item.image}
                                                                 alt=""/></th>
-                                                            <td>{item.name}</td>
+                                                            <td>{item.title}</td>
                                                             <td>{ConvertCurrency(item.sale_price)}</td>
                                                             <td>{item.total_sold}</td>
                                                         </tr>
