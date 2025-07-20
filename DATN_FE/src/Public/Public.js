@@ -55,9 +55,14 @@ import UpdateUser from './Components/AdminApp/Users/UpdateUser/UpdateUser';
 import ListCoupon from './Components/AdminApp/Coupons/ListCoupon/ListCoupon';
 import CreateCoupon from './Components/AdminApp/Coupons/CreateCoupon/CreateCoupon';
 import DetailCoupon from './Components/AdminApp/Coupons/DetailCoupon/DetailCoupon';
+/* Admin Reviews */
+import ListReview from './Components/AdminApp/Reviews/ListReview/ListReview';
+import DetailReview from './Components/AdminApp/Reviews/DetailReview/DetailReview';
 /* Admin Contacts */
 import ListContact from './Components/AdminApp/Contacts/ListContact/ListContact';
 import DetailContact from './Components/AdminApp/Contacts/DetailContact/DetailContact';
+/* Review Product */
+import ReviewProduct from './Components/Profile/MyOrder/ReviewProduct/ReviewProduct';
 
 /**
  * This component renders the routes for the public part of the application.
@@ -94,6 +99,7 @@ function Public() {
                 <Route path='/my-order' element={<ListMyOrder/>}/>
                 <Route path='/my-order/:id' element={<DetailMyOrder/>}/>
                 <Route path='/my-coupon' element={<ListMyCoupon/>}/>
+                <Route path='/reviews/products' element={<ReviewProduct/>}/>
                 {/* Admin Page */}
                 <Route path='/admin/dashboard' element={<Dashboard/>}/>
                 {/* Admin Category */}
@@ -119,6 +125,9 @@ function Public() {
                 <Route path='/admin/coupons/list' element={<ListCoupon/>}/>
                 <Route path='/admin/coupons/create' element={<CreateCoupon/>}/>
                 <Route path='/admin/coupons/detail/:id' element={<DetailCoupon/>}/>
+                {/* Admin Reviews */}
+                <Route path='/admin/reviews/list' element={<ListReview/>}/>
+                <Route path='/admin/reviews/detail/:id' element={<DetailReview/>}/>
                 {/* Admin Coupons */}
                 <Route path='/admin/contacts/list' element={<ListContact/>}/>
                 <Route path='/admin/contacts/detail/:id' element={<DetailContact/>}/>

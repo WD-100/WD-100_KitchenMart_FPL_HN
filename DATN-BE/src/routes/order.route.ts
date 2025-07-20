@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/list", authenticateToken, list);
 
-router.patch("/cancel", authenticateToken, cancel);
+router.patch("/cancel/:id", authenticateToken, cancel);
 
 router.get("/detail/:id", authenticateToken, detail);
 

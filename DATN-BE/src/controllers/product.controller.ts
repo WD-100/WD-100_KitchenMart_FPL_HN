@@ -72,13 +72,15 @@ export const getNewProduct = async (req: any, res: any) => {
       .limit(size);
 
     const sanitizedProducts = products.map((product) => {
-      const p = product.toObject();
+      const p = product.toObject() as any;
 
-      p.price = parseFloat(p.price?.toString() || "0");
-      p.sale_price = parseFloat(p.sale_price?.toString() || "0");
-
-      return p;
+      return {
+        ...p,
+        price: parseFloat(p.price?.toString() || "0"),
+        sale_price: parseFloat(p.sale_price?.toString() || "0"),
+      };
     });
+
 
     res.status(200).json({
       message: "Lấy sản phẩm mới nhất thành công",
@@ -140,6 +142,7 @@ export const getBySlug = async (req: any, res: any) => {
     }
 
 
+
     const categories = await Categories.findById({
       _id: product.categories_id,
       is_deleted: false,
@@ -147,7 +150,7 @@ export const getBySlug = async (req: any, res: any) => {
 
     return res.status(200).json({
       message: "Product fetched successfully",
-      data: { product, categories },
+      data: { product,  categories },
       statusCode: 200,
     });
   } catch (error) {

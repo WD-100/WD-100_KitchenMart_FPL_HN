@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema(
     {
         timestamps: true,
         toJSON: {
-            transform(doc, ret) {
+             transform(doc, ret: any) {
                 ret.id = ret._id.toString();
                 ret.products_price = parseFloat(ret.products_price);
                 ret.shipping_price = parseFloat(ret.shipping_price);

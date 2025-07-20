@@ -48,7 +48,7 @@ export const detail = async (req: any, res: any) => {
         const orderId = req.params.id;
         const order = await Order.findById(orderId);
 
-        if (!order || order.is_deleted == 1 || String(order.user_id) !== userId) {
+        if (!order || order.is_deleted == true || String(order.user_id) !== userId) {
             return res.status(404).json(returnMessage(0, null, "Order not found"));
         }
 
@@ -82,11 +82,11 @@ export const detail = async (req: any, res: any) => {
 
 export const cancel = async (req: any, res: any) => {
     try {
-        const userId = req.userId; // lấy từ middleware decode JWT
+        const userId = req.userId;
         const orderId = req.params.id;
 
         const order = await Order.findById(orderId);
-        if (!order || order.status === "DELETED" || String(order.user_id) !== userId) {
+        if (!order || order.is_deleted == true || String(order.user_id) !== userId) {
             return res.status(404).json(returnMessage(0, null, "Order not found"));
         }
 

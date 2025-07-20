@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
-      transform(doc, ret) {
+       transform(doc, ret: any) {
         ret.id = ret._id.toString(); // _id → id
         ret.price = parseFloat(ret.price); // Decimal128 → number
         ret.sale_price = parseFloat(ret.sale_price); // Decimal128 → number
