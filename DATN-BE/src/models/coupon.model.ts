@@ -1,7 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
 /**
- * Schema cho mã giảm giá (Discount)
+ * Schema cho mã giảm giá (Coupon)
  *
  * Các trường:
  * - code: Mã giảm giá (bắt buộc, duy nhất)
@@ -17,7 +17,7 @@ import mongoose, {Schema} from "mongoose";
  * - is_deleted: Trạng thái xóa mềm (true = đã xóa, mặc định: false)
  */
 
-export interface IDiscount extends Document {
+export interface ICoupon extends Document {
     name: string;
     code: string;
     type: "percent" | "fixed";
@@ -36,7 +36,7 @@ export interface IDiscount extends Document {
     updatedAt?: Date;
 }
 
-const discountSchema = new Schema<IDiscount>(
+const couponSchema = new Schema<ICoupon>(
     {
         name: {type: String, required: true},
         code: {type: String, required: true, unique: true},
@@ -66,4 +66,4 @@ const discountSchema = new Schema<IDiscount>(
     }
 );
 
-export const Discount = mongoose.model("Discount", discountSchema);
+export const Coupon = mongoose.model("Coupon", couponSchema);
