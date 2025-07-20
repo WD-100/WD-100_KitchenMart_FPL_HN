@@ -3,21 +3,21 @@ import axios from "axios";
 
 const API_ENDPOINT = {
     /* My coupon*/
-    LIST_MY: "/api/my-discount/list",
-    SEARCH_MY: "/api/my-discount/search",
-    DETAIL_MY: "/api/my-discount/detail/",
+    LIST_MY: "/api/my-coupons/list",
+    SEARCH_MY: "/api/my-coupons/search",
+    DETAIL_MY: "/api/my-coupons/detail/",
     //
-    LIST: "/api/discount/list",
-    SEARCH: "/api/discount/search",
-    DETAIL: "/api/discount/detail/",
+    LIST: "/api/coupons/list",
+    SEARCH: "/api/coupons/search",
+    DETAIL: "/api/coupons/detail/",
     /* Save coupon */
-    SAVE: "/api/my-discount/save",
+    SAVE: "/api/my-coupons/save",
     //
-    ADMIN_LIST: "/api/admin/discount/list",
-    ADMIN_DETAIL: "/api/admin/discount/detail/",
-    ADMIN_CREATE: "/api/admin/discount/create",
-    ADMIN_UPDATE: "/api/admin/discount/update/",
-    ADMIN_DELETE: "/api/admin/discount/delete/",
+    ADMIN_LIST: "/api/admin/coupons/list",
+    ADMIN_DETAIL: "/api/admin/coupons/detail/",
+    ADMIN_CREATE: "/api/admin/coupons/create",
+    ADMIN_UPDATE: "/api/admin/coupons/update/",
+    ADMIN_DELETE: "/api/admin/coupons/delete/",
 }
 
 class CouponService {
