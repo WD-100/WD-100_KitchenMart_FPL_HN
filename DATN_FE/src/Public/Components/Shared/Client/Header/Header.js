@@ -4,7 +4,7 @@ import accountService from "../../../Service/AccountService";
 import Css from "../../Client/Lib/StyleSheet";
 import Script from "../../Client/Lib/Script";
 import $ from "jquery";
-// import cartService from "../../../Service/CartService";
+import cartService from "../../../Service/CartService";
 import categoryService from "../../../Service/CategoryService";
 
 function NoLogin() {
@@ -31,11 +31,21 @@ function YesLogin() {
     }
 
     const getListCart = async () => {
-       
+        await cartService.listCart()
+            .then((res) => {
+                setLoading(false)
+                let count = res.data.data.length;
+                console.log(count);
+                $('#countCart').text(count);
+            })
+            .catch((err) => {
+                setLoading(false)
+                console.log(err)
+            })
     }
 
     useEffect(() => {
-        // getListCart();
+        getListCart();
     }, [loading]);
 
     return (
