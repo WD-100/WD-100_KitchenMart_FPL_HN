@@ -1,246 +1,136 @@
 import {Order} from "../models/order.model";
+import {OrderItem} from "../models/order_item.model";
+import {toNumber} from "../utils/number_formater";
+import {returnMessage} from "../utils/response";
 import {Product} from "../models/product.model";
-import {User} from "../models/user.model";
-
-export const create = async (req: any, res: any) => {
-    const {
-        description,
-        product_id,
-        user_id,
-        email,
-        phone_number,
-        full_name,
-        address,
-        address_detail,
-    } = req.body;
-
-    console.log("Payload nhận được:", req.body);
-    if (!product_id || !user_id) {
-        return res.status(400).json({
-            message: "Missing product_id or user_id in payload",
-            statusCode: 400,
-        });
-    }
-
-    try {
-        const user = await User.findById({_id: user_id});
-        if (!user) {
-            return res.status(400).json({
-                message: "user not found",
-                statusCode: 400,
-            });
-        }
-        await Order.create({
-            description,
-            product_id,
-            user_id,
-            email,
-            phone_number,
-            full_name,
-            address,
-            address_detail,
-        });
-        res.status(201).json({
-            message: "success",
-            statusCode: 201,
-        });
-    } catch (error) {
-        console.log(error);
-    }
-};
+import {OrderHistory} from "../models/order_history.model";
 
 export const list = async (req: any, res: any) => {
     try {
-        const searchValue = (req.query.value as string)?.trim() || "";
-        const page = parseInt(req.query.page as string) || 1;
-        const status = parseInt(req.query.status as string) || 0;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const skip = (page - 1) * limit;
+        const userId = req.userId;
+        const status = req.query.status as string | undefined;
 
-        const filter: any = {is_deleted: false, status};
-
-        if (searchValue) {
-            const regex = new RegExp(searchValue, "i");
-            filter.$or = [
-                {full_name: {$regex: regex}},
-                {email: {$regex: regex}},
-                {phone_number: {$regex: regex}},
-            ];
+        const filter: any = {user_id: userId};
+        if (status) {
+            filter.status = status;
         }
+        filter.is_deleted = false;
 
-        const [orders, total] = await Promise.all([
-            Order.find(filter)
-                .skip(skip)
-                .limit(limit)
-                .sort({createdAt: -1})
-                .populate({path: "product_id", select: "title"})
-                .populate({path: "user_id", select: "full_name email"}),
-            Order.countDocuments(filter),
-        ]);
+        const orders = await Order.find(filter).sort({createdAt: -1});
 
-        return res.status(200).json({
-            message: "success",
-            data: {
-                orders,
-                pagination: {
-                    currentPage: page,
-                    totalPages: Math.ceil(total / limit),
-                    totalItems: total,
-                    limit,
-                },
-            },
-        });
+        const enrichedOrders = await Promise.all(
+            orders.map(async (order) => {
+                const orderItems = await OrderItem.find({order_id: order._id});
+                const raw = order.toObject();
+
+                return {
+                    ...raw,
+                    products_price: toNumber(raw.products_price),
+                    shipping_price: toNumber(raw.shipping_price),
+                    discount_price: toNumber(raw.discount_price),
+                    total_price: toNumber(raw.total_price),
+                    order_items: orderItems.map(item => item.toObject())
+                };
+            })
+        );
+
+        return res.status(200).json(returnMessage(1, enrichedOrders, "Success"));
     } catch (error) {
         console.error("Error listing users:", error);
         return res.status(500).json({message: "Server error"});
     }
 };
 
-export const status = async (req: any, res: any) => {
-    const {product_id, type} = req.body;
-
-    if (!product_id || !type) {
-        return res.status(400).json({
-            message: "Missing product_id or type in payload",
-            statusCode: 400,
-        });
-    }
-
-    if (!["approve", "reject", "cancel"].includes(type)) {
-        return res.status(400).json({
-            message: "Invalid type. Must be 'approve' or 'reject'",
-            statusCode: 400,
-        });
-    }
-
+export const detail = async (req: any, res: any) => {
     try {
-        const order = await Order.findOne({product_id});
+        const userId = req.userId;
 
-        if (!order) {
-            return res.status(404).json({
-                message: "Order not found",
-                statusCode: 404,
-            });
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId);
+
+        if (!order || order.is_deleted == 1 || String(order.user_id) !== userId) {
+            return res.status(404).json(returnMessage(0, null, "Order not found"));
         }
 
-        const statusMap: any = {
-            approve: 1,
-            reject: 2,
-            cancel: 2,
-        };
-
-        const responseProduct = await Product.findById({
-            _id: product_id,
-            is_deleted: false,
-        });
-        order.status = statusMap[type];
-        if (type === "approve") {
-        
-
+        const orderData = {
+            ...order.toObject(),
+            products_price: toNumber(order.products_price),
+            shipping_price: toNumber(order.shipping_price),
+            discount_price: toNumber(order.discount_price),
+            total_price: toNumber(order.total_price),
         }
 
-        await order.save();
+        const orderItems = await OrderItem.find({order_id: orderId});
 
-        return res.status(200).json({
-            message: `${type} order success`,
-            statusCode: 200,
-        });
+        (orderData as any).order_items = await Promise.all(
+            orderItems.map(async (item) => {
+                const itemObj = item.toObject();
+
+                const product = await Product.findById(item.product_id);
+                (itemObj as any).product = product?.toObject() || null;
+
+                return itemObj;
+            })
+        );
+
+        return res.status(200).json(returnMessage(1, orderData, "Success"));
     } catch (error) {
-        console.error("Order status update failed:", error);
-        return res.status(500).json({
-            message: "Internal server error",
-            statusCode: 500,
-        });
+        console.error("Error getting order detail:", error);
+        return res.status(500).json(returnMessage(0, null, "Server error"));
     }
 };
 
 export const cancel = async (req: any, res: any) => {
-    const {product_id} = req.body;
-
-    if (!product_id) {
-        return res.status(400).json({
-            message: "Missing product_id  in payload",
-            statusCode: 400,
-        });
-    }
-
     try {
-        const order = await Order.findOne({product_id});
+        const userId = req.userId; // lấy từ middleware decode JWT
+        const orderId = req.params.id;
 
-        if (!order) {
-            return res.status(404).json({
-                message: "Order not found",
-                statusCode: 404,
-            });
+        const order = await Order.findById(orderId);
+        if (!order || order.status === "DELETED" || String(order.user_id) !== userId) {
+            return res.status(404).json(returnMessage(0, null, "Order not found"));
         }
 
-        order.status = 3;
+        const status = String(order.status);
+
+        if (["CONFIRMED", "SHIPPING", "CANCELED", "COMPLETED"].includes(status)) {
+            const messages: Record<string, string> = {
+                CONFIRMED: "Đơn hàng đã được xác nhận!",
+                SHIPPING: "Đơn hàng đang vận chuyển!",
+                CANCELED: "Đơn hàng đã huỷ!",
+                COMPLETED: "Đơn hàng đã hoàn thành!",
+            };
+            return res.status(400).json(returnMessage(0, null, messages[status]));
+        }
+
+        const reasonCancel = req.body.reason_cancel;
+
+        order.status = "CANCELED";
+        order.reason_cancel = reasonCancel;
         await order.save();
 
-        return res.status(200).json({
-            message: `Cancel order success`,
-            statusCode: 200,
-        });
-    } catch (error) {
-        console.error("Order status update failed:", error);
-        return res.status(500).json({
-            message: "Internal server error",
-            statusCode: 500,
-        });
-    }
-};
+        const orderItems = await OrderItem.find({order_id: order._id});
 
-export const detail = async (req: any, res: any) => {
-    const {id} = req.params;
-
-    try {
-        const order = await Order.findById({_id: id, is_deleted: false});
-
-        if (!order) {
-            return res.status(404).json({
-                message: "Order not found",
-                statusCode: 404,
-            });
+        for (const item of orderItems) {
+            const product = await Product.findById(item.product_id);
+            if (product) {
+                if (product && typeof product.quantity === "number" && typeof item.quantity === "number") {
+                    product.quantity += item.quantity;
+                    await product.save();
+                }
+            }
         }
 
-        return res.status(200).json({
-            message: "success",
-            statusCode: 200,
-            data: order,
+        const orderHistory = new OrderHistory({
+            order_id: order._id,
+            status: "CANCELED",
+            user_id: order.user_id,
+            notes: reasonCancel,
         });
-    } catch (error) {
-        console.error("Error in order detail:", error);
-        return res.status(500).json({
-            message: "Internal server error",
-            statusCode: 500,
-        });
-    }
-};
+        await orderHistory.save();
 
-export const destroy = async (req: any, res: any) => {
-    const {id} = req.params;
-
-    try {
-        const order = await Order.findById({_id: id, is_deleted: false});
-
-        if (!order) {
-            return res.status(404).json({
-                message: "Order not found",
-                statusCode: 404,
-            });
-        }
-
-        order.is_deleted = true;
-        order.save();
-
-        return res.status(200).json({
-            message: "delete order success",
-            statusCode: 200,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Internal server error",
-            statusCode: 500,
-        });
+        return res.status(200).json(returnMessage(1, order.toObject(), "Cancel success"));
+    } catch (error: any) {
+        console.error("Cancel order error:", error);
+        return res.status(400).json(returnMessage(-1, "", error.message));
     }
 };
