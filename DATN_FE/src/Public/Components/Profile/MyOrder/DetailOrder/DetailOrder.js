@@ -1,4 +1,4 @@
-import {Button, Form, Input, message, Table} from 'antd';
+import {Form, Table} from 'antd';
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import orderService from '../../../Service/OrderService';
@@ -6,6 +6,7 @@ import Header from '../../Header/Header'
 import Sidebar from '../../Sidebar/Sidebar'
 import $ from 'jquery';
 import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
+import dayjs from "dayjs";
 
 function DetailOrder() {
     const {id} = useParams();
@@ -22,6 +23,20 @@ function DetailOrder() {
         },
     });
 
+    const statusMap = {
+        PENDING: 'CHỜ XÁC NHẬN',
+        PROCESSING: 'ĐANG XỬ LÝ',
+        CONFIRMED: 'ĐÃ XÁC NHẬN',
+        SHIPPING: 'ĐANG VẬN CHUYỂN',
+        CANCELED: 'ĐÃ HỦY',
+        DELIVERED: 'ĐÃ GIAO HÀNG',
+        COMPLETED: 'ĐÃ HOÀN THÀNH',
+    };
+
+    const methodMap = {
+        IMMEDIATE: 'Thanh toán khi nhận hàng',
+        CARD_CREDIT: 'Thanh toán qua VNPAY',
+    };
 
     const handleCancel = async (id) => {
         let reason_cancel = $('#reason_cancel').val();
@@ -92,22 +107,15 @@ function DetailOrder() {
             title: 'Trạng thái',
             dataIndex: 'status',
             width: '20%',
+            render: (text) => {
+                return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
+            },
         },
         {
             title: 'Thời gian',
             dataIndex: 'created_at',
-            width: '10%',
-            render: (text) => {
-                const date = new Date(text);
-                return date.toLocaleString('vi-VN', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                });
-            },
+            width: '20%',
+            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
         },
     ];
 
@@ -193,7 +201,7 @@ function DetailOrder() {
                                                             Phương thức thanh toán
                                                         </td>
                                                         <td className="text-black Address">
-                                                            {order.order_method}
+                                                            {methodMap[order.order_method] || 'KHÔNG XÁC ĐỊNH'}
                                                         </td>
                                                     </tr>
                                                     </thead>
@@ -271,30 +279,17 @@ function DetailOrder() {
                                                             return (
                                                                 <tr key={index}>
                                                                     <td>
-                                                                        <img src={orderItem.product.thumbnail} alt=""
+                                                                        <img src={orderItem.product.image} alt=""
                                                                              width="100px"/>
                                                                     </td>
                                                                     <td>
-                                                                        {orderItem.product.name}
-                                                                        <div className="list-option mt-2 small">
-                                                                            {
-                                                                                orderItem.attribute.map((item1, index1) => {
-                                                                                    return (
-                                                                                        <div key={index1}
-                                                                                             className="d-flex align-items-center justify-content-start">
-                                                                                            <span>{item1.attribute.name}: </span>
-                                                                                            <span>{item1.property.name}</span>
-                                                                                        </div>
-                                                                                    );
-                                                                                })
-                                                                            }
-                                                                        </div>
+                                                                        {orderItem.product.title}
                                                                     </td>
                                                                     <td>{orderItem.quantity}</td>
-                                                                    <td>{ConvertCurrency(orderItem.price)}</td>
+                                                                    <td>{orderItem.price}</td>
                                                                     <td>{ConvertCurrency(orderItem.price * orderItem.quantity)}</td>
                                                                     <td>
-                                                                        {order.status === 'ĐÃ HOÀN THÀNH' && (
+                                                                        {order.status === 'COMPLETED' && (
                                                                             <a className="btn btn-primary"
                                                                                href={"/reviews/products?pro=" + orderItem.product_id + "&order=" + id}>Đánh
                                                                                 giá</a>
@@ -323,7 +318,7 @@ function DetailOrder() {
                                             <div className="row mt-3 mb-4">
                                                 <div id="bar-progress" className="mt-5 mt-lg-0">
                                                     <div
-                                                        className={"step " + (order.status === 'CHỜ XÁC NHẬN' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'PENDING' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">1</span>
                                                     </span>
@@ -331,7 +326,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'ĐANG XỬ LÝ' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'PROCESSING' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">2</span>
                                                     </span>
@@ -339,7 +334,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'ĐÃ XÁC NHẬN' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'CONFIRMED' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">3</span>
                                                     </span>
@@ -347,7 +342,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'ĐANG VẬN CHUYỂN' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'SHIPPING' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">4</span>
                                                     </span>
@@ -355,7 +350,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'ĐÃ GIAO HÀNG' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'CANCELED' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">5</span>
                                                     </span>
@@ -363,7 +358,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'ĐÃ HOÀN THÀNH' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'DELIVERED' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">6</span>
                                                     </span>
@@ -372,7 +367,7 @@ function DetailOrder() {
                                                 </div>
                                             </div>
 
-                                            {(order.status === 'CHỜ XÁC NHẬN' || order.status === 'ĐANG XỬ LÝ') && (
+                                            {(order.status !== 'CANCELED' && order.status !== 'COMPLETED') && (
                                                 <button type="button" data-bs-toggle="modal"
                                                         data-bs-target="#exampleModal"
                                                         className="btn btn-danger mt-3">
@@ -416,7 +411,7 @@ function DetailOrder() {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" className="btn btn-danger" onClick={() => handleCancel(order.id)}>
+                            <button type="button" className="btn btn-danger" onClick={() => handleCancel(order._id)}>
                                 Xác nhận huỷ đơn hàng
                             </button>
                         </div>

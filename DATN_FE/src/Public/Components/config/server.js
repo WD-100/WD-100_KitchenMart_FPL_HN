@@ -1,1 +1,2 @@
-export const BASE_URL_SERVER = "http://localhost:3005";
+const BASE_URL_SERVER = process.env.REACT_APP_BASE_URL_SERVER;
+module.exports = { BASE_URL_SERVER };

@@ -31,4 +31,5 @@ package-lock.json
 .idea
 
 ######## DO NOT SHOW ANYTHING BELOW THIS LINE ########
-/src/Public/Components/config/Constants.js
+.env.development
+.env.production

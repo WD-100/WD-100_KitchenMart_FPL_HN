@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {Form} from 'antd';
-
+import cartService from '../../Service/CartService';
 import Header from "../../Shared/Client/Header/Header";
 import Footer from "../../Shared/Client/Footer/Footer";
 import productService from "../../Service/ProductService";
@@ -40,7 +40,28 @@ function ProductDetail() {
             })
     }
 
-  
+    const addToCart = async () => {
+        LoadingPage();
+
+        let product_id = product.id || '';
+        let user_id = sessionStorage.getItem('id') || '';
+        let quantity = $('#inputQuantity').val();
+        let data = {
+            product_id: product_id,
+            user_id: user_id,
+            quantity: quantity
+        }
+
+        await cartService.createCart(data)
+            .then((res) => {
+                LoadingPage();
+                alert("Thêm sản phẩm vào giỏ hàng thành công!")
+            })
+            .catch((err) => {
+                LoadingPage();
+                let message = err.response.data.message;
+            })
+    }
 
     const handleShowDescription = () => {
         let product_description_ = $('#product_description_area_ .product_description_');
@@ -114,7 +135,7 @@ function ProductDetail() {
 
             <div className="site-section">
                 <div className="container">
-                    <Form className="row" id="formCreate">
+                    <Form className="row" id="formCreate" onFinish={addToCart}>
                         <input type="text" className="d-none" id="product_option"/>
                         <div className="col-md-6">
                             <img src={product.image} alt="Image" className="img-fluid" id="productImage"
@@ -176,7 +197,35 @@ function ProductDetail() {
                         <h5 className="text-start text-danger mt-3">Đánh giá gần đây</h5>
 
                         <div className="list_review_content_ mt-2">
-                          
+                            {reviews.map((review, index) => (
+                                <div className="verified_customer_section mb-2" key={index}>
+                                    <div className="image_review">
+                                        <div className="customer_image">
+                                            <img src={review.user.avt}
+                                                 alt="customer image"/>
+                                        </div>
+
+                                        <div className="customer_name_review_status">
+                                            <div className="customer_name">{review.user.email}</div>
+                                            <div className="customer_review">
+                                                {Array.from({length: 5}).map((_, i) => (
+                                                    <i
+                                                        key={i}
+                                                        className={`fa-solid fa-star ${i < review.stars ? 'filled' : ''}`}
+                                                    ></i>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h5>{review.title}</h5>
+
+                                    <div className="customer_comment text_truncate_3_">
+                                        {review.content}
+                                    </div>
+
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

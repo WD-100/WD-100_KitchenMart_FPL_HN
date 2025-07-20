@@ -37,3 +37,10 @@ npx ts-node ./src/server.ts
 ```bash
 npm install -D ts-node typescript
 ```
+
+## Run project with nodemon and ts
+
+```bash
+npm run dev
+
+```

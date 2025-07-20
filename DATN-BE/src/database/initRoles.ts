@@ -19,13 +19,13 @@ export const initRoles = async () => {
     if (rolesToCreate.length > 0) {
       await Role.insertMany(rolesToCreate);
       console.log(
-        "✅ Đã khởi tạo role mặc định:",
+        "Đã khởi tạo role mặc định:",
         rolesToCreate.map((r) => r.code).join(", ")
       );
     } else {
-      console.log("ℹ️ Các role mặc định đã tồn tại.");
+      console.log("Các role mặc định đã tồn tại.");
     }
   } catch (error) {
-    console.error("❌ Lỗi khi khởi tạo role mặc định:", error);
+    console.error("Lỗi khi khởi tạo role mặc định:", error);
   }
 };

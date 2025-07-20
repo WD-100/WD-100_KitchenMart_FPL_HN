@@ -24,10 +24,11 @@ export const list = async (req: any, res: any) => {
                 const sanitizedProducts = products.map(product => {
                     const p = product.toObject();
 
-                    p.price = parseFloat(p.price?.toString() || '0');
-                    p.sale_price = parseFloat(p.sale_price?.toString() || '0');
-
-                    return p;
+                    return {
+                        ...p,
+                        price: parseFloat(p.price?.toString() || '0'),
+                        sale_price: parseFloat(p.sale_price?.toString() || '0'),
+                    };
                 });
 
                 return {

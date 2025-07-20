@@ -64,7 +64,7 @@ class OrderService {
                 'Authorization': `Bearer ${sessionStorage.getItem("accessToken")}`
             }
         };
-        return axios.post(BASE_URL_SERVER + API_ENDPOINT.CANCEL_ORDER + id, data, config);
+        return axios.patch(BASE_URL_SERVER + API_ENDPOINT.CANCEL_ORDER + id, data, config);
     }
 
 

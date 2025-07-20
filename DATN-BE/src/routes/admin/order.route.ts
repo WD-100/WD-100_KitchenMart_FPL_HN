@@ -1,16 +1,13 @@
 import {Router} from "express";
-import {cancel, destroy, detail, list, status} from "../../controllers/admin/order.controller";
+import {detail, list, update} from "../../controllers/admin/order.controller";
+import {authenticateToken} from "../../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/list", list);
+router.get("/list", authenticateToken, list);
 
-router.patch("/status", status);
+router.patch("/update/:id", authenticateToken, update);
 
-router.patch("/cancel", cancel);
-
-router.get("/detail/:id", detail);
-
-router.delete("/delete/:id", destroy);
+router.get("/detail/:id", authenticateToken, detail);
 
 export default router;
