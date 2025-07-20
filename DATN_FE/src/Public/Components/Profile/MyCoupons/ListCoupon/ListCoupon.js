@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../Header/Header'
 import Sidebar from '../../Sidebar/Sidebar'
-import {Button, Form, Table} from 'antd';
 import couponService from '../../../Service/CouponService';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import $ from 'jquery';
 import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
 
 function ListCoupon() {
@@ -31,6 +29,11 @@ function ListCoupon() {
             })
     }
 
+    const statusMap = {
+        UNUSED: 'CHƯA SỬ DỤNG',
+        USED: 'ĐÃ SỬ DỤNG',
+        EXPIRED: 'ĐÃ HẾT HẠN',
+    };
 
     useEffect(() => {
         getListCoupons();
@@ -80,7 +83,7 @@ function ListCoupon() {
 
                                     <div className="d-flex align-items-center justify-content-end">
                                         <p className="btn btn-outline-primary mt-3">
-                                            {coupon.status}
+                                            {statusMap[coupon.status] || 'KHÔNG XÁC ĐỊNH'}
                                         </p>
                                     </div>
                                 </div>
