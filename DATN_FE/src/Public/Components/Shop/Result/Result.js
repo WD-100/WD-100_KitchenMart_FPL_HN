@@ -1,233 +1,261 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {useSearchParams} from 'react-router-dom';
-import categoryService from '../../Service/CategoryService';
 import Header from "../../Shared/Client/Header/Header";
 import Footer from "../../Shared/Client/Footer/Footer";
 import productService from "../../Service/ProductService";
-import $ from "jquery";
 import ConvertCurrency from "../../Shared/Utils/ConvertCurrency";
+import categoryService from "../../Service/CategoryService";
 
 function Result() {
     const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [attributes, setAttributes] = useState([]);
-    const [checkedItems, setCheckedItems] = useState([]);
-
     const [searchParams] = useSearchParams();
+    const [newProducts, setNewProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
 
-    let category_param = searchParams.get('category');
-    let keyword_param = searchParams.get('keyword');
-    let size_param = searchParams.get('size');
-    let sort_param = searchParams.get('sort');
-    let minPrice_param = searchParams.get('minPrice');
-    let maxPrice_param = searchParams.get('maxPrice');
-    let option_param = searchParams.get('option');
+    const minPriceRef = useRef(null);
+    const maxPriceRef = useRef(null);
+    const keywordRef = useRef(null);
+    const sizeRef = useRef(null);
+    const sortRef = useRef(null);
+    const checkboxRefs = useRef({});
 
-    if (option_param.endsWith(',')) {
-        option_param = option_param.slice(0, -1);
-    }
-    let arr_option = option_param.split(',');
+    const category_param = searchParams.get('category') ?? '';
+    const keyword_param = searchParams.get('keyword') ?? '';
+    const size_param = searchParams.get('size') ?? '';
+    const sort_param = searchParams.get('sort') ?? '';
+    const minPrice_param = searchParams.get('minPrice') ?? '';
+    const maxPrice_param = searchParams.get('maxPrice') ?? '';
+    const option_param = searchParams.get('option') ?? '';
 
-    function searchMainProduct(categoryID, keywordID, sizeID, sortID, minPriceID, maxPriceID, option) {
-        let baseurl = '/products/search';
-        let category = categoryID ?? category_param;
-        let keyword = keywordID ?? $('#keywordSearch').val();
-        let size = sizeID ?? size_param;
-        let sort = sortID ?? sort_param;
-        let minPrice = minPriceID ?? $('#min-price').val() ?? '';
-        let maxPrice = maxPriceID ?? $('#max-price').val() ?? '';
-        let optionVal = option ?? option_param ?? '';
-        let searchUrl = `${baseurl}?keyword=${keyword}&size=${size}&category=${category}&sort=${sort}&minPrice=${minPrice}&maxPrice=${maxPrice}&option=${optionVal}`;
-        window.location.href = searchUrl;
-    }
-
-    // Lọc sản phẩm theo size và sort
-    const filterProduct = () => {
-        setLoading(true);
-        searchMainProduct(null, null, $('#size').val(), $('#sort').val(), null, null, null);
-    }
+    const getListProduct = async () => {
+        try {
+            const res = await productService.searchProduct(
+                category_param,
+                keyword_param,
+                size_param,
+                sort_param,
+                minPrice_param,
+                maxPrice_param,
+                option_param
+            );
+            setNewProducts(res.data.data.products || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getListCategory = async () => {
-        await categoryService.listCategory()
-            .then((res) => {
-                if (res.status === 200) {
-                    setCategories(res.data.data);
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
-
-    // Gọi hàm tìm kiếm
-    const handleClick = (event) => {
-        event.preventDefault();
-        const categoryId = event.currentTarget.getAttribute('data-id');
-        searchMainProduct(categoryId, null, null, null, null, null, null);
-    }
-
-    /* Gọi hàm search */
-    const searchProduct = (event) => {
-        event.preventDefault();
-        let option = '';
-        $('.property_val').each(function () {
-            let el = $(this);
-            if (el.is(':checked')) {
-                option = option + el.val() + ',';
-            }
-        })
-        searchMainProduct(null, null, null, null, null, null, option);
-    }
-
-    // Gọi api search product với các giá trị từ tham số
-    const getListProduct = async () => {
-        await productService.searchProduct(category_param, keyword_param, size_param, sort_param, minPrice_param, maxPrice_param, option_param)
-            .then((res) => {
-                if (res.status === 200) {
-                    console.log("data", res.data)
-                    setProducts(res.data.data)
-                    setLoading(false)
-                }
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
-    }
-
-    function isChecked(propertyId) {
-        return arr_option.includes(propertyId.toString());
-    }
-
-    function handleCheckboxChange(event) {
-        const propertyId = event.target.value;
-        if (checkedItems.includes(propertyId)) {
-            setCheckedItems(checkedItems.filter(id => id !== propertyId));
-        } else {
-            setCheckedItems([...checkedItems, propertyId]);
+        try {
+            const res = await categoryService.listCategory();
+            setCategories(res.data.data || []);
+        } catch (err) {
+            console.error(err);
         }
-    }
+    };
+
+    const getCheckedOptions = () => {
+        return Object.entries(checkboxRefs.current)
+            .filter(([_, ref]) => ref?.checked)
+            .map(([_, ref]) => ref.value)
+            .join(',');
+    };
+
+    const searchMainProduct = ({
+                                   categoryID,
+                                   keywordID,
+                                   sizeID,
+                                   sortID,
+                                   minPriceID,
+                                   maxPriceID,
+                                   option,
+                               }) => {
+        const keyword = keywordID ?? keywordRef.current?.value ?? '';
+        const size = sizeID ?? sizeRef.current?.value ?? '';
+        const sort = sortID ?? sortRef.current?.value ?? '';
+        const minPrice = minPriceID ?? minPriceRef.current?.value ?? '';
+        const maxPrice = maxPriceID ?? maxPriceRef.current?.value ?? '';
+        const category = categoryID ?? category_param ?? '';
+        const optionVal = option ?? option_param ?? '';
+
+        const searchUrl = `/products/search?keyword=${keyword}&size=${size}&category=${category}&sort=${sort}&minPrice=${minPrice}&maxPrice=${maxPrice}&option=${optionVal}`;
+        window.location.href = searchUrl;
+    };
+
+    const filterProduct = () => {
+        setLoading(true);
+        searchMainProduct({});
+    };
+
+    const searchProduct = () => {
+        const option = getCheckedOptions();
+        searchMainProduct({option});
+    };
+
+    const goCategory = (event, id) => {
+        event.preventDefault();
+        const option = getCheckedOptions();
+        searchMainProduct({categoryID: id, option});
+    };
 
     useEffect(() => {
         getListProduct();
         getListCategory();
-    }, [loading]);
+    }, []);
+
+    let productsPerPage = parseInt(size_param) || 12;
+    const totalPages = Math.ceil(newProducts.length / productsPerPage);
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = newProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
     return (
         <div className="site-wrap">
             <Header/>
+            {/* Breadcrumb */}
+            <div className="bg-light py-3">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-12 mb-0">
+                            <a href="/">Trang chủ</a> <span className="mx-2 mb-0">/</span>
+                            <strong className="text-black">Cửa hàng</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
             <div className="site-section">
                 <div className="container">
-
                     <div className="row mb-5">
                         <div className="col-md-9 order-2">
-
                             <div className="row">
-                                <div className="col-md-12 mb-5">
-                                    <div className="float-md-left mb-4"><h2 className="text-black h5">Toàn bộ sản
-                                        phẩm</h2>
-                                    </div>
-                                    <div className="d-flex justify-content-end">
-                                        <div className="btn-group">
-                                            <select name="size" id="size" className="form-select"
-                                                    onChange={filterProduct}>
-                                                <option selected={size_param === ''} value="">Tất cả</option>
-                                                <option selected={size_param === '3'} value="3">3</option>
-                                                <option selected={size_param === '6'} value="6">6</option>
-                                                <option selected={size_param === '9'} value="9">9</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="btn-group ms-3">
-                                            <select name="sort" id="sort" className="form-select"
-                                                    onChange={filterProduct}>
-                                                <option selected={sort_param === 'desc'} value="desc">Từ cao đến thấp
-                                                </option>
-                                                <option selected={sort_param === 'asc'} value="asc">Từ thấp đến cao
-                                                </option>
-                                            </select>
-                                        </div>
+                                <div className="col-md-12 mb-5 d-flex justify-content-between align-items-center">
+                                    <h2 className="text-black h5">Toàn bộ sản phẩm</h2>
+                                    <div className="d-flex">
+                                        <select id="size" className="form-select" ref={sizeRef} onChange={filterProduct}>
+                                            <option value="">Tất cả</option>
+                                            <option value="3">3</option>
+                                            <option value="6">6</option>
+                                            <option value="9">9</option>
+                                        </select>
+                                        <select id="sort" className="form-select ms-3" ref={sortRef} onChange={filterProduct}>
+                                            <option value="desc">Từ cao đến thấp</option>
+                                            <option value="asc">Từ thấp đến cao</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <div className="row mb-5">
-                                {
-                                    products.map((product) => (
-                                        <div className="col-sm-6 col-lg-4 mb-4 productDetail" key={product.id}>
-                                            <div className="block-4 text-center border">
-                                                <figure className="block-4-image">
-                                                    <a href={`/products/${product.id}`}>
-                                                        <img src={product.thumbnail}
-                                                             alt={product.name}
-                                                             className="img-fluid"/>
-                                                    </a>
-                                                </figure>
-                                                <div className="block-4-text p-4">
-                                                    <h3><a className="text_truncate_2_"
-                                                           href={`/products/${product.id}`}>{product.name}</a></h3>
-                                                    <p className="mb-0 text_truncate_2_"
-                                                       dangerouslySetInnerHTML={{__html: product.short_description}}></p>
 
-                                                    <p className="text-danger font-weight-bold">
-                                                        {ConvertCurrency(product.sale_price || 50)}
-                                                        <strike className="ml-2 small text-black">
-                                                            {ConvertCurrency(product.price || 50)}
-                                                        </strike>
-                                                    </p>
-                                                </div>
+                            <div className="row mb-5">
+                                {currentProducts.map((product, idx) => (
+                                    <div className="col-sm-6 col-lg-4 mb-4 productDetail" key={idx}>
+                                        <div className="block-4 text-center border">
+                                            <figure className="block-4-image">
+                                                <img
+                                                    src={product.image || "/assets/clients/images/no-image.jpg"}
+                                                    alt={product.title || "Image placeholder"}
+                                                    className="img-fluid"
+                                                    style={{width: '100%', height: '300px'}}
+                                                />
+                                            </figure>
+                                            <div className="block-4-text p-4">
+                                                <h3>
+                                                    <a className="text_truncate_" href={`/products/${product.slug}`}>
+                                                        {product.title}
+                                                    </a>
+                                                </h3>
+                                                <p className="text-danger font-weight-bold">
+                                                    {ConvertCurrency(product.sale_price || 0)}
+                                                    <strike className="ml-2 small text-black">
+                                                        {ConvertCurrency(product.price || 0)}
+                                                    </strike>
+                                                </p>
                                             </div>
                                         </div>
-                                    ))
-                                }
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Pagination */}
+                            <div className="row">
+                                <div className="col-md-12 text-center">
+                                    <div className="site-block-27">
+                                        <ul>
+                                            <li>
+                                                <a href="#" onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}>&lt;</a>
+                                            </li>
+                                            {Array.from({length: totalPages}, (_, i) => (
+                                                <li key={i + 1} className={currentPage === i + 1 ? "active" : ""}>
+                                                    <a href="#" onClick={() => setCurrentPage(i + 1)}>{i + 1}</a>
+                                                </li>
+                                            ))}
+                                            <li>
+                                                <a href="#" onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}>&gt;</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        {/* Sidebar */}
                         <div className="col-md-3 order-1 mb-5 mb-md-0">
                             <div className="border p-4 rounded mb-4">
-                                <h3 className="mb-3 h6 text-uppercase text-black d-block">Danh mục </h3>
-                                <ul className="list-unstyled mb-0 product_category">
-                                    {
-                                        categories.map((category) => (
-                                            <li className="mb-1" key={category.id}>
-                                                <a href={'/products?category=' + category.id} data-id={category.id}
-                                                   className={`d-flex category${category_param}`}
-                                                   onClick={handleClick}>
-                                                    <span>{category.name}</span>
-                                                    <span className="text-black ml-auto">({category.count})</span>
-                                                </a>
-                                            </li>
-                                        ))
-                                    }
+                                <h3 className="mb-3 h6 text-uppercase text-black d-block">Danh mục</h3>
+                                <ul className="list-unstyled mb-0">
+                                    {categories.map((category) => (
+                                        <li className="mb-1" key={category.id}>
+                                            <a href={`/products?category=${category.id}`} onClick={(e) => goCategory(e, category.id)}>
+                                                <span>{category.name}</span>
+                                            </a>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
 
                             <div className="border p-4 rounded mb-4">
-                                <div className="mb-4">
-                                    <h3 className="mb-3 h6 text-uppercase text-black d-block">Lọc theo giá</h3>
-                                    <div className="form-group d-flex align-items-center justify-content-between gap-3">
-                                        <input type="number" name="min-price" id="min-price" min="1"
-                                               className="form-control border"/>
-                                        <span>-</span>
-                                        <input type="number" min="1" name="max-price" id="max-price"
-                                               className="form-control border"/>
+                                <h3 className="mb-3 h6 text-uppercase text-black d-block">Lọc theo giá</h3>
+                                <div className="form-group d-flex align-items-center justify-content-between gap-3">
+                                    <div className="form-group flex-column d-flex align-items-start justify-content-between gap-3">
+                                        {/*<p>Từ: </p>*/}
+                                        <input type="number" name="min-price" id="min-price" min="0" className="form-control border"
+                                               placeholder="Từ" ref={minPriceRef} />
+                                        {/*<p>Đến: </p>*/}
+                                        <input type="number" name="max-price" id="max-price" min="1" className="form-control border"
+                                               placeholder="Đến" ref={maxPriceRef} />
                                     </div>
                                 </div>
+                                <button className="btn btn-primary w-100 mt-3" type="button" onClick={searchProduct}>
+                                    Áp dụng
+                                </button>
+                            </div>
 
-                                <div className="mb-4">
-                                    <button className="btn btn-primary w-100" type="button"
-                                            onClick={searchProduct}>Áp dụng
-                                    </button>
+                            <div className="border p-4 rounded mb-4">
+                                <h3 className="mb-3 h6 text-uppercase text-black d-block">Tùy chọn</h3>
+                                <div>
+                                    {[1, 2, 3].map(val => (
+                                        <div key={val}>
+                                            <input
+                                                type="checkbox"
+                                                value={val}
+                                                ref={(el) => (checkboxRefs.current[val] = el)}
+                                                className="me-2"
+                                            />
+                                            Option {val}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             <Footer/>
         </div>
-    )
+    );
 }
 
-export default Result
+export default Result;

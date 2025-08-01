@@ -10,6 +10,7 @@ import uploadRoutes from "./routes/upload.route";
 /* End public routes */
 /* User routes */
 import userRoutes from "./routes/user.route";
+import feedbackRoutes from "./routes/feedback.route";
 import cartRoutes from "./routes/cart.route";
 import checkoutRoutes from "./routes/checkout.route";
 import orderRoutes from "./routes/order.route";
@@ -20,6 +21,7 @@ import myCouponRoutes from "./routes/my_coupon.route";
 /* Start admin routes */
 import adminProductRoutes from "./routes/admin/product.route";
 import adminUserRoutes from "./routes/admin/user.route";
+import adminFeedbackRoutes from "./routes/admin/feedback.route";
 import adminCategoriesRoutes from "./routes/admin/categories.route";
 import adminContactsRoutes from "./routes/admin/contacts.route";
 import adminOrderRoutes from "./routes/admin/order.route";
@@ -32,6 +34,8 @@ import {connectDB} from "./config/db";
 import cors from "cors";
 import path from "path";
 import {initRoles} from "./database/initRoles";
+import console from "console";
+import {Categories} from "./models/categories.model";
 
 dotenv.config();
 
@@ -53,6 +57,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 /* Start public routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/feedback", feedbackRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/contacts", contactsRoutes);
 app.use("/api/upload", uploadRoutes);
@@ -70,6 +75,7 @@ app.use("/api/my-coupons", myCouponRoutes);
 app.use("/api/admin/role", adminRoleRoutes);
 app.use("/api/admin/product", adminProductRoutes);
 app.use("/api/admin/user", adminUserRoutes);
+app.use("/api/admin/feedback", adminFeedbackRoutes);
 app.use("/api/admin/categories", adminCategoriesRoutes);
 app.use("/api/admin/contacts", adminContactsRoutes);
 app.use("/api/admin/order", adminOrderRoutes);

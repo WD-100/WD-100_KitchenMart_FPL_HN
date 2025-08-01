@@ -1,12 +1,11 @@
 import {Form, Table} from 'antd';
-import React, {useEffect, useState} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import orderService from '../../../Service/OrderService';
-import Header from '../../Header/Header'
-import Sidebar from '../../Sidebar/Sidebar'
-import $ from 'jquery';
-import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
-import dayjs from "dayjs";
+import Header from '../../Header/Header';
+import Sidebar from '../../Sidebar/Sidebar';
+import ConvertCurrency from '../../../Shared/Utils/ConvertCurrency';
+import dayjs from 'dayjs';
 
 function DetailOrder() {
     const {id} = useParams();
@@ -16,6 +15,8 @@ function DetailOrder() {
     const [order, setData] = useState([]);
     const [orderItems, setOrderItems] = useState([]);
     const [orderHistories, setOrderHistories] = useState([]);
+    const reasonCancelRef = useRef(null);
+
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
@@ -39,83 +40,58 @@ function DetailOrder() {
     };
 
     const handleCancel = async (id) => {
-        let reason_cancel = $('#reason_cancel').val();
-        let data = {
-            reason_cancel: reason_cancel,
-        };
-        if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng?')) {
-            await orderService.cancelOrder(id, data)
-                .then((res) => {
-                    console.log("cancel", res.data.data)
-                    alert(`Hủy đơn hàng thành công!`)
-                    detailOrder();
-                })
-                .catch((err) => {
-                    console.log(err)
-                    let res = err.response;
-                    let mess = res.data.message;
-                    alert('Thất bại ' + mess);
-                })
+        const reason_cancel = reasonCancelRef.current?.value || '';
+        if (!reason_cancel.trim()) {
+            alert('Vui lòng nhập lý do huỷ đơn hàng!');
+            return;
         }
-    }
+
+        if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng?')) {
+            try {
+                await orderService.cancelOrder(id, {reason_cancel});
+                alert(`Hủy đơn hàng thành công!`);
+                detailOrder();
+            } catch (err) {
+                const mess = err.response?.data?.message || 'Có lỗi xảy ra';
+                alert('Thất bại ' + mess);
+            }
+        }
+    };
 
     const detailOrder = async () => {
-        await orderService.detailOrder(id)
-            .then((res) => {
-                setLoading(false)
-                console.log('order: ' + res.data);
-                setData(res.data.data);
-                setOrderItems(res.data.data.order_items);
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
+        try {
+            const res = await orderService.detailOrder(id);
+            setData(res.data.data);
+            setOrderItems(res.data.data.order_items);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const listOrderHistories = async () => {
-        await orderService.listOrderHistories(id)
-            .then((res) => {
-                setLoading(false)
-                console.log('order histories: ' + res.data);
-                setOrderHistories(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err)
-                setLoading(false)
-            })
+        try {
+            const res = await orderService.listOrderHistories(id);
+            setOrderHistories(res.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const columns = [
         {
-            title: 'STT',
-            dataIndex: 'key',
-            width: '10%',
-            render: (text, record, index) => index + 1,
-        },
-        {
-            title: 'Người thay đổi',
-            dataIndex: 'user_name',
-            width: 'x',
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'notes',
-            width: '20%',
-        },
-        {
             title: 'Trạng thái',
             dataIndex: 'status',
-            width: '20%',
-            render: (text) => {
-                return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
-            },
+            render: (text) => statusMap[text] || 'KHÔNG XÁC ĐỊNH',
         },
         {
             title: 'Thời gian',
             dataIndex: 'created_at',
             width: '20%',
-            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
+            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm'),
         },
     ];
 
@@ -127,11 +103,10 @@ function DetailOrder() {
         });
     };
 
-
     useEffect(() => {
         detailOrder();
         listOrderHistories();
-    }, [form, id])
+    }, [id]);
 
     return (
         <>
@@ -254,11 +229,11 @@ function DetailOrder() {
                                         </div>
                                         <div className="col-md-8">
                                             <div className="p-3 p-lg-5 border">
-                                                <table className="table mb-3">
+                                                <table className="table table-bordered mb-3">
                                                     <colgroup>
                                                         <col width="10%"/>
                                                         <col width="32%"/>
-                                                        <col width="5%"/>
+                                                        <col width="15%"/>
                                                         <col width="10%"/>
                                                         <col width="15%"/>
                                                         <col width="x"/>
@@ -279,14 +254,14 @@ function DetailOrder() {
                                                             return (
                                                                 <tr key={index}>
                                                                     <td>
-                                                                        <img src={orderItem.product.image} alt=""
+                                                                        <img src={orderItem.image} alt=""
                                                                              width="100px"/>
                                                                     </td>
                                                                     <td>
-                                                                        {orderItem.product.title}
+                                                                        {orderItem.title}
                                                                     </td>
                                                                     <td>{orderItem.quantity}</td>
-                                                                    <td>{orderItem.price}</td>
+                                                                    <td>{ConvertCurrency(orderItem.price)}</td>
                                                                     <td>{ConvertCurrency(orderItem.price * orderItem.quantity)}</td>
                                                                     <td>
                                                                         {order.status === 'COMPLETED' && (
@@ -367,7 +342,7 @@ function DetailOrder() {
                                                 </div>
                                             </div>
 
-                                            {(order.status !== 'CANCELED' && order.status !== 'COMPLETED') && (
+                                            {(order.status === 'PENDING' || order.status === 'PROCESSING' || order.status === 'CONFIRMED') && (
                                                 <button type="button" data-bs-toggle="modal"
                                                         data-bs-target="#exampleModal"
                                                         className="btn btn-danger mt-3">
@@ -391,22 +366,25 @@ function DetailOrder() {
                     </div>
                 </section>
             </main>
-
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">Huỷ đơn hàng</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
                         </div>
                         <div className="modal-body">
                             <div className="form-group">
                                 <label htmlFor="reason_cancel" className="text-black">Lý do huỷ đơn hàng</label>
-                                <textarea name="reason_cancel" id="reason_cancel" cols="30" rows="5"
-                                          className="form-control"
-                                          placeholder="Vui lòng nhập lý do huỷ đơn hàng của bạn ở đây..."></textarea>
+                                <textarea
+                                    ref={reasonCancelRef}
+                                    id="reason_cancel"
+                                    cols="30"
+                                    rows="5"
+                                    className="form-control"
+                                    placeholder="Vui lòng nhập lý do huỷ đơn hàng của bạn ở đây..."
+                                />
                             </div>
                         </div>
                         <div className="modal-footer">
@@ -419,7 +397,7 @@ function DetailOrder() {
                 </div>
             </div>
         </>
-    )
+    );
 }
 
-export default DetailOrder
+export default DetailOrder;

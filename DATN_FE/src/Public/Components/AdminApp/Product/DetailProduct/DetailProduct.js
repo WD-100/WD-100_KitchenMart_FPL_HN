@@ -1,83 +1,50 @@
-import {Form} from 'antd';
-import React, {useEffect, useRef, useState} from 'react'
-import {Link, useParams} from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../../../Shared/Admin/Header/Header';
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar';
 import productService from '../../../Service/ProductService';
-import categoryService from '../../../Service/CategoryService';
-import $ from "jquery";
-import {API_KEY_TINYMCE} from "../../../config/Constants";
-import {Editor} from "@tinymce/tinymce-react";
+import { Descriptions, Card, Image, Typography, Spin } from 'antd';
 
-/**
- * Renders a page that displays the details of a product.
- * The page provides a form for editing the product.
- * The form includes fields for the product name, price, quantity, description, image, category, and status.
- * The page uses the `productService` to fetch the details of the product from the server.
- * The page also uses the `categoryService` to fetch the list of categories from the server.
- * The page uses the `useState` hook to store the list of categories and the table parameters in the component state.
- * The page uses the `useCallback` hook to memoize the function that fetches the list of categories.
- * The page uses the `useCallback` hook to memoize the function that handles the change event of the table.
- * The page uses the `useEffect` hook to fetch the list of categories when the component mounts.
- * The page uses the `useEffect` hook to fetch the details of the product when the component mounts.
- * The page also uses the `useEffect` hook to update the component state when the user navigates to a different product.
- * @returns {ReactElement} A React element that represents the page.
- * @function
- */
+const { Title } = Typography;
+
 function DetailProduct() {
-    const {id} = useParams();
-    const [product, setProduct] = useState([]);
-    const [categories, setData] = useState([]);
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [category, setCategory] = useState(null);
     const [loading, setLoading] = useState(true);
-    const descriptionRef = useRef(null);
-
-    const getProduct = async () => {
-        await productService.adminDetailProduct(id)
-            .then((res) => {
-                const product = res.data.data.product;
-                setProduct(product)
-                setLoading(false)
-                renderImage(product.photo_library, product.title)
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
-    }
-
-    const getListCategory = async () => {
-        await categoryService.adminListCategory()
-            .then((res) => {
-                setData(res.data.data)
-                setLoading(false)
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
-    }
-
-    function renderImage(images, alt) {
-        let arr = images.split(',');
-        let html = '';
-        for (let i = 0; i < arr.length; i++) {
-            html += `<div class="item">
-          <img width="100px" src="${arr[i]}" alt="${alt}">
-        </div>`;
-        }
-
-        $('#list_images').empty().append(html);
-    }
 
     useEffect(() => {
-        getListCategory();
-        getProduct();
-    }, [loading]);
+        const fetchProduct = async () => {
+            try {
+                const res = await productService.adminDetailProduct(id);
+                const p = res.data.data.product || {};
+                const c = res.data.data.categories || null;
+                const photoLibrary = p.photo_library && p.photo_library.length > 0
+                    ? JSON.parse(p.photo_library)
+                    : [];
+
+                setProduct({
+                    ...p,
+                    photo_library: photoLibrary,
+                });
+                setCategory(c);
+            } catch (err) {
+                console.error('Lỗi khi lấy dữ liệu sản phẩm:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProduct();
+    }, [id]);
+
+    if (loading) return <Spin className="m-5" size="large" tip="Đang tải..." />;
+    if (!product) return <p className="m-4">Không tìm thấy sản phẩm.</p>;
 
     return (
         <>
-            <Header/>
-            <Sidebar/>
+            <Header />
+            <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
                     <h1>Chi tiết sản phẩm</h1>
@@ -89,129 +56,62 @@ function DetailProduct() {
                         </ol>
                     </nav>
                 </div>
+
                 <section className="section">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="card">
-                                <div className="card-body">
-                                    <h5 className="card-title">Chi tiết sản phẩm</h5>
-                                    <Form>
-                                        <div className="form-group">
-                                            <label htmlFor="name">Tên sản phẩm</label>
-                                            <input type="text" className="form-control form_input_" id="name"
-                                                   name="name" disabled
-                                                   defaultValue={product.title} required/>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="price">Giá cũ</label>
-                                                <input type="number" min="1" className="form-control form_input_"
-                                                       id="price" disabled
-                                                       defaultValue={product.price} name="price" required/>
+                            <Card bordered>
+                                <Title level={4}>Thông tin sản phẩm</Title>
+                                <Descriptions
+                                    bordered
+                                    column={2}
+                                    size="middle"
+                                    labelStyle={{ width: 180, fontWeight: 500 }}
+                                >
+                                    <Descriptions.Item label="Tên sản phẩm">{product.title}</Descriptions.Item>
+                                    <Descriptions.Item label="Danh mục">{category?.name || 'Không rõ'}</Descriptions.Item>
+                                    <Descriptions.Item label="Giá cũ">
+                                        {product.price?.toLocaleString()} đ
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Giá mới">
+                                        {product.sale_price?.toLocaleString()} đ
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Số lượng">{product.quantity}</Descriptions.Item>
+                                    <Descriptions.Item label="Trạng thái">
+                                        {product.is_active ? 'ĐANG HOẠT ĐỘNG' : 'KHÔNG HOẠT ĐỘNG'}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Mô tả ngắn" span={2}>
+                                        <div dangerouslySetInnerHTML={{ __html: product.shot_description }} />
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Mô tả chi tiết" span={2}>
+                                        <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Hình ảnh" span={2}>
+                                        <Image width={150} src={product.image} alt={product.title} />
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Thư viện ảnh" span={2}>
+                                        <Image.PreviewGroup>
+                                            <div className="d-flex flex-wrap gap-2 mt-2">
+                                                {product.photo_library.map((img, index) => (
+                                                    <Image key={index} width={100} src={img} alt={product.title} />
+                                                ))}
                                             </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="sale_price">Giá mới</label>
-                                                <input type="number" className="form-control form_input_"
-                                                       id="sale_price" min="1" disabled
-                                                       name="sale_price" defaultValue={product.sale_price}
-                                                       required/>
-                                            </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="quantity">Số lượng</label>
-                                                <input type="number" min="1" className="form-control form_input_"
-                                                       id="quantity" disabled
-                                                       name="quantity" defaultValue={product.quantity}
-                                                       required/>
-                                            </div>
-                                        </div>
-                                        <div className="form-group">
-                                            <label htmlFor="description">Mô tả</label>
-                                            <Editor
-                                                apiKey={API_KEY_TINYMCE}
-                                                onInit={(evt, editor) => descriptionRef.current = editor}
-                                                init={{
-                                                    plugins: [
-                                                        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                                                        'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
-                                                    ],
-                                                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                                                    tinycomments_mode: 'embedded',
-                                                    tinycomments_author: 'Author name',
-                                                    /**
-                                                     * The AI request function. This function is called when the AI button in the toolbar is clicked.
-                                                     * It should return a promise that resolves with a string containing the AI response.
-                                                     * The string should be a valid HTML string.
-                                                     * The function takes two parameters, `request` and `respondWith`. `request` is an object containing information about the request,
-                                                     * and `respondWith` is a function that should be called with the response string.
-                                                     * The `respondWith` function takes one parameter, a string containing the response.
-                                                     * The `respondWith` function should be called with a string containing the AI response.
-                                                     * The AI response should be a valid HTML string.
-                                                     * The function should return a promise.
-                                                     * The promise should resolve with a string containing the AI response.
-                                                     * The AI response should be a valid HTML string.
-                                                     * The AI request function should be a function.
-                                                     * @param {object} request - The request object.
-                                                     * @param {function} respondWith - The respondWith function.
-                                                     * @returns {Promise<string>} - A promise that resolves with a string containing the AI response.
-                                                     */
-                                                    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                                                }}
-                                                id="description"
-                                                name="description"
-                                                disabled={true}
-                                                initialValue={product.description}
-                                            />
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="file">Hình ảnh</label>
-                                                <img className="mt-3" width="100px" src={product.image}
-                                                     alt={product.title}/>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="file">Hình ảnh chi tiết</label>
-                                                <div id="list_images" className="d-flex align-items-center gap-2">
+                                        </Image.PreviewGroup>
+                                    </Descriptions.Item>
+                                </Descriptions>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="category_id">Danh mục</label>
-                                                <select id="category_id" disabled className="form-control form_input_"
-                                                        name="category_id">
-                                                    <option value="">Chọn danh mục</option>
-                                                    {
-                                                        categories.map((category) => (
-                                                            <option selected={category.id === product.categories_id}
-                                                                    value={category.id}>{category.name}</option>
-                                                        ))
-                                                    }
-                                                </select>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="status">Trạng thái</label>
-                                                <select id="status" disabled className="form-control form_input_"
-                                                        name="status">
-                                                    <option selected={product.is_active} value="1">ĐANG HOẠT ĐỘNG
-                                                    </option>
-                                                    <option selected={!product.is_active} value="0">KHÔNG HOẠT ĐỘNG
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <a href={'/admin/products/update/' + id} className="btn btn-primary mt-3">
-                                            Chỉnh sửa
-                                        </a>
-                                    </Form>
+                                <div className="mt-4 text-end">
+                                    <Link to={`/admin/products/update/${id}`} className="btn btn-primary">
+                                        Chỉnh sửa
+                                    </Link>
                                 </div>
-                            </div>
+                            </Card>
                         </div>
                     </div>
                 </section>
             </main>
         </>
-    )
+    );
 }
 
-export default DetailProduct
+export default DetailProduct;

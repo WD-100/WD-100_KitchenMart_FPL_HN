@@ -178,139 +178,139 @@ function UpdateProduct() {
     }, []);
 
     return (<>
-            <Header/>
-            <Sidebar/>
-            <main id="main" className="main">
-                <div className="pagetitle">
-                    <h1>Chỉnh sửa sản phẩm</h1>
-                    <nav>
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><Link to="/admin/dashboard">Trang quản trị</Link></li>
-                            <li className="breadcrumb-item">Quản lí sản phẩm</li>
-                            <li className="breadcrumb-item active">Chỉnh sửa sản phẩm</li>
-                        </ol>
-                    </nav>
-                </div>
-                <section className="section">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="card">
-                                <div className="card-body">
-                                    <h5 className="card-title">Chỉnh sửa sản phẩm</h5>
-                                    <Form onFinish={onFinish} id="formUpdate">
-                                        <div className="form-group">
-                                            <label htmlFor="name">Tên sản phẩm</label>
-                                            <input type="text" className="form-control form_input_" id="title"
-                                                   name="title"
-                                                   defaultValue={product.title} required/>
+        <Header/>
+        <Sidebar/>
+        <main id="main" className="main">
+            <div className="pagetitle">
+                <h1>Chỉnh sửa sản phẩm</h1>
+                <nav>
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><Link to="/admin/dashboard">Trang quản trị</Link></li>
+                        <li className="breadcrumb-item">Quản lí sản phẩm</li>
+                        <li className="breadcrumb-item active">Chỉnh sửa sản phẩm</li>
+                    </ol>
+                </nav>
+            </div>
+            <section className="section">
+                <div className="row">
+                    <div className="col-lg-12">
+                        <div className="card">
+                            <div className="card-body">
+                                <h5 className="card-title">Chỉnh sửa sản phẩm</h5>
+                                <Form onFinish={onFinish} id="formUpdate">
+                                    <div className="form-group">
+                                        <label htmlFor="name">Tên sản phẩm</label>
+                                        <input type="text" className="form-control form_input_" id="title"
+                                               name="title"
+                                               defaultValue={product.title} required/>
+                                    </div>
+                                    <div className="row">
+                                        <div className="form-group col-md-4">
+                                            <label htmlFor="price">Giá cũ</label>
+                                            <input type="number" min="1" className="form-control form_input_"
+                                                   id="price"
+                                                   defaultValue={product.price} name="price" required/>
                                         </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="price">Giá cũ</label>
-                                                <input type="number" min="1" className="form-control form_input_"
-                                                       id="price"
-                                                       defaultValue={product.price} name="price" required/>
-                                            </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="sale_price">Giá mới</label>
-                                                <input type="number" className="form-control form_input_"
-                                                       id="sale_price" min="1"
-                                                       name="sale_price" defaultValue={product.sale_price}
-                                                       required/>
-                                            </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="quantity">Số lượng</label>
-                                                <input type="number" min="1" className="form-control form_input_"
-                                                       id="quantity"
-                                                       name="quantity" defaultValue={product.quantity}
-                                                       required/>
-                                            </div>
+                                        <div className="form-group col-md-4">
+                                            <label htmlFor="sale_price">Giá mới</label>
+                                            <input type="number" className="form-control form_input_"
+                                                   id="sale_price" min="1"
+                                                   name="sale_price" defaultValue={product.sale_price}
+                                                   required/>
                                         </div>
-                                        <div className="form-group">
-                                            <label htmlFor="description">Mô tả</label>
-                                            <Editor
-                                                apiKey={API_KEY_TINYMCE}
-                                                onInit={(evt, editor) => descriptionRef.current = editor}
-                                                init={{
-                                                    plugins: ['anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',],
-                                                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                                                    tinycomments_mode: 'embedded',
-                                                    tinycomments_author: 'Author name',
-                                                    /**
-                                                     * The AI request function. This function is called when the AI button in the toolbar is clicked.
-                                                     * It should return a promise that resolves with a string containing the AI response.
-                                                     * The string should be a valid HTML string.
-                                                     * The function takes two parameters, `request` and `respondWith`. `request` is an object containing information about the request,
-                                                     * and `respondWith` is a function that should be called with the response string.
-                                                     * The `respondWith` function takes one parameter, a string containing the response.
-                                                     * The `respondWith` function should be called with a string containing the AI response.
-                                                     * The AI response should be a valid HTML string.
-                                                     * The function should return a promise.
-                                                     * The promise should resolve with a string containing the AI response.
-                                                     * The AI response should be a valid HTML string.
-                                                     * The AI request function should be a function.
-                                                     * @param {object} request - The request object.
-                                                     * @param {function} respondWith - The respondWith function.
-                                                     * @returns {Promise<string>} - A promise that resolves with a string containing the AI response.
-                                                     */
-                                                    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                                                }}
-                                                id="description"
-                                                name="description"
-                                                initialValue={product.description}
-                                            />
+                                        <div className="form-group col-md-4">
+                                            <label htmlFor="quantity">Số lượng</label>
+                                            <input type="number" min="1" className="form-control form_input_"
+                                                   id="quantity"
+                                                   name="quantity" defaultValue={product.quantity}
+                                                   required/>
                                         </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="file">Hình ảnh</label>
-                                                <input type="file" className="form-control" id="thumbnail"
-                                                       name="thumbnail" onChange={event => handleFileChange(event)}/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="description">Mô tả</label>
+                                        <Editor
+                                            apiKey={API_KEY_TINYMCE}
+                                            onInit={(evt, editor) => descriptionRef.current = editor}
+                                            init={{
+                                                plugins: ['anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',],
+                                                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                                                tinycomments_mode: 'embedded',
+                                                tinycomments_author: 'Author name',
+                                                /**
+                                                 * The AI request function. This function is called when the AI button in the toolbar is clicked.
+                                                 * It should return a promise that resolves with a string containing the AI response.
+                                                 * The string should be a valid HTML string.
+                                                 * The function takes two parameters, `request` and `respondWith`. `request` is an object containing information about the request,
+                                                 * and `respondWith` is a function that should be called with the response string.
+                                                 * The `respondWith` function takes one parameter, a string containing the response.
+                                                 * The `respondWith` function should be called with a string containing the AI response.
+                                                 * The AI response should be a valid HTML string.
+                                                 * The function should return a promise.
+                                                 * The promise should resolve with a string containing the AI response.
+                                                 * The AI response should be a valid HTML string.
+                                                 * The AI request function should be a function.
+                                                 * @param {object} request - The request object.
+                                                 * @param {function} respondWith - The respondWith function.
+                                                 * @returns {Promise<string>} - A promise that resolves with a string containing the AI response.
+                                                 */
+                                                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                                            }}
+                                            id="description"
+                                            name="description"
+                                            initialValue={product.description}
+                                        />
+                                    </div>
+                                    <div className="row">
+                                        <div className="form-group col-md-6">
+                                            <label htmlFor="file">Hình ảnh</label>
+                                            <input type="file" className="form-control" id="thumbnail"
+                                                   name="thumbnail" onChange={event => handleFileChange(event)}/>
 
-                                                <img className="mt-3" width="100px" src={product.image}
-                                                     alt={product.title}/>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="file">Hình ảnh chi tiết</label>
-                                                <input type="file" className="form-control" id="gallery"
-                                                       name="gallery"
-                                                       onChange={event => handleFileChangeMultiple(event)}
-                                                       multiple/>
-                                                <div id="list_images" className="d-flex align-items-center gap-2"></div>
-                                            </div>
+                                            <img className="mt-3" width="100px" src={product.image}
+                                                 alt={product.title}/>
                                         </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="categories_id">Danh mục</label>
-                                                <select id="categories_id" className="form-control form_input_"
-                                                        name="categories_id">
-                                                    <option value="">Chọn danh mục</option>
-                                                    {categories.map((category) => (
-                                                        <option selected={category.id === product.categories_id}
-                                                                value={category.id}>{category.name}</option>))}
-                                                </select>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="is_active">Trạng thái</label>
-                                                <select id="is_active" className="form-control form_input_"
-                                                        name="is_active">
-                                                    <option selected={product.is_active} value="1">ĐANG HOẠT ĐỘNG
-                                                    </option>
-                                                    <option selected={!product.is_active} value="0">KHÔNG HOẠT ĐỘNG
-                                                    </option>
-                                                </select>
-                                            </div>
+                                        <div className="form-group col-md-6">
+                                            <label htmlFor="file">Hình ảnh chi tiết</label>
+                                            <input type="file" className="form-control" id="gallery"
+                                                   name="gallery"
+                                                   onChange={event => handleFileChangeMultiple(event)}
+                                                   multiple/>
+                                            <div id="list_images" className="d-flex align-items-center gap-2"></div>
                                         </div>
-                                        <button type="submit" id="btnSave" className="btn btn-primary mt-3">
-                                            Lưu thay đổi
-                                        </button>
-                                    </Form>
-                                </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="form-group col-md-6">
+                                            <label htmlFor="categories_id">Danh mục</label>
+                                            <select id="categories_id" className="form-control form_input_"
+                                                    name="categories_id">
+                                                <option value="">Chọn danh mục</option>
+                                                {categories.map((category) => (
+                                                    <option selected={category.id === product.categories_id}
+                                                            value={category.id}>{category.name}</option>))}
+                                            </select>
+                                        </div>
+                                        <div className="form-group col-md-6">
+                                            <label htmlFor="is_active">Trạng thái</label>
+                                            <select id="is_active" className="form-control form_input_"
+                                                    name="is_active">
+                                                <option selected={product.is_active} value="1">ĐANG HOẠT ĐỘNG
+                                                </option>
+                                                <option selected={!product.is_active} value="0">KHÔNG HOẠT ĐỘNG
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="btnSave" className="btn btn-primary mt-3">
+                                        Lưu thay đổi
+                                    </button>
+                                </Form>
                             </div>
                         </div>
                     </div>
-                </section>
-            </main>
-        </>)
+                </div>
+            </section>
+        </main>
+    </>)
 }
 
 export default UpdateProduct

@@ -20,12 +20,25 @@ import categoryService from "../Service/CategoryService";
 function Home() {
     const [loading, setLoading] = useState(true);
     const [newProducts, setNewProducts] = useState([]);
+    const [hotProducts, setHotProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
     const getListProduct = async () => {
         await productService.newProduct('', '')
             .then((res) => {
                 setNewProducts(res.data.data)
+                setLoading(false)
+            })
+            .catch((err) => {
+                setLoading(false)
+                console.log(err)
+            })
+    }
+
+    const getListProductHot = async () => {
+        await productService.hotProduct('', '')
+            .then((res) => {
+                setHotProducts(res.data.data)
                 setLoading(false)
             })
             .catch((err) => {
@@ -46,6 +59,7 @@ function Home() {
 
     useEffect(() => {
         getListProduct();
+        getListProductHot();
         getListCategory();
     }, [loading]);
 
@@ -71,7 +85,7 @@ function Home() {
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-end">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
-                                   
+
                                 </div>
                             </div>
                         </div>
@@ -83,7 +97,7 @@ function Home() {
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-start">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
-                                  
+
                                 </div>
                             </div>
                         </div>
@@ -95,7 +109,7 @@ function Home() {
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-end">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
-                                   
+
                                 </div>
                             </div>
                         </div>
@@ -105,47 +119,47 @@ function Home() {
 
             <div className="site-section site-section-sm site-blocks-1">
                 <div className="container">
-                <div className="row">
-                    <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
-                        <div className="icon mr-4 align-self-start">
-                            <span className="icon-truck"></span>
+                    <div className="row">
+                        <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
+                            <div className="icon mr-4 align-self-start">
+                                <span className="icon-truck"></span>
+                            </div>
+                            <div className="text">
+                                <h2 className="text-uppercase">Miễn phí giao hàng</h2>
+                                <p>
+                                    Với KitchenMart, mua sắm chưa bao giờ dễ dàng đến thế! Dù bạn ở bất cứ đâu, chỉ cần
+                                    chọn sản phẩm, chúng tôi sẽ giao tận tay bạn mà không tốn thêm bất kỳ chi phí
+                                    nào.
+                                </p>
+                            </div>
                         </div>
-                        <div className="text">
-                            <h2 className="text-uppercase">Miễn phí giao hàng</h2>
-                            <p>
-                                Với KitchenMart, mua sắm chưa bao giờ dễ dàng đến thế! Dù bạn ở bất cứ đâu, chỉ cần
-                                chọn sản phẩm, chúng tôi sẽ giao tận tay bạn mà không tốn thêm bất kỳ chi phí
-                                nào.
-                            </p>
+                        <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
+                            <div className="icon mr-4 align-self-start">
+                                <span className="icon-refresh2"></span>
+                            </div>
+                            <div className="text">
+                                <h2 className="text-uppercase">Miễn phí đổi trả</h2>
+                                <p>
+                                    Sự hài lòng của bạn là ưu tiên hàng đầu của chúng tôi. Nếu sản phẩm không vừa ý, bạn
+                                    có thể đổi trả hoàn toàn miễn phí trong vòng 30 ngày, giúp bạn tự tin hơn khi chọn
+                                    lựa.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
+                            <div className="icon mr-4 align-self-start">
+                                <span className="icon-help"></span>
+                            </div>
+                            <div className="text">
+                                <h2 className="text-uppercase">Hỗ trợ khách hàng</h2>
+                                <p>
+                                    Đội ngũ chăm sóc khách hàng của KitchenMart luôn sẵn sàng lắng nghe và hỗ trợ mọi thắc
+                                    mắc của bạn 24/7. Chúng tôi đảm bảo bạn được mua
+                                    sắm thoải mái và hoàn toàn hài lòng.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
-                        <div className="icon mr-4 align-self-start">
-                            <span className="icon-refresh2"></span>
-                        </div>
-                        <div className="text">
-                            <h2 className="text-uppercase">Miễn phí đổi trả</h2>
-                            <p>
-                                Sự hài lòng của bạn là ưu tiên hàng đầu của chúng tôi. Nếu sản phẩm không vừa ý, bạn
-                                có thể đổi trả hoàn toàn miễn phí trong vòng 30 ngày, giúp bạn tự tin hơn khi chọn
-                                lựa.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-lg-4 d-lg-flex mb-4 mb-lg-0 pl-4">
-                        <div className="icon mr-4 align-self-start">
-                            <span className="icon-help"></span>
-                        </div>
-                        <div className="text">
-                            <h2 className="text-uppercase">Hỗ trợ khách hàng</h2>
-                            <p>
-                                Đội ngũ chăm sóc khách hàng của KitchenMart luôn sẵn sàng lắng nghe và hỗ trợ mọi thắc
-                                mắc của bạn 24/7. Chúng tôi đảm bảo bạn được mua
-                                sắm thoải mái và hoàn toàn hài lòng.
-                            </p>
-                        </div>
-                    </div>
-                </div>
                 </div>
             </div>
 
@@ -169,6 +183,59 @@ function Home() {
                                     className="mySwiper"
                                 >
                                     {newProducts.map((product, index) => (
+                                        <SwiperSlide key={index}>
+                                            <div className="item">
+                                                <div className="block-4 text-center">
+                                                    <figure className="block-4-image">
+                                                        <img
+                                                            src={product.image || "/assets/clients/images/no-image.jpg"}
+                                                            alt={product.title || "Image placeholder"}
+                                                            className="img-fluid"
+                                                            style={{width: '100%', height: '300px',}}
+                                                        />
+                                                    </figure>
+                                                    <div className="block-4-text p-4">
+                                                        <h3><a className="text_truncate_"
+                                                               href={'/products/' + product.slug}>{product.title || "Product Name"}</a>
+                                                        </h3>
+                                                        <p className="text-danger font-weight-bold">
+                                                            {ConvertCurrency(product.sale_price || 0)}
+                                                            <strike className="ml-2 small text-black">
+                                                                {ConvertCurrency(product.price || 0)}
+                                                            </strike>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="site-section block-3 site-blocks-2 ">
+                <div className="container">
+                    <div className="row justify-content-center">
+                        <div className="col-md-7 site-section-heading text-center pt-4">
+                            <h2>Sản phẩm nổi bật</h2>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="row">
+                                <Swiper
+                                    slidesPerView={3}
+                                    spaceBetween={30}
+                                    pagination={{
+                                        clickable: true,
+                                    }}
+                                    modules={[Pagination]}
+                                    className="mySwiper"
+                                >
+                                    {hotProducts.map((product, index) => (
                                         <SwiperSlide key={index}>
                                             <div className="item">
                                                 <div className="block-4 text-center">

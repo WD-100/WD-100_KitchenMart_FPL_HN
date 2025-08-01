@@ -1,5 +1,5 @@
 import {Cart, ICart} from "../models/cart.model";
-import { Product } from "../models/product.model";
+import {IProduct, Product} from "../models/product.model";
 
 export const addToCart = async (req: any, res: any) => {
     try {
@@ -11,15 +11,20 @@ export const addToCart = async (req: any, res: any) => {
 
         let cartItem: ICart | null = await Cart.findOne({ user_id, product_id });
 
-        const product = await Product.findById(product_id);
-        if (!product) {
+        const product: IProduct | null = await Product.findById(product_id);
+        if (!product || product.is_deleted || !product.is_active) {
             return res.status(404).json({ message: "Product not found" });
         }
 
         const requestedQty = parseInt(quantity);
-
         const currentQtyInCart = cartItem?.quantity ?? 0;
         const totalRequestedQty = currentQtyInCart + requestedQty;
+
+        if (totalRequestedQty > product.quantity) {
+            return res.status(400).json({
+                message: `Chỉ còn lại ${product.quantity - currentQtyInCart} sản phẩm trong kho`,
+            });
+        }
 
         if (cartItem) {
             cartItem.quantity = totalRequestedQty;

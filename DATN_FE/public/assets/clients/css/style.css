@@ -1,10 +1,14 @@
 /* Base */
 body {
     line-height: 1.7;
-    color: #8c92a0;
+    color: #444444;
     font-weight: 300;
     font-size: 16px;
-    font-family: "Poppins", sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+body {
+    background: rgba(243, 251, 246, 0.22);
 }
 
 ::-moz-selection {
@@ -123,7 +127,7 @@ ul, li {
 }
 
 .form-control:active, .form-control:focus {
-    border-color: #7971ea;
+    border-color: #28a745;
 }
 
 .form-control:hover, .form-control:active, .form-control:focus {
@@ -158,7 +162,7 @@ ul, li {
     position: absolute;
     width: 40px;
     height: 2px;
-    background: #7971ea;
+    background: #28a745;
 }
 
 .site-section-heading.text-center:before {
@@ -171,7 +175,7 @@ ul, li {
     position: absolute;
     width: 40px;
     height: 2px;
-    background: #7971ea;
+    background: #28a745;
 }
 
 .border-top {
@@ -192,7 +196,7 @@ ul, li {
 }
 
 .site-footer ul li a:hover {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-footer .footer-heading {
@@ -293,7 +297,7 @@ ul, li {
     border-radius: 50%;
     display: block;
     text-align: center;
-    background: #7971ea;
+    background: #28a745;
     color: #fff;
     -webkit-transition: .2s all ease-in-out;
     -o-transition: .2s all ease-in-out;
@@ -326,7 +330,7 @@ ul, li {
 }
 
 .site-navbar .site-navigation .site-menu .active > a {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-navbar .site-navigation .site-menu a {
@@ -350,7 +354,7 @@ ul, li {
 }
 
 .site-navbar .site-navigation .site-menu > li > a:hover {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-navbar .site-navigation .site-menu .has-children {
@@ -380,7 +384,7 @@ ul, li {
     top: 100%;
     position: absolute;
     text-align: left;
-    border-top: 2px solid #7971ea;
+    border-top: 2px solid #28a745;
     -webkit-box-shadow: 0 0px 4px 0px rgba(0, 0, 0, 0.05);
     box-shadow: 0 0px 4px 0px rgba(0, 0, 0, 0.05);
     border-left: 1px solid #edf0f5;
@@ -405,7 +409,7 @@ ul, li {
 }
 
 .site-navbar .site-navigation .site-menu .has-children .dropdown .active > a {
-    color: #7971ea !important;
+    color: #28a745 !important;
 }
 
 .site-navbar .site-navigation .site-menu .has-children .dropdown > li {
@@ -445,7 +449,7 @@ ul, li {
 }
 
 .site-navbar .site-navigation .site-menu .has-children:hover > a, .site-navbar .site-navigation .site-menu .has-children:focus > a, .site-navbar .site-navigation .site-menu .has-children:active > a {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-navbar .site-navigation .site-menu .has-children:hover, .site-navbar .site-navigation .site-menu .has-children:focus, .site-navbar .site-navigation .site-menu .has-children:active {
@@ -559,7 +563,7 @@ ul, li {
 }
 
 .site-mobile-menu .site-nav-wrap a:hover {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-mobile-menu .site-nav-wrap li {
@@ -568,7 +572,7 @@ ul, li {
 }
 
 .site-mobile-menu .site-nav-wrap li.active > a {
-    color: #7971ea;
+    color: #28a745;
 }
 
 .site-mobile-menu .site-nav-wrap .arrow-collapse {
@@ -708,7 +712,7 @@ ul, li {
 
 .site-blocks-1 .icon span {
     position: relative;
-    color: #7971ea;
+    color: #28a745;
     top: -10px;
     font-size: 50px;
     display: inline-block;
@@ -854,7 +858,7 @@ ul, li {
     left: 0;
     font-size: 20px;
     line-height: 1;
-    color: #7971ea;
+    color: #28a745;
 }
 
 .block-5 ul li.address:before {
@@ -937,7 +941,7 @@ ul, li {
 }
 
 .site-blocks-table tbody tr:first-child td {
-    border-top: 1px solid #7971ea !important;
+    border-top: 1px solid #28a745 !important;
 }
 
 .site-block-order-table th {
@@ -994,7 +998,7 @@ ul, li {
 }
 
 .site-block-27 ul li.active a, .site-block-27 ul li.active span {
-    background: #7971ea;
+    background: #28a745;
     color: #fff;
     border: 1px solid transparent;
 }
@@ -1008,7 +1012,7 @@ ul, li {
     height: 16px;
     border-radius: 50%;
     border: none !important;
-    background: #7971ea;
+    background: #28a745;
 }
 
 #slider-range .ui-slider-handle:focus, #slider-range .ui-slider-handle:active {
@@ -1016,7 +1020,7 @@ ul, li {
 }
 
 #slider-range .ui-slider-range {
-    background-color: #7971ea;
+    background-color: #28a745;
 }
 
 .color-item .color {
@@ -1237,7 +1241,7 @@ ul, li {
     font-size: 18px;
     font-weight: 500;
     color: #012970;
-    font-family: "Poppins", sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .card-title span {
@@ -1252,6 +1256,14 @@ ul, li {
 
 .card-img-overlay {
     background-color: rgba(255, 255, 255, 0.6);
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #28a745 !important;
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: #28a745 !important;
 }
 
 /*   */

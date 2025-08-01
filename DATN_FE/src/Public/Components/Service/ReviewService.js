@@ -2,14 +2,14 @@ import {BASE_URL_SERVER} from "../config/server";
 import axios from "axios";
 
 const API_ENDPOINT = {
-    LIST_REVIEW_BY_PRODUCT: "/api/reviews/list",
-    CHECK_REVIEW_BY_PRODUCT: "/api/reviews/check",
-    POST_REVIEW: "/api/reviews/create",
+    LIST_REVIEW_BY_PRODUCT: "/api/feedback/list",
+    CHECK_REVIEW_BY_PRODUCT: "/api/feedback/check",
+    POST_REVIEW: "/api/feedback/store",
     // ADMIN
-    LIST_REVIEW: "/api/admin/reviews/list",
-    DETAIL_REVIEW: "/api/admin/reviews/detail/",
-    UPDATE_REVIEW: "/api/admin/reviews/update/",
-    DELETE_REVIEW: "/api/admin/reviews/delete/",
+    LIST_REVIEW: "/api/admin/feedback/list",
+    DETAIL_REVIEW: "/api/admin/feedback/detail/",
+    UPDATE_REVIEW: "/api/admin/feedback/update/",
+    DELETE_REVIEW: "/api/admin/feedback/delete/",
 }
 
 class ReviewService {

@@ -121,25 +121,8 @@ function DetailOrder() {
 
     const columns = [
         {
-            title: 'STT',
-            dataIndex: 'key',
-            width: '10%',
-            render: (text, record, index) => index + 1,
-        },
-        {
-            title: 'Người thay đổi',
-            dataIndex: 'user_name',
-            width: 'x',
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'notes',
-            width: '30%',
-        },
-        {
             title: 'Trạng thái',
             dataIndex: 'status',
-            width: '20%',
             render: (text) => {
                 return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
             },
@@ -285,7 +268,15 @@ function DetailOrder() {
                                     </div>
                                     <div className="col-md-8">
                                         <div className="p-3 p-lg-5 border">
-                                            <table className="table mb-4">
+                                            <table className="table table-bordered mb-3">
+                                                <colgroup>
+                                                    <col width="10%"/>
+                                                    <col width="32%"/>
+                                                    <col width="15%"/>
+                                                    <col width="10%"/>
+                                                    <col width="15%"/>
+                                                    <col width="x"/>
+                                                </colgroup>
                                                 <thead>
                                                 <tr>
                                                     <th scope="col">Hình ảnh</th>
@@ -299,14 +290,14 @@ function DetailOrder() {
                                                 {orderItems.map((orderItem, index) => {
                                                     return (<tr key={index}>
                                                         <td>
-                                                            <img src={orderItem.product.image} alt=""
+                                                            <img src={orderItem.image} alt=""
                                                                  width="100px"/>
                                                         </td>
                                                         <td>
-                                                            {orderItem.product.title}
+                                                            {orderItem.title}
                                                         </td>
                                                         <td>{orderItem.quantity}</td>
-                                                        <td>{orderItem.price}</td>
+                                                        <td>{ConvertCurrency(orderItem.price)}</td>
                                                         <td>{ConvertCurrency(orderItem.price * orderItem.quantity)}</td>
                                                     </tr>)
                                                 })}
