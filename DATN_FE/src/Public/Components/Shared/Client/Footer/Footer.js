@@ -41,8 +41,8 @@ function Footer() {
                     <div className="col-md-6 col-lg-3 mb-4 mb-lg-0">
                         <h3 className="footer-heading mb-4">Khuyến mãi nổi bật</h3>
                         <Link to="#" className="block-6">
-                            <img src="/assets/clients/images/promo_kitchen.jpg" alt="Khuyến mãi đồ gia dụng"
-                                className="img-fluid rounded mb-4" />
+                            <img src="/assets/clients/images/banner1.jpg" alt="Khuyến mãi đồ gia dụng"
+                                 className="img-fluid rounded mb-4" />
                             <h3 className="font-weight-light mb-0">Bộ dụng cụ nấu ăn Elmich cao cấp - giảm giá 25%</h3>
                             <p>Áp dụng từ 20/07/2024 đến 31/07/2024</p>
                         </Link>
@@ -64,7 +64,7 @@ function Footer() {
                                 <label htmlFor="email_subscribe" className="footer-heading">Đăng ký nhận tin</label>
                                 <div className="form-group">
                                     <input type="text" className="form-control py-4" id="email_subscribe"
-                                        placeholder="Nhập email của bạn" />
+                                           placeholder="Nhập email của bạn" />
                                     <input type="submit" className="btn btn-sm btn-primary mt-2" value="Gửi" />
                                 </div>
                             </form>

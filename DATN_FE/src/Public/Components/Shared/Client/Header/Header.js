@@ -11,7 +11,7 @@ function NoLogin() {
     return (
         <div className="site-top-icons">
             <ul>
-                <li><Link to="/login"><i className="fa-solid fa-right-to-bracket"></i></Link></li>
+                <li><Link to="/login">Đăng nhập</Link></li>
                 <li className="d-inline-block d-md-none ml-md-0">
                     <Link to="#" className="site-menu-toggle js-menu-toggle"><span
                         className="icon-menu"></span></Link></li>
@@ -51,15 +51,14 @@ function YesLogin() {
     return (
         <div className="site-top-icons">
             <ul>
-                <li><Link to="/profile"><span className="icon icon-person"></span></Link></li>
-                <li><Link to="/product-favourites"><span className="icon icon-heart-o"></span></Link></li>
                 <li>
                     <Link to="/cart" className="site-cart">
                         <span className="icon icon-shopping_cart"></span>
                         <span className="count" id="countCart">0</span>
                     </Link>
                 </li>
-                <li><Link to="#" onClick={handlelogout}><i className="fa-solid fa-right-to-bracket"></i></Link></li>
+                <li><Link className="mr-3 ml-3" to="/profile">Tài khoản</Link></li>
+                <li><Link to="#" onClick={handlelogout}>Đăng xuất</Link></li>
                 <li className="d-inline-block d-md-none ml-md-0">
                     <Link to="#"
                           className="site-menu-toggle js-menu-toggle"><span

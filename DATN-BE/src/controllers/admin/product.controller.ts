@@ -90,7 +90,9 @@ export const create = async (req: any, res: any) => {
       sale_price,
       photo_library,
       categories_id,
+      shot_description,
       is_active,
+      is_hot,
     } = req.body;
 
     if (!title || !sale_price || !quantity || !categories_id) {
@@ -104,6 +106,7 @@ export const create = async (req: any, res: any) => {
 
     const newProduct = await Product.create({
       title,
+      shot_description: shot_description || "",
       description: description || "",
       image: image || "",
       code,
@@ -113,6 +116,7 @@ export const create = async (req: any, res: any) => {
       photo_library: photo_library || [],
       categories_id,
       is_active,
+      is_hot: is_hot || false,
     });
 
     return res.status(201).json({
@@ -138,6 +142,8 @@ export const update = async (req: any, res: any) => {
     photo_library,
     image,
     is_active,
+    is_hot,
+    shot_description,
   } = req.body;
 
   try {
@@ -182,6 +188,8 @@ export const update = async (req: any, res: any) => {
     if (quantity !== undefined) product.quantity = quantity;
     if (image !== undefined) product.image = image;
     if (is_active !== undefined) product.is_active = is_active;
+    if (shot_description !== undefined) product.shot_description = shot_description;
+    if (is_hot !== undefined) product.is_hot = is_hot || false;
 
     await product.save();
 

@@ -10,11 +10,13 @@ const orderItemSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        title: {type: String},
+        image: {type: String},
     },
     {
         timestamps: true,
         toJSON: {
-             transform(doc, ret: any) {
+            transform(doc, ret: any) {
                 ret.id = ret._id.toString();
                 delete ret._id;
                 delete ret.__v;

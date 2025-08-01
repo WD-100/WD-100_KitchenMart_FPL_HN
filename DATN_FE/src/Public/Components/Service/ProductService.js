@@ -3,6 +3,7 @@ import axios from "axios";
 
 const API_ENDPOINT = {
     NEW_PRODUCT: "/api/product/new-list",
+    HOT_PRODUCT: "/api/product/hot-list",
     LIST_PRODUCT: "/api/product/list",
     DETAIL_PRODUCT: "/api/product/detail/",
     SLUG_PRODUCT: "/api/product/slug/",
@@ -19,6 +20,11 @@ class ProductService {
     newProduct = (size, sort) => {
         let params = `?size=${size}&sort=${sort}`;
         return axios.get(BASE_URL_SERVER + API_ENDPOINT.NEW_PRODUCT + params);
+    }
+
+    hotProduct = (size, sort) => {
+        let params = `?size=${size}&sort=${sort}`;
+        return axios.get(BASE_URL_SERVER + API_ENDPOINT.HOT_PRODUCT + params);
     }
 
     listProduct = (size, sort) => {
