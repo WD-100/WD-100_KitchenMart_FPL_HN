@@ -325,7 +325,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'CANCELED' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'DELIVERED' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">5</span>
                                                     </span>
@@ -333,7 +333,7 @@ function DetailOrder() {
                                                     </div>
                                                     <div className="seperator"></div>
                                                     <div
-                                                        className={"step " + (order.status === 'DELIVERED' ? 'step-active' : '')}>
+                                                        className={"step " + (order.status === 'COMPLETED' ? 'step-active' : '')}>
                                                     <span className="number-container">
                                                         <span className="number">6</span>
                                                     </span>

@@ -25,8 +25,24 @@ function CreateCoupon() {
             }
         }
 
+        const start_date = $('#start_date').val();
+        const end_date = $('#end_date').val();
+        if (start_date > end_date) {
+            alert('Ngày bắt đầu không hợp lệ!')
+            return false;
+        }
+
+        const discount_percent = $('#discount_percent').val();
+        if (discount_percent > 100) {
+            console.log(discount_percent);
+            alert('Phần trăm giảm giá không hợp lệ!')
+            return false;
+        }
+
         const formData = new FormData($('#formCreate')[0]);
         formData.append('thumbnail', imageUrl);
+        formData.append('value', 1);
+        formData.append('used_count', 0);
         await couponService.adminCreateCoupon(formData)
             .then((res) => {
                 console.log("create property", res.data)
@@ -106,19 +122,8 @@ function CreateCoupon() {
                                                 <input type="number" name="max_discount" className="form-control"
                                                        id="max_discount" min="0" required/>
                                             </div>
+
                                             <div className="form-group col-md-4">
-                                                <label htmlFor="value">Giá trị giảm</label>
-                                                <input type="number" name="value" className="form-control"
-                                                       id="value" min="1" required/>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="used_count">Số lần mã đã được sử dụng</label>
-                                                <input type="number" name="used_count" className="form-control"
-                                                       id="used_count" min="0" required/>
-                                            </div>
-                                            <div className="form-group col-md-6">
                                                 <label htmlFor="usage_limit">Số lần mã được sử dụng tối đa</label>
                                                 <input type="number" name="usage_limit" className="form-control"
                                                        id="usage_limit" min="1" required/>
@@ -142,21 +147,14 @@ function CreateCoupon() {
                                             </div>
                                         </div>
                                         <div className="row">
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="image">Hình ảnh</label>
                                                 <input type="file" className="form-control" id="image"
                                                        onChange={event => handleFileChange(event)}
                                                        required/>
                                                 <img src={imageUrl} alt="" id="image" width="100"/>
                                             </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="type">Loại mã giảm giá</label>
-                                                <select id="type" name="type" className="form-select">
-                                                    <option value="percent">Theo phần trăm</option>
-                                                    <option value="fixed">Số tiền cố định</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="is_active">Trạng thái</label>
                                                 <select id="is_active" name="is_active" className="form-select">
                                                     <option value="1">ĐANG HOẠT ĐỘNG</option>
