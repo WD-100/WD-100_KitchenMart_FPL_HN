@@ -12,6 +12,7 @@ const orderItemSchema = new mongoose.Schema(
         },
         title: {type: String},
         image: {type: String},
+        value: {type: String, required: true, trim: true},
     },
     {
         timestamps: true,
