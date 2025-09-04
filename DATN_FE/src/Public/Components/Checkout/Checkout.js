@@ -9,6 +9,7 @@ import ConvertCurrency from "../Shared/Utils/ConvertCurrency";
 import accountService from "../Service/AccountService";
 import LoadingPage from "../Shared/Utils/LoadingPage";
 import CheckoutForm from "./CheckoutForm";
+import {message} from "antd";
 
 function Checkout() {
     const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ function Checkout() {
     };
 
     const getCoupon = async () => {
-        if (!couponCode.trim()) return alert('Vui lòng nhập mã giảm giá');
+        if (!couponCode.trim()) return message.error('Vui lòng nhập mã giảm giá');
         setLoading(true);
         try {
             const res = await couponService.searchMyCoupon(couponCode.trim());
@@ -59,11 +60,11 @@ function Checkout() {
                 const coupon = foundCoupon.coupon_id;
                 validateAndApplyCoupon(coupon);
             } else {
-                alert('Không tìm thấy mã giảm giá hợp lệ');
+                message.error('Không tìm thấy mã giảm giá hợp lệ');
             }
         } catch (err) {
             console.error(err);
-            alert('Không tìm thấy mã giảm giá hợp lệ');
+            message.error('Không tìm thấy mã giảm giá hợp lệ');
         } finally {
             setLoading(false);
         }
@@ -72,7 +73,7 @@ function Checkout() {
     const validateAndApplyCoupon = (coupon) => {
         const minTotal = Number(coupon.min_order_value);
         if (totalProduct < minTotal) {
-            alert(`Đơn hàng chưa đạt giá trị tối thiểu để sử dụng mã: ${ConvertCurrency(minTotal)}`);
+            message.error(`Đơn hàng chưa đạt giá trị tối thiểu để sử dụng mã: ${ConvertCurrency(minTotal)}`);
             return;
         }
 
@@ -88,7 +89,7 @@ function Checkout() {
 
     const calcTotal = () => {
         const totalProductCost = carts.reduce((sum, item) => {
-            return sum + item.product_id.sale_price * item.quantity;
+            return sum + item.value.sale_price * item.quantity;
         }, 0);
 
         const totalAfterDiscount = totalProductCost - discountPrice;
@@ -120,7 +121,7 @@ function Checkout() {
 
     useEffect(() => {
         const p = sessionStorage.getItem('quick_buy_product');
-        if (p){
+        if (p) {
             setQuickBuyProduct(JSON.parse(p));
         }
     }, []);
@@ -139,7 +140,7 @@ function Checkout() {
         const requiredFields = ['full_name', 'c_address', 'd_address', 'c_email_address', 'c_phone'];
         for (const field of requiredFields) {
             if (!formData[field]) {
-                alert(`${field} không được bỏ trống!`);
+                message.error(`${field} không được bỏ trống!`);
                 return;
             }
         }
@@ -174,15 +175,24 @@ function Checkout() {
                     const res = await orderService.createOrder(data);
                     console.log('Đặt hàng thành công:', res.data);
                 }
+                message.success('Đặt hàng thành công!');
                 navigate('/thanks-you');
             } else {
-                const res = await orderService.createOrderVnpay(data);
-                localStorage.setItem('order_info', JSON.stringify(data));
-                window.location.href = res.data.data;
+                if (quick_buy_product) {
+                    const res = await orderService.createQuickOrderVnpay(data);
+                    console.log('Đặt hàng thành công:', res.data);
+                    localStorage.setItem('order_info', JSON.stringify(data));
+                    window.location.href = res.data.data;
+                } else {
+                    const res = await orderService.createOrderVnpay(data);
+                    console.log('Đặt hàng thành công:', res.data);
+                    localStorage.setItem('order_info', JSON.stringify(data));
+                    window.location.href = res.data.data;
+                }
             }
         } catch (err) {
             console.error('Lỗi đặt hàng:', err);
-            alert(err.response.data.message ?? 'Đã xảy ra lỗi khi đặt hàng!');
+            message.error('Xây ra lỗi trong qua trình đặt hàng!');
         } finally {
             setLoading(false);
         }

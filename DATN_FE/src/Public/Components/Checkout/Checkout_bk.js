@@ -8,6 +8,7 @@ import couponService from "../Service/CouponService";
 import ConvertCurrency from "../Shared/Utils/ConvertCurrency";
 import accountService from "../Service/AccountService";
 import LoadingPage from "../Shared/Utils/LoadingPage";
+import {message} from "antd";
 
 function Checkout() {
     const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ function Checkout() {
     };
 
     const getCoupon = async () => {
-        if (!couponCode.trim()) return alert('Vui lòng nhập mã giảm giá');
+        if (!couponCode.trim()) return message.error('Vui lòng nhập mã giảm giá');
         setLoading(true);
         try {
             const res = await couponService.searchMyCoupon(couponCode.trim());
@@ -59,11 +60,11 @@ function Checkout() {
                 const coupon = foundCoupon.coupon_id;
                 validateAndApplyCoupon(coupon);
             } else {
-                alert('Không tìm thấy mã giảm giá hợp lệ');
+                message.error('Không tìm thấy mã giảm giá hợp lệ');
             }
         } catch (err) {
             console.error(err);
-            alert('Không tìm thấy mã giảm giá hợp lệ');
+            message.error('Không tìm thấy mã giảm giá hợp lệ');
         } finally {
             setLoading(false);
         }
@@ -72,7 +73,7 @@ function Checkout() {
     const validateAndApplyCoupon = (coupon) => {
         const minTotal = Number(coupon.min_order_value);
         if (totalProduct < minTotal) {
-            alert(`Đơn hàng chưa đạt giá trị tối thiểu để sử dụng mã: ${ConvertCurrency(minTotal)}`);
+            message.error(`Đơn hàng chưa đạt giá trị tối thiểu để sử dụng mã: ${ConvertCurrency(minTotal)}`);
             return;
         }
 
@@ -133,7 +134,7 @@ function Checkout() {
         const requiredFields = ['full_name', 'c_address', 'd_address', 'c_email_address', 'c_phone'];
         for (const field of requiredFields) {
             if (!formData[field]) {
-                alert(`${field} không được bỏ trống!`);
+                message.error(`${field} không được bỏ trống!`);
                 return;
             }
         }

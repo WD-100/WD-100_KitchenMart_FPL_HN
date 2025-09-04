@@ -179,7 +179,7 @@ function CheckoutForm({
                                             <tr key={index}>
                                                 <td><strong>{cart.product_id.title}</strong></td>
                                                 <td>
-                                                    <strong>{ConvertCurrency(cart.product_id.sale_price * cart.quantity)}</strong>
+                                                    <strong>{ConvertCurrency(cart.value.sale_price * cart.quantity)}</strong>
                                                 </td>
                                             </tr>
                                         ))
@@ -210,50 +210,31 @@ function CheckoutForm({
 
                                 <h4 className="mt-3 mb-2 font-weight-bold">Phương thức thanh toán</h4>
 
-                                {!carts ? (
-                                    <>
-                                        <div className="border p-3 mb-3">
-                                            <input
-                                                type="radio"
-                                                id="cod"
-                                                name="order_method"
-                                                value="cod"
-                                                checked={orderMethod === 'cod'}
-                                                onChange={() => setOrderMethod('cod')}
-                                            />
-                                            <label htmlFor="cod" className="text-black ml-2">Thanh toán khi nhận
-                                                hàng</label>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="border p-3 mb-3">
-                                            <input
-                                                type="radio"
-                                                id="cod"
-                                                name="order_method"
-                                                value="cod"
-                                                checked={orderMethod === 'cod'}
-                                                onChange={() => setOrderMethod('cod')}
-                                            />
-                                            <label htmlFor="cod" className="text-black ml-2">Thanh toán khi nhận
-                                                hàng</label>
-                                        </div>
+                                <div className="border p-3 mb-3">
+                                    <input
+                                        type="radio"
+                                        id="cod"
+                                        name="order_method"
+                                        value="cod"
+                                        checked={orderMethod === 'cod'}
+                                        onChange={() => setOrderMethod('cod')}
+                                    />
+                                    <label htmlFor="cod" className="text-black ml-2">Thanh toán khi nhận
+                                        hàng</label>
+                                </div>
 
-                                        <div className="border p-3 mb-5">
-                                            <input
-                                                type="radio"
-                                                id="ewallet"
-                                                name="order_method"
-                                                value="vnpay"
-                                                checked={orderMethod === 'vnpay'}
-                                                onChange={() => setOrderMethod('vnpay')}
-                                            />
-                                            <label htmlFor="ewallet" className="text-black ml-2">Thanh toán
-                                                online</label>
-                                        </div>
-                                    </>
-                                )}
+                                <div className="border p-3 mb-5">
+                                    <input
+                                        type="radio"
+                                        id="ewallet"
+                                        name="order_method"
+                                        value="vnpay"
+                                        checked={orderMethod === 'vnpay'}
+                                        onChange={() => setOrderMethod('vnpay')}
+                                    />
+                                    <label htmlFor="ewallet" className="text-black ml-2">Thanh toán
+                                        online</label>
+                                </div>
 
                                 <div className="form-group">
                                     <button type="submit" className="btn btn-primary btn-lg py-3 btn-block"

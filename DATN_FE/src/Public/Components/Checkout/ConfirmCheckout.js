@@ -1,14 +1,14 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Header from "../Shared/Client/Header/Header";
 import Footer from "../Shared/Client/Footer/Footer";
 import {useLocation} from 'react-router-dom';
 import $ from 'jquery';
 import orderService from "../Service/OrderService";
+import {message} from "antd";
 
 function ConfirmCheckout() {
     const {search} = useLocation();
     const queryParams = new URLSearchParams(search);
-
     // Convert query parameters to an object
     const queryParamsObj = {};
     queryParams.forEach((value, key) => {
@@ -17,7 +17,7 @@ function ConfirmCheckout() {
 
     const vnp_ResponseCode = queryParamsObj['vnp_ResponseCode'];
 
-    const loadingPage = async () => {
+    const loadingPage = async (quick_buy_product) => {
         let html = ``;
         let title = ``;
         switch (vnp_ResponseCode) {
@@ -31,7 +31,11 @@ function ConfirmCheckout() {
                 title = `Cảm ơn`;
                 let order_info = localStorage.getItem('order_info')
                 if (order_info) {
-                    await createOrder();
+                    if (quick_buy_product) {
+                        await createQuickOrder(quick_buy_product);
+                    } else {
+                        await createOrder();
+                    }
                 }
                 break;
             default:
@@ -61,13 +65,45 @@ function ConfirmCheckout() {
             })
             .catch((err) => {
                 console.log(err)
-                alert("Error, Vui lòng thử lại sau!")
+                message.error("Error, Vui lòng thử lại sau!")
+                $('#btnCheckout').prop('disabled', false).text('Place Order');
+            })
+    }
+
+    const createQuickOrder = async (quick_buy_product) => {
+        let order_info = localStorage.getItem('order_info')
+        let data = JSON.parse(order_info)
+
+        if (quick_buy_product) {
+            if (quick_buy_product) {
+                data = {
+                    ...data,
+                    ...quick_buy_product,
+                };
+            }
+        }
+
+        await orderService.createQuickOrder(data)
+            .then((res) => {
+                console.log("order", res.data)
+                localStorage.removeItem('order_info');
+                sessionStorage.removeItem('quick_buy_product');
+            })
+            .catch((err) => {
+                console.log(err)
+                message.error("Error, Vui lòng thử lại sau!")
                 $('#btnCheckout').prop('disabled', false).text('Place Order');
             })
     }
 
     useEffect(() => {
-        loadingPage();
+        const p = sessionStorage.getItem('quick_buy_product');
+        if (p) {
+            const parsed = JSON.parse(p);
+            loadingPage(parsed);
+        } else {
+            loadingPage(null);
+        }
     }, [])
 
     return (
