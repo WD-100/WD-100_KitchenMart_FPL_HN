@@ -5,6 +5,7 @@ import Css from '../Lib/StyleSheet';
 import Script from '../Lib/Script';
 import $ from 'jquery';
 import {BASE_URL_SERVER} from '../../../config/server'
+import {message} from "antd";
 
 function IsAdmin() {
     return (
@@ -40,7 +41,7 @@ function Header() {
     const handleLogout = () => {
         localStorage.clear();
         sessionStorage.clear();
-        alert('Đăng xuất thành công!')
+        message.success("Đăng xuất thành công!");
         window.location.href = `/login`;
     }
 
@@ -56,7 +57,7 @@ function Header() {
                 console.log(err)
                 let stt = err.response.status;
                 if (stt === 444) {
-                    alert('Phiên đăng nhập đã hết hạn, đăng nhập lại...');
+                    message.error('Phiên đăng nhập hàng hết hạn, đăng nhập lại...');
                     sessionStorage.clear();
                     navigate('/login');
                 } else {

@@ -6,72 +6,46 @@ import Script from "../../Client/Lib/Script";
 import $ from "jquery";
 import cartService from "../../../Service/CartService";
 import categoryService from "../../../Service/CategoryService";
-
-function NoLogin() {
-    return (
-        <div className="site-top-icons">
-            <ul>
-                <li><Link to="/login">Đăng nhập</Link></li>
-                <li className="d-inline-block d-md-none ml-md-0">
-                    <Link to="#" className="site-menu-toggle js-menu-toggle"><span
-                        className="icon-menu"></span></Link></li>
-            </ul>
-        </div>
-    );
-}
+import {message} from "antd";
+import {useCart} from "../../../store/CartContext";
 
 function YesLogin() {
-    const userId = sessionStorage.getItem("id")
-    const [loading, setLoading] = useState(true);
+    const {cartCount} = useCart();
 
     const handlelogout = () => {
         sessionStorage.clear();
-        alert('Đăng xuất thành công!');
         window.location.href = '/';
-    }
+    };
 
-    const getListCart = async () => {
-        await cartService.listCart()
-            .then((res) => {
-                setLoading(false)
-                let count = res.data.data.length;
-                console.log(count);
-                $('#countCart').text(count);
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
-    }
+    return (<div className="site-top-icons">
+        <ul>
+            <li>
+                <Link to="/cart" className="site-cart">
+                    <span className="icon icon-shopping_cart"></span>
+                    <span className="count">{cartCount}</span>
+                </Link>
+            </li>
+            <li><Link className="mr-3 ml-3" to="/profile">Tài khoản</Link></li>
+            <li><Link to="#" onClick={handlelogout}>Đăng xuất</Link></li>
+        </ul>
+    </div>);
+}
 
-    useEffect(() => {
-        getListCart();
-    }, [loading]);
-
-    return (
-        <div className="site-top-icons">
-            <ul>
-                <li>
-                    <Link to="/cart" className="site-cart">
-                        <span className="icon icon-shopping_cart"></span>
-                        <span className="count" id="countCart">0</span>
-                    </Link>
-                </li>
-                <li><Link className="mr-3 ml-3" to="/profile">Tài khoản</Link></li>
-                <li><Link to="#" onClick={handlelogout}>Đăng xuất</Link></li>
-                <li className="d-inline-block d-md-none ml-md-0">
-                    <Link to="#"
-                          className="site-menu-toggle js-menu-toggle"><span
-                        className="icon-menu"></span></Link></li>
-            </ul>
-        </div>
-    );
+function NoLogin() {
+    return (<div className="site-top-icons">
+        <ul>
+            <li><Link to="/login">Đăng nhập</Link></li>
+            <li className="d-inline-block d-md-none ml-md-0">
+                <Link to="#" className="site-menu-toggle js-menu-toggle"><span
+                    className="icon-menu"></span></Link></li>
+        </ul>
+    </div>);
 }
 
 function HeaderClient() {
     const [searchParams] = useSearchParams();
     const [categories, setCategories] = useState([]);
-    const navigate = useNavigate();
+    const {setCartCount} = useCart();
     let isLogin = true;
 
     const Auth = sessionStorage.getItem("accessToken")
@@ -137,78 +111,83 @@ function HeaderClient() {
         }
     };
 
+    const getListCart = async () => {
+        await cartService.listCart()
+            .then((res) => {
+                setCartCount(res.data.data.length);
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
     useEffect(() => {
         getListCategory();
+        getListCart();
     }, []);
 
-    return (
-        <>
-            <Css/>
-            <Script/>
-            <header className="site-navbar" role="banner">
-                <div className="site-navbar-top">
-                    <div className="container">
-                        <div className="row align-items-center">
+    return (<>
+        <Css/>
+        <Script/>
+        <header className="site-navbar" role="banner">
+            <div className="site-navbar-top">
+                <div className="container">
+                    <div className="row align-items-center">
 
-                            <div className="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
-                                <form action="#" className="site-block-top-search">
-                                    <span className="icon icon-search2"></span>
-                                    <input type="text" className="form-control border-0" id="keywordSearch"
-                                           onKeyDown={processSearch} defaultValue={keyword_param}
-                                           placeholder="Nhập từ khóa tìm kiếm"></input>
-                                </form>
-                            </div>
-
-                            <div className="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
-                                <div className="site-logo">
-                                    <a href="/" className="js-logo-clone">KitchenMart</a>
-                                </div>
-                            </div>
-
-                            <div className="col-6 col-md-4 order-3 order-md-3 text-right">
-                                {isLogin ? <YesLogin/> : <NoLogin/>}
-                            </div>
-
+                        <div className="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
+                            <form action="#" className="site-block-top-search">
+                                <span className="icon icon-search2"></span>
+                                <input type="text" className="form-control border-0" id="keywordSearch"
+                                       onKeyDown={processSearch} defaultValue={keyword_param}
+                                       placeholder="Nhập từ khóa tìm kiếm"></input>
+                            </form>
                         </div>
+
+                        <div className="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
+                            <div className="site-logo">
+                                <a href="/" className="js-logo-clone">KitchenMart</a>
+                            </div>
+                        </div>
+
+                        <div className="col-6 col-md-4 order-3 order-md-3 text-right">
+                            {isLogin ? <YesLogin/> : <NoLogin/>}
+                        </div>
+
                     </div>
                 </div>
-                <nav className="site-navigation text-right text-md-center" role="navigation">
-                    <div className="container">
-                        <ul className="site-menu js-clone-nav d-none d-md-block">
-                            <li><a href="/" className="active">Trang chủ</a></li>
-                            <li className="has-children">
-                                <a href="/products">Danh mục</a>
-                                <ul className="dropdown">
-                                    {
-                                        categories.map((category) => (
-                                            <li className="mb-1" key={category.id}>
-                                                <a href={'/products?category=' + category.id} data-id={category.id}
-                                                   className="d-flex categoryID" onClick={handleClick}>
-                                                    <span>{category.name}</span>
-                                                </a>
-                                            </li>
-                                        ))
-                                    }
-                                </ul>
-                            </li>
-                            <li className="has-children">
-                                <a href="#">Mục lục</a>
-                                <ul className="dropdown">
-                                    <li><a href="/products">Cửa hàng</a></li>
-                                    <li><a href="/coupons">Mã giảm giá</a></li>
-                                    <li><a href="/about-us">Về chúng tôi</a></li>
-                                    <li><a href="/contact">Liên hệ</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="/products">Cửa hàng</a></li>
-                            <li><a href="/about-us">Về chúng tôi</a></li>
-                            <li><a href="/contact">Liên hệ</a></li>
-                        </ul>
-                    </div>
-                </nav>
-            </header>
-        </>
-    )
+            </div>
+            <nav className="site-navigation text-right text-md-center" role="navigation">
+                <div className="container">
+                    <ul className="site-menu js-clone-nav d-none d-md-block">
+                        <li><a href="/" className="active">Trang chủ</a></li>
+                        <li className="has-children">
+                            <a href="/products">Danh mục</a>
+                            <ul className="dropdown">
+                                {categories.map((category) => (<li className="mb-1" key={category.id}>
+                                    <a href={'/products?category=' + category.id} data-id={category.id}
+                                       className="d-flex categoryID" onClick={handleClick}>
+                                        <span>{category.name}</span>
+                                    </a>
+                                </li>))}
+                            </ul>
+                        </li>
+                        <li className="has-children">
+                            <a href="#">Mục lục</a>
+                            <ul className="dropdown">
+                                <li><a href="/products">Cửa hàng</a></li>
+                                <li><a href="/coupons">Mã giảm giá</a></li>
+                                <li><a href="/about-us">Về chúng tôi</a></li>
+                                <li><a href="/contact">Liên hệ</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/products">Cửa hàng</a></li>
+                        <li><a href="/about-us">Về chúng tôi</a></li>
+                        <li><a href="/contact">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+    </>)
 }
 
 export default HeaderClient
