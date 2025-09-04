@@ -68,7 +68,14 @@ export const detail = async (req: any, res: any) => {
             total_price: toNumber(order.total_price),
         }
 
-        const orderItems = await OrderItem.find({order_id: orderId});
+        const orderItems = await OrderItem.find({order_id: orderId}).populate({
+            path: "value",
+            model: "ProductAttribute",
+            populate: {
+                path: "attribute_id",
+                model: "Attribute",
+            },
+        });
 
         (orderData as any).order_items = await Promise.all(
             orderItems.map(async (item) => {
