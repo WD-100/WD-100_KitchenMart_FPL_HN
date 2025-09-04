@@ -65,7 +65,7 @@ class ReviewService {
                 'Authorization': `Bearer ${sessionStorage.getItem("accessToken")}`
             }
         };
-        return axios.put(BASE_URL_SERVER + API_ENDPOINT.UPDATE_REVIEW + id, data, config);
+        return axios.patch(BASE_URL_SERVER + API_ENDPOINT.UPDATE_REVIEW + id, data, config);
     }
 
     detailReview = (id) => {

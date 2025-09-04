@@ -6,6 +6,7 @@ const API_ENDPOINT = {
     DETAIL_ORDER: "/api/order/detail/",
     CREATE_ORDER: "/api/checkout/create",
     QUICK_ORDER: "/api/checkout/quick-order",
+    QUICK_ORDER_VNPAY: "/api/checkout/quick-order-vnpay",
     CREATE_ORDER_VNPAY: "/api/checkout/checkout_vnpay",
     CANCEL_ORDER: "/api/order/cancel/",
     // ADMIN
@@ -56,6 +57,16 @@ class OrderService {
             }
         };
         return axios.post(BASE_URL_SERVER + API_ENDPOINT.QUICK_ORDER, data, config);
+    }
+
+    createQuickOrderVnpay = (data) => {
+        const config = {
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem("accessToken")}`
+            }
+        };
+        return axios.post(BASE_URL_SERVER + API_ENDPOINT.QUICK_ORDER_VNPAY, data, config);
     }
 
     createOrderVnpay = (data) => {

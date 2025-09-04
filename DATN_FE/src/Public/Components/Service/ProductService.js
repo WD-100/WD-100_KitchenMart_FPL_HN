@@ -7,6 +7,9 @@ const API_ENDPOINT = {
     LIST_PRODUCT: "/api/product/list",
     DETAIL_PRODUCT: "/api/product/detail/",
     SLUG_PRODUCT: "/api/product/slug/",
+    /* OPTION PRODUCT */
+    LIST_OPTION_PRODUCT: "/api/product-attributes/list-product/",
+    DETAIL_OPTION_PRODUCT: "/api/product-attributes/detail/",
     // ADMIN
     ADMIN_LIST_PRODUCT: "/api/admin/product/list",
     ADMIN_DETAIL_PRODUCT: "/api/admin/product/detail/",
@@ -45,6 +48,14 @@ class ProductService {
         return axios.get(BASE_URL_SERVER + url);
     }
 
+    /* OPTION */
+    listOptionProduct = (id) => {
+        return axios.get(BASE_URL_SERVER + API_ENDPOINT.LIST_OPTION_PRODUCT + id);
+    }
+
+    detailOptionProduct = (id) => {
+        return axios.get(BASE_URL_SERVER + API_ENDPOINT.DETAIL_OPTION_PRODUCT + id);
+    }
     // ADMIN
     adminListProduct = () => {
         const config = {
