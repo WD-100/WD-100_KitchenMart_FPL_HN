@@ -37,11 +37,19 @@ import ListCategory from './Components/AdminApp/Category/ListCategory/ListCatego
 import CreateCategory from './Components/AdminApp/Category/CreateCategory/CreateCategory';
 import DetailCategory from './Components/AdminApp/Category/DetailCategory/DetailCategory';
 import UpdateCategory from './Components/AdminApp/Category/UpdateCategory/UpdateCategory';
+/* Admin Attribute */
+import ListAttribute from './Components/AdminApp/Attribute/ListAttribute/ListAttribute';
+import CreateAttribute from './Components/AdminApp/Attribute/CreateAttribute/CreateAttribute';
+import DetailAttribute from './Components/AdminApp/Attribute/DetailAttribute/DetailAttribute';
 /* Admin Product */
 import ListProduct from './Components/AdminApp/Product/ListProduct/ListProduct';
 import CreateProduct from './Components/AdminApp/Product/CreateProduct/CreateProduct';
 import DetailProduct from './Components/AdminApp/Product/DetailProduct/DetailProduct';
 import UpdateProduct from "./Components/AdminApp/Product/UpdateProduct/UpdateProduct";
+/* Admin Product Attribute */
+import ListProductAttribute from './Components/AdminApp/ProductAttribute/ListProductAttribute/ListProductAttribute';
+import CreateProductAttribute from './Components/AdminApp/ProductAttribute/CreateProductAttribute/CreateProductAttribute';
+import DetailProductAttribute from './Components/AdminApp/ProductAttribute/DetailProductAttribute/DetailProductAttribute';
 /* Admin Order */
 import DetailOrder from './Components/AdminApp/Orders/DetailOrder/DetailOrder';
 import ListOrder from './Components/AdminApp/Orders/ListOrder/ListOrder';
@@ -107,11 +115,19 @@ function Public() {
                 <Route path='/admin/categories/create' element={<CreateCategory/>}/>
                 <Route path='/admin/categories/detail/:id' element={<DetailCategory/>}/>
                 <Route path='/admin/categories/update/:id' element={<UpdateCategory/>}/>
+                {/* Admin Attributes */}
+                <Route path='/admin/attributes/list' element={<ListAttribute/>}/>
+                <Route path='/admin/attributes/create' element={<CreateAttribute/>}/>
+                <Route path='/admin/attributes/detail/:id' element={<DetailAttribute/>}/>
                 {/* Admin Products */}
                 <Route path='/admin/products/list' element={<ListProduct/>}/>
                 <Route path='/admin/products/create' element={<CreateProduct/>}/>
                 <Route path='/admin/products/detail/:id' element={<DetailProduct/>}/>
                 <Route path='/admin/products/update/:id' element={<UpdateProduct/>}/>
+                {/* Admin Products */}
+                <Route path='/admin/product-attributes/list' element={<ListProductAttribute/>}/>
+                <Route path='/admin/product-attributes/create' element={<CreateProductAttribute/>}/>
+                <Route path='/admin/product-attributes/detail/:id' element={<DetailProductAttribute/>}/>
                 {/* Admin Orders */}
                 <Route path='/admin/orders/detail/:id' element={<DetailOrder/>}/>
                 <Route path='/admin/orders/list' element={<ListOrder/>}/>
