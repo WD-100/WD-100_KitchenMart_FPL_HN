@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Table} from 'antd';
+import {message, Table} from 'antd';
 import orderService from '../../../Service/OrderService';
 import {Link} from 'react-router-dom';
 import $ from "jquery";
@@ -153,7 +153,7 @@ function ListOrder() {
                     setData(res.data.data)
                     setLoading(false)
                 } else {
-                    alert('Error')
+                    message.error('Error')
                     setLoading(false)
                 }
             })

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Table} from 'antd';
+import {message, Table} from 'antd';
 import contactService from '../../../Service/ContactService';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -24,7 +24,7 @@ function ListContact() {
         if (window.confirm('Bạn có chắc chắn muốn xóa?')) {
             await contactService.deleteContact(id)
                 .then((res) => {
-                    alert(`Xóa thành công!`)
+                    message.success(`Xóa thành công!`)
                     getListContact();
                 })
                 .catch((err) => {

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../Header/Header'
 import Sidebar from '../../Sidebar/Sidebar'
-import {Table} from 'antd';
+import {message, Table} from 'antd';
 import orderService from '../../../Service/OrderService';
 import {Link} from 'react-router-dom';
 import $ from "jquery";
@@ -22,14 +22,14 @@ function ListOrder() {
             await orderService.cancelOrder(id)
                 .then((res) => {
                     console.log("cancel", res.data.data)
-                    alert(`Hủy đơn hàng thành công!`)
+                    message.success('Hủy đơn hàng thành công!');
                     getListOrder();
                 })
                 .catch((err) => {
                     console.log(err)
                     let res = err.response;
                     let mess = res.data.message;
-                    alert('Thất bại ' + mess);
+                    message.error(mess);
                 })
         }
     }
@@ -170,7 +170,7 @@ function ListOrder() {
                     setData(res.data.data)
                     setLoading(false)
                 } else {
-                    alert('Thất bại')
+                    message.error('Thất bại')
                     setLoading(false)
                 }
             })

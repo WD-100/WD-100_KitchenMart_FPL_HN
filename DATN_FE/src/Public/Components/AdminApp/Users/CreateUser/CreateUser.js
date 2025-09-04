@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Form} from 'antd'
+import {Form, message} from 'antd'
 import userService from '../../../Service/UserService';
 import {Link, useNavigate} from 'react-router-dom'
 import $ from 'jquery';
@@ -33,7 +33,7 @@ function CreateUser() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val()) {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
                 return
             }
@@ -45,12 +45,12 @@ function CreateUser() {
         await userService.adminCreateUser(formData)
             .then((res) => {
                 console.log("create user", res.data)
-                alert("Tạo tài khoản thành công!")
+                message.success("Tạo tài khoản thành công!")
                 navigate("/admin/users/list")
             })
             .catch((err) => {
                 console.log(err)
-                alert(err.response.data.message)
+                message.error(err.response.data.message)
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
             })
     };

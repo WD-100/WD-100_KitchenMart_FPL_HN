@@ -62,7 +62,7 @@ function Header() {
                 console.log(err)
                 let stt = err.response.status;
                 if (stt === 444) {
-                    alert('Phiên đăng nhập đã hết hạn, đăng nhập lại...');
+                    message.error('Phiên đăng nhập hàng hết hạn, đăng nhập lại...');
                     sessionStorage.clear();
                     navigate('/login');
                 }

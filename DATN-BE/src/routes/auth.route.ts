@@ -6,17 +6,20 @@ import {Role} from "../models/role.model";
 
 const router = Router();
 
+// Định nghĩa dữ liệu đăng nhập
 interface PayloadLogin {
     email: string;
     password: string;
 }
 
+// Định nghĩa dữ liệu đăng ký
 interface PayloadRegister {
     full_name: string;
     email: string;
     password: string;
 }
 
+// API Đăng ký
 router.post(
     "/register",
     async (
@@ -29,18 +32,16 @@ router.post(
             const {full_name, email, password} = req.body;
 
             const existingUser = await User.findOne({email});
-            if (existingUser)
-                return res.status(400).json({message: "Email already in use"});
+            if (existingUser) return res.status(400).json({message: "Email đã được sử dụng"});
 
-            // Tìm role "User"
+            // Tìm role "Người dùng"
             const userRole = await Role.findOne({code: "user", is_deleted: false});
-            if (!userRole)
-                return res.status(500).json({message: "User role not found"});
+            if (!userRole) return res.status(500).json({message: "Không tìm thấy quyền User"});
 
-            // Hash password
+            // Mã hoá mật khẩu
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Create user with role
+            // Tạo tài khoản kèm role
             await User.create({
                 full_name,
                 email,
@@ -49,15 +50,16 @@ router.post(
             });
 
             return res.status(201).json({
-                message: "User registered successfully",
+                message: "Đăng ký tài khoản thành công",
             });
         } catch (error) {
-            console.error("Register error:", error);
-            return res.status(500).json({message: "Server error"});
+            console.error("Lỗi khi đăng ký:", error);
+            return res.status(500).json({message: "Lỗi máy chủ"});
         }
     }
 );
 
+// API Đăng nhập
 router.post(
     "/login",
     async (
@@ -72,17 +74,17 @@ router.post(
             const user = await User.findOne({email}).populate("role_id");
 
             if (!user)
-                return res.status(401).json({message: "Account does not exist"});
+                return res.status(401).json({message: "Tài khoản không tồn tại"});
 
             if (typeof user.password !== "string") {
-                return res.status(500).json({message: "Invalid password format"});
+                return res.status(500).json({message: "Định dạng mật khẩu không hợp lệ"});
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch)
                 return res
                     .status(401)
-                    .json({message: "Incorrect account information"});
+                    .json({message: "Thông tin tài khoản không chính xác"});
 
             const token = jwt.sign(
                 {userId: user._id},
@@ -96,12 +98,12 @@ router.post(
             };
 
             return res.status(200).json({
-                message: "Login successful",
+                message: "Đăng nhập thành công",
                 data: dataResponse,
             });
         } catch (error) {
-            console.error("Login error:", error);
-            return res.status(500).json({message: "Server error"});
+            console.error("Lỗi khi đăng nhập:", error);
+            return res.status(500).json({message: "Lỗi máy chủ"});
         }
     }
 );

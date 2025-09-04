@@ -14,14 +14,9 @@ function ListCoupon() {
     const getListCoupons = async () => {
         await couponService.listMyCoupon()
             .then((res) => {
-                if (res.status === 200) {
-                    setData(res.data.data)
-                    console.log(data)
-                    setLoading(false)
-                } else {
-                    alert('Error')
-                    setLoading(false)
-                }
+                setData(res.data.data)
+                console.log(data)
+                setLoading(false)
             })
             .catch((err) => {
                 setLoading(false)

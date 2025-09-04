@@ -4,6 +4,7 @@ import couponService from '../Service/CouponService';
 import Header from "../Shared/Client/Header/Header";
 import Footer from "../Shared/Client/Footer/Footer";
 import $ from 'jquery';
+import {message} from "antd";
 
 function Coupons() {
     const [data, setData] = useState([]);
@@ -28,7 +29,7 @@ function Coupons() {
         let Token = sessionStorage.getItem("accessToken")
 
         if (email == null || Token == null) {
-            alert('Vui lòng đăng nhập...')
+            message.error('Vui lòng đăng nhập...');
             navigate('/login')
             return;
         }
@@ -41,13 +42,13 @@ function Coupons() {
             .then((res) => {
                 if (res.status === 200) {
                     console.log(res)
-                    alert('Lưu mã giảm giá thành công')
+                    message.success('Lưu má giảm giá thành công!');
                 }
             })
             .catch((err) => {
                 setLoading(false)
-                console.log(err)
-                alert(err.response.data.message)
+                console.log(err);
+                message.error(err.response.data.message);
             })
     }
 

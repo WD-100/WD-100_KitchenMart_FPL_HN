@@ -1,444 +1,338 @@
-import {Form, Table} from 'antd';
-import React, {useEffect, useState} from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
-import orderService from '../../../Service/OrderService';
-import Header from '../../../Shared/Admin/Header/Header'
-import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import $ from 'jquery';
+import React, { useEffect, useState } from "react";
+import { Form, message, Table, Modal, Input, Button } from "antd";
+import { Link, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+
+import useOrderStore from "../../../store/OrderStore";
+import Header from "../../../Shared/Admin/Header/Header";
+import Sidebar from "../../../Shared/Admin/Sidebar/Sidebar";
 import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
-import dayjs from 'dayjs';
+
+// Component hiển thị tiến trình đơn hàng
+function OrderProgress({ status }) {
+    const steps = [
+        { key: "PENDING", label: "CHỜ XÁC NHẬN" },
+        { key: "PROCESSING", label: "ĐANG XỬ LÝ" },
+        { key: "CONFIRMED", label: "ĐÃ XÁC NHẬN" },
+        { key: "SHIPPING", label: "ĐANG VẬN CHUYỂN" },
+        { key: "DELIVERED", label: "ĐÃ GIAO HÀNG" },
+        { key: "COMPLETED", label: "ĐÃ HOÀN THÀNH" },
+    ];
+
+    return (
+        <div id="bar-progress" className="mt-5 mt-lg-0 d-flex align-items-center">
+            {steps.map((step, index) => (
+                <React.Fragment key={step.key}>
+                    <div className={`step ${status === step.key ? "step-active" : ""}`}>
+                        <span className="number-container">
+                            <span className="number">{index + 1}</span>
+                        </span>
+                        <h5>{step.label}</h5>
+                    </div>
+                    {index < steps.length - 1 && <div className="seperator"></div>}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+}
 
 function DetailOrder() {
-    const {id} = useParams();
+    const { id } = useParams();
     const [form] = Form.useForm();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [selectedValue, setSelectedValue] = useState('');
-    const [order, setData] = useState([]);
-    const [orderItems, setOrderItems] = useState([]);
-    const [orderHistories, setOrderHistories] = useState([]);
-    const [tableParams, setTableParams] = useState({
-        pagination: {
-            current: 1,
-            pageSize: 10,
-        },
-    });
+    const [reasonCancel, setReasonCancel] = useState("");
+    const [isCancelModalVisible, setCancelModalVisible] = useState(false);
+
+    const {
+        order,
+        orderItems,
+        orderHistories,
+        loading,
+        fetchOrder,
+        fetchOrderHistories,
+        updateOrderStatus,
+        cancelOrder,
+    } = useOrderStore();
 
     const statusMap = {
-        PENDING: 'CHỜ XÁC NHẬN',
-        PROCESSING: 'ĐANG XỬ LÝ',
-        CONFIRMED: 'ĐÃ XÁC NHẬN',
-        SHIPPING: 'ĐANG VẬN CHUYỂN',
-        CANCELED: 'ĐÃ HỦY',
-        DELIVERED: 'ĐÃ GIAO HÀNG',
-        COMPLETED: 'ĐÃ HOÀN THÀNH',
+        PENDING: "CHỜ XÁC NHẬN",
+        PROCESSING: "ĐANG XỬ LÝ",
+        CONFIRMED: "ĐÃ XÁC NHẬN",
+        SHIPPING: "ĐANG VẬN CHUYỂN",
+        CANCELED: "ĐÃ HỦY",
+        DELIVERED: "ĐÃ GIAO HÀNG",
+        COMPLETED: "ĐÃ HOÀN THÀNH",
     };
 
     const methodMap = {
-        IMMEDIATE: 'Thanh toán khi nhận hàng',
-        CARD_CREDIT: 'Thanh toán qua VNPAY',
+        IMMEDIATE: "Thanh toán khi nhận hàng",
+        CARD_CREDIT: "Thanh toán qua VNPAY",
     };
 
-    const updateOrder = async (id) => {
-        let data = {
-            status: null,
-        };
-        if (window.confirm('Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?')) {
-            await orderService.adminUpdateOrder(id, data)
-                .then((res) => {
-                    console.log("cancel", res.data.data)
-                    alert(`Thay đổi trạng thái thành công!`)
-                    detailOrder();
-                    listOrderHistories();
-                })
-                .catch((err) => {
-                    console.log(err)
-                    let res = err.response;
-                    let mess = res.data.message;
-                    alert('Thất bại ' + mess);
-                })
-        }
-    }
+    useEffect(() => {
+        fetchOrder(id);
+        fetchOrderHistories(id);
+    }, [id, fetchOrder, fetchOrderHistories]);
 
-    const handleCancel = async (id) => {
-        let reason_cancel = $('#reason_cancel').val();
+    // Xác nhận chuyển trạng thái
+    const handleUpdateOrder = () => {
+        Modal.confirm({
+            title: "Xác nhận thay đổi trạng thái",
+            onOk: async () => {
+                try {
+                    await updateOrderStatus(id, { status: null });
+                    message.success("Thay đổi trạng thái thành công!");
+                } catch (err) {
+                    message.error("Thất bại: " + (err.message || "Lỗi không xác định"));
+                }
+            },
+        });
+    };
 
-        if (!reason_cancel) {
-            alert('Vui lòng nhập lý do hủy đơn hàng');
+    // Hủy đơn hàng
+    const handleCancelOrder = async () => {
+        if (!reasonCancel.trim()) {
+            message.error("Vui lòng nhập lý do hủy đơn hàng");
             return;
         }
-
-        let data = {
-            reason_cancel: reason_cancel,
-            status: 'CANCELED',
-        };
-
-        if (window.confirm('Bạn có chắc chắn muốn hủy đơn hàng?')) {
-            await orderService.adminUpdateOrder(id, data)
-                .then((res) => {
-                    console.log("cancel", res.data.data)
-                    alert(`Hủy đơn hàng thành công!`)
-                    detailOrder();
-                    listOrderHistories();
-                    $('#btnCloseModal').click();
-                })
-                .catch((err) => {
-                    console.log(err)
-                    let res = err.response;
-                    let mess = res.data.message;
-                    alert('Thất bại ' + mess);
-                    window.location.reload();
-                })
+        try {
+            await cancelOrder(id, reasonCancel);
+            setCancelModalVisible(false);
+            setReasonCancel("");
+            message.success("Hủy đơn hàng thành công!");
+        } catch (err) {
+            message.error("Thất bại: " + (err.message || "Lỗi không xác định"));
         }
-    }
-
-    const detailOrder = async () => {
-        await orderService.adminDetailOrder(id)
-            .then((res) => {
-                setLoading(false)
-                setData(res.data.data);
-                setOrderItems(res.data.data.order_items);
-                setSelectedValue(statusMap[res.data.data.status] || 'KHÔNG XÁC ĐỊNH');
-            })
-            .catch((err) => {
-                console.log(err)
-                setLoading(false)
-            })
-    };
-
-    const listOrderHistories = async () => {
-        await orderService.listOrderHistories(id)
-            .then((res) => {
-                setLoading(false)
-                console.log('order histories: ' + res.data);
-                setOrderHistories(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err)
-                setLoading(false)
-            })
     };
 
     const columns = [
         {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            render: (text) => {
-                return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
-            },
+            title: "Trạng thái",
+            dataIndex: "status",
+            render: (text) => statusMap[text] || "KHÔNG XÁC ĐỊNH",
         },
         {
-            title: 'Thời gian',
-            dataIndex: 'created_at',
-            width: '20%',
-            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
+            title: "Thời gian",
+            dataIndex: "created_at",
+            width: "20%",
+            render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm"),
         },
     ];
 
-    const handleTableChange = (pagination, filters, sorter) => {
-        setTableParams({
-            pagination,
-            filters,
-            ...sorter,
-        });
-    };
+    return (
+        <>
+            <Header />
+            <Sidebar />
 
-    useEffect(() => {
-        detailOrder();
-        listOrderHistories();
-    }, [form, id])
+            <main id="main" className="main" style={{ backgroundColor: "#f6f9ff" }}>
+                <div className="pagetitle">
+                    <h1>Chi tiết đơn hàng</h1>
+                    <nav>
+                        <ol className="breadcrumb">
+                            <li className="breadcrumb-item">
+                                <Link to="/admin/dashboard">Trang quản trị</Link>
+                            </li>
+                            <li className="breadcrumb-item">Đơn hàng</li>
+                            <li className="breadcrumb-item active">Chi tiết đơn hàng</li>
+                        </ol>
+                    </nav>
+                </div>
 
-    return (<>
-        <Header/>
-        <Sidebar/>
-        <main id="main" className="main" style={{backgroundColor: "#f6f9ff"}}>
-            <div className="pagetitle">
-                <h1>Chi tiết đơn hàng</h1>
-                <nav>
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link to="/admin/dashboard">Trang quản trị</Link></li>
-                        <li className="breadcrumb-item">Đơn hàng</li>
-                        <li className="breadcrumb-item active">Chi tiết đơn hàng</li>
-                    </ol>
-                </nav>
-            </div>
-            {/* End Page Title */}
-            <section className="section">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <div className="card">
-                            <div className="card-body">
-                                <h5 className="card-title">Chi tiết đơn hàng</h5>
-                                <div className="row mb-5">
-                                    <div className="col-md-4">
-                                        <div className="p-3 border">
-                                            <table className="table site-block-order-table mb-5">
-                                                <colgroup>
-                                                    <col width="40%"/>
-                                                    <col width="60%"/>
-                                                </colgroup>
-                                                <thead>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        Tên đầy đủ
-                                                    </td>
-                                                    <td className="text-black FullName">
-                                                        {order.full_name}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        Email
-                                                    </td>
-                                                    <td className="text-black Email">
-                                                        {order.email}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        Số điện thoại
-                                                    </td>
-                                                    <td className="text-black Phone">
-                                                        {order.phone}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        Địa chỉ
-                                                    </td>
-                                                    <td className="text-black Address">
-                                                        {order.address}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        Phương thức thanh toán
-                                                    </td>
-                                                    <td className="text-black Address">
-                                                        {methodMap[order.order_method] || 'KHÔNG XÁC ĐỊNH'}
-                                                    </td>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        <p>Tổng tiền của sản phẩm</p></td>
-                                                    <td className="text-black">
-                                                        <span
-                                                            id="allProductPrice">{ConvertCurrency(order.products_price)}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        <p>Phí vận chuyển</p>
-                                                    </td>
-                                                    <td className="text-black">
-                                                        <span
-                                                            id="shipping_fee">{ConvertCurrency(order.shipping_price)}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        <p>Miễn giảm giá</p>
-                                                    </td>
-                                                    <td className="text-black">
-                                                        <span
-                                                            id="discount_fee">{ConvertCurrency(order.discount_price)}</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="text-black ">
-                                                        <p>Tổng tiền
-                                                        </p>
-                                                    </td>
-                                                    <td className="text-black ">
-                                                        <p>
-                                                            <span
-                                                                id="order_total">{ConvertCurrency(order.total_price)}</span>
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                            <h5>Ghi chú:</h5>
-                                            <div className="notes">
-                                                {order.note}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-8">
-                                        <div className="p-3 p-lg-5 border">
-                                            <table className="table table-bordered mb-3">
-                                                <colgroup>
-                                                    <col width="10%"/>
-                                                    <col width="32%"/>
-                                                    <col width="15%"/>
-                                                    <col width="10%"/>
-                                                    <col width="15%"/>
-                                                    <col width="x"/>
-                                                </colgroup>
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col">Hình ảnh</th>
-                                                    <th scope="col">Tên sản phẩm</th>
-                                                    <th scope="col">Số lượng</th>
-                                                    <th scope="col">Đơn giá</th>
-                                                    <th scope="col">Thành tiền</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody id="tableOrderItem">
-                                                {orderItems.map((orderItem, index) => {
-                                                    return (<tr key={index}>
+                <section className="section">
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h5 className="card-title">Chi tiết đơn hàng</h5>
+
+                                    <div className="row mb-5">
+                                        {/* Thông tin khách hàng */}
+                                        <div className="col-md-4">
+                                            <div className="p-3 border">
+                                                <table className="table site-block-order-table mb-5">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>Tên đầy đủ</td>
+                                                        <td>{order?.full_name}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Email</td>
+                                                        <td>{order?.email}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>SĐT</td>
+                                                        <td>{order?.phone}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Địa chỉ</td>
+                                                        <td>{order?.address}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Phương thức</td>
                                                         <td>
-                                                            <img src={orderItem.image} alt=""
-                                                                 width="100px"/>
+                                                            {methodMap[order?.order_method] ||
+                                                                "KHÔNG XÁC ĐỊNH"}
                                                         </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Tổng tiền SP</td>
                                                         <td>
-                                                            {orderItem.title}
+                                                            {ConvertCurrency(order?.products_price)}
                                                         </td>
-                                                        <td>{orderItem.quantity}</td>
-                                                        <td>{ConvertCurrency(orderItem.price)}</td>
-                                                        <td>{ConvertCurrency(orderItem.price * orderItem.quantity)}</td>
-                                                    </tr>)
-                                                })}
-                                                </tbody>
-                                            </table>
-
-                                            <h5 className="mb-2">
-                                                Lịch sử đơn hàng
-                                            </h5>
-                                            <Table
-                                                style={{margin: "auto"}}
-                                                columns={columns}
-                                                dataSource={orderHistories}
-                                                pagination={tableParams.pagination}
-                                                loading={loading}
-                                                onChange={handleTableChange}
-                                            />
-                                        </div>
-
-                                        <div className="row mt-3 mb-4">
-                                            <div id="bar-progress" className="mt-5 mt-lg-0">
-                                                <div
-                                                    className={"step " + (order.status === 'PENDING' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">1</span>
-                                                    </span>
-                                                    <h5>CHỜ XÁC NHẬN</h5>
-                                                </div>
-                                                <div className="seperator"></div>
-                                                <div
-                                                    className={"step " + (order.status === 'PROCESSING' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">2</span>
-                                                    </span>
-                                                    <h5>ĐANG XỬ LÝ</h5>
-                                                </div>
-                                                <div className="seperator"></div>
-                                                <div
-                                                    className={"step " + (order.status === 'CONFIRMED' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">3</span>
-                                                    </span>
-                                                    <h5>ĐÃ XÁC NHẬN</h5>
-                                                </div>
-                                                <div className="seperator"></div>
-                                                <div
-                                                    className={"step " + (order.status === 'SHIPPING' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">4</span>
-                                                    </span>
-                                                    <h5>ĐANG VẬN CHUYỂN</h5>
-                                                </div>
-                                                <div className="seperator"></div>
-                                                <div
-                                                    className={"step " + (order.status === 'DELIVERED' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">5</span>
-                                                    </span>
-                                                    <h5>ĐÃ GIAO HÀNG</h5>
-                                                </div>
-                                                <div className="seperator"></div>
-                                                <div
-                                                    className={"step " + (order.status === 'COMPLETED' ? 'step-active' : '')}>
-                                                    <span className="number-container">
-                                                        <span className="number">6</span>
-                                                    </span>
-                                                    <h5>ĐÃ HOÀN THÀNH</h5>
-                                                </div>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Phí vận chuyển</td>
+                                                        <td>
+                                                            {ConvertCurrency(order?.shipping_price)}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Giảm giá</td>
+                                                        <td>
+                                                            {ConvertCurrency(order?.discount_price)}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Tổng cộng</td>
+                                                        <td>
+                                                            {ConvertCurrency(order?.total_price)}
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                <h5>Ghi chú:</h5>
+                                                <div className="notes">{order?.note}</div>
                                             </div>
                                         </div>
 
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="status">Trạng thái</label>
-                                                <select id="status" className="form-control" disabled
-                                                        value={order.status}>
-                                                    <option value={order.status}>{selectedValue}
-                                                    </option>
-                                                </select>
+                                        {/* Danh sách sản phẩm */}
+                                        <div className="col-md-8">
+                                            <div className="p-3 p-lg-5 border">
+                                                <table className="table table-bordered mb-3">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Hình ảnh</th>
+                                                        <th>Tên sản phẩm</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Đơn giá</th>
+                                                        <th>Thành tiền</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {orderItems.map((item, index) => (
+                                                        <tr key={index}>
+                                                            <td>
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt=""
+                                                                    width="100px"
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                {item.title}
+                                                                <div>
+                                                                    Loại:{" "}
+                                                                    {item.value?.attribute_id?.name}
+                                                                </div>
+                                                            </td>
+                                                            <td>{item.quantity}</td>
+                                                            <td>{ConvertCurrency(item.price)}</td>
+                                                            <td>
+                                                                {ConvertCurrency(
+                                                                    item.price * item.quantity
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                    </tbody>
+                                                </table>
+
+                                                <h5 className="mb-2">Lịch sử đơn hàng</h5>
+                                                <Table
+                                                    style={{ margin: "auto" }}
+                                                    columns={columns}
+                                                    dataSource={orderHistories}
+                                                    pagination={{ pageSize: 10 }}
+                                                    loading={loading}
+                                                    rowKey="_id"
+                                                />
                                             </div>
-                                        </div>
 
-                                        {(order.status !== 'CANCELED' && order.status !== 'COMPLETED') && (
-                                            <div className="d-flex gap-3 align-items-center justify-content-start">
-                                                <button type="button" className="btn btn-primary mt-3"
-                                                        onClick={() => updateOrder(order._id)}>
-                                                    Chuyển trạng thái
-                                                </button>
+                                            {/* Tiến trình đơn hàng */}
+                                            <OrderProgress status={order?.status} />
 
-                                                {(order.status === 'PENDING' || order.status === 'PROCESSING' || order.status === 'CONFIRMED') && (
-                                                    <button type="button" data-bs-toggle="modal"
-                                                            data-bs-target="#exampleModal"
-                                                            className="btn btn-danger mt-3">
-                                                        Hủy đơn hàng
-                                                    </button>
+                                            {/* Action */}
+                                            {order?.status !== "CANCELED" &&
+                                                order?.status !== "COMPLETED" && (
+                                                    <div className="d-flex gap-3 mt-3">
+                                                        <Button
+                                                            type="primary"
+                                                            onClick={handleUpdateOrder}
+                                                        >
+                                                            Chuyển trạng thái
+                                                        </Button>
+                                                        {(order?.status === "PENDING" ||
+                                                            order?.status === "PROCESSING" ||
+                                                            order?.status === "CONFIRMED") && (
+                                                            <Button
+                                                                danger
+                                                                onClick={() =>
+                                                                    setCancelModalVisible(true)
+                                                                }
+                                                            >
+                                                                Hủy đơn hàng
+                                                            </Button>
+                                                        )}
+                                                    </div>
                                                 )}
-                                            </div>)}
-                                        {order.reason_cancel && (<>
-                                            <h5 className="mt-2 ">Lý do huỷ đơn hàng:</h5>
-                                            <div className="text-danger">
-                                                {order.reason_cancel}
-                                            </div>
-                                        </>)}
+
+                                            {order?.reason_cancel && (
+                                                <>
+                                                    <h5 className="mt-2">Lý do huỷ đơn:</h5>
+                                                    <div className="text-danger">
+                                                        {order.reason_cancel}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
 
-        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="exampleModalLabel">Huỷ đơn hàng</h1>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body">
-                        <div className="form-group">
-                            <label htmlFor="reason_cancel" className="text-black">Lý do huỷ đơn hàng</label>
-                            <textarea name="reason_cancel" id="reason_cancel" cols="30" rows="5"
-                                      className="form-control"
-                                      placeholder="Vui lòng nhập lý do huỷ đơn hàng của bạn ở đây..."></textarea>
-                        </div>
-                    </div>
-                    <div className="modal-footer">
-                        <button type="button" id="btnCloseModal" className="btn btn-secondary"
-                                data-bs-dismiss="modal">Đóng
-                        </button>
-                        <button type="button" className="btn btn-danger" onClick={() => handleCancel(order._id)}>
-                            Xác nhận huỷ đơn hàng
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </>)
+            {/* Modal hủy đơn hàng */}
+            <Modal
+                title="Huỷ đơn hàng"
+                open={isCancelModalVisible}
+                onCancel={() => setCancelModalVisible(false)}
+                footer={[
+                    <Button
+                        key="back"
+                        onClick={() => setCancelModalVisible(false)}
+                    >
+                        Đóng
+                    </Button>,
+                    <Button
+                        key="submit"
+                        type="primary"
+                        danger
+                        onClick={handleCancelOrder}
+                    >
+                        Xác nhận huỷ đơn hàng
+                    </Button>,
+                ]}
+            >
+                <Input.TextArea
+                    rows={4}
+                    placeholder="Vui lòng nhập lý do huỷ đơn hàng..."
+                    value={reasonCancel}
+                    onChange={(e) => setReasonCancel(e.target.value)}
+                />
+            </Modal>
+        </>
+    );
 }
 
-export default DetailOrder
+export default DetailOrder;

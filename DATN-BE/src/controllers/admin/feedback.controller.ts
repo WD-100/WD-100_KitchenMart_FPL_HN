@@ -33,7 +33,7 @@ export const list = async (req: any, res: any) => {
 
             return {
                 ...fb,
-                product_name: productKey ? productMap[productKey]?.name || null : null,
+                product_name: productKey ? productMap[productKey]?.title || null : null,
                 email: userKey ? userMap[userKey]?.email || null : null,
                 phone: userKey ? userMap[userKey]?.phone || null : null,
             };

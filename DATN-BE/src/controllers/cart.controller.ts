@@ -3,17 +3,17 @@ import {IProduct, Product} from "../models/product.model";
 
 export const addToCart = async (req: any, res: any) => {
     try {
-        const {user_id, product_id, quantity} = req.body;
+        const {user_id, product_id, quantity, value} = req.body;
 
         if (!user_id || !product_id || !quantity) {
             return res.status(400).json({message: "Missing required fields"});
         }
 
-        let cartItem: ICart | null = await Cart.findOne({ user_id, product_id });
+        let cartItem: ICart | null = await Cart.findOne({user_id, product_id, value});
 
         const product: IProduct | null = await Product.findById(product_id);
         if (!product || product.is_deleted || !product.is_active) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(404).json({message: "Product not found"});
         }
 
         const requestedQty = parseInt(quantity);
@@ -30,7 +30,7 @@ export const addToCart = async (req: any, res: any) => {
             cartItem.quantity = totalRequestedQty;
             await cartItem.save();
         } else {
-            cartItem = await Cart.create({ user_id, product_id, quantity: requestedQty });
+            cartItem = await Cart.create({user_id, product_id, quantity: requestedQty, value});
         }
 
         res.status(201).json({
@@ -47,7 +47,14 @@ export const getCartByUser = async (req: any, res: any) => {
     try {
         const {user_id} = req.params;
 
-        const cartItems = await Cart.find({user_id}).populate("product_id");
+        const cartItems = await Cart.find({user_id}).populate("product_id").populate({
+            path: "value",
+            model: "ProductAttribute",
+            populate: {
+                path: "attribute_id",
+                model: "Attribute",
+            },
+        });
 
         res.status(201).json({
             message: 'Success!',

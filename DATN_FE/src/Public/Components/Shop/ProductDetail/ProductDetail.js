@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import cartService from '../../Service/CartService';
 import Header from "../../Shared/Client/Header/Header";
 import Footer from "../../Shared/Client/Footer/Footer";
@@ -10,14 +10,19 @@ import {Pagination} from "swiper/modules";
 import LoadingPage from "../../Shared/Utils/LoadingPage";
 import ConvertCurrency from "../../Shared/Utils/ConvertCurrency";
 import reviewService from "../../Service/ReviewService";
+import {useCart} from "../../store/CartContext";
 
 function ProductDetail() {
+    const {setCartCount} = useCart();
+
     const {slug} = useParams();
     const [product, setProduct] = useState({});
     const [reviews, setReviews] = useState([]);
     const [category, setCategory] = useState(null);
     const [productOthers, setProductOthers] = useState([]);
-
+    const [optionsProduct, setOptionsProduct] = useState([]);
+    const [option, setOption] = useState(null);
+    const [optionSelected, setOptionSelected] = useState(null);
     const quantityRef = useRef(null);
     const productImageRef = useRef(null);
     const listImagesRef = useRef(null);
@@ -39,7 +44,8 @@ function ProductDetail() {
                 setCategory(data.categories);
                 setProductOthers(data.other_products ?? []);
                 renderImage(product.photo_library, product.title);
-                fetchReviews(product.id);
+                await fetchReviews(product.id);
+                await fetchProductOptions(product.id);
             } catch (err) {
                 console.error(err);
             }
@@ -49,6 +55,15 @@ function ProductDetail() {
             try {
                 const res = await reviewService.getReviewByProduct(productId);
                 setReviews(res.data.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        const fetchProductOptions = async (productId) => {
+            try {
+                const res = await productService.listOptionProduct(productId);
+                setOptionsProduct(res.data);
             } catch (err) {
                 console.error(err);
             }
@@ -74,12 +89,17 @@ function ProductDetail() {
     };
 
     const addToCart = async () => {
+        if (!optionSelected) {
+            message.error('Vui lòng chọn thuộc tính sản phẩm!')
+            return false;
+        }
         LoadingPage();
         const userId = sessionStorage.getItem('id') || '';
         const quantity = quantityRef.current?.value || '1';
 
         const data = {
             product_id: product.id,
+            value: optionSelected,
             user_id: userId,
             quantity: quantity
         };
@@ -87,37 +107,45 @@ function ProductDetail() {
         try {
             await cartService.createCart(data);
             LoadingPage();
-            alert("Thêm sản phẩm vào giỏ hàng thành công!");
+            message.success('Thêm sản phẩm vào giỏ hàng thành công!');
+            const res = await cartService.listCart();
+            setCartCount(res.data.data.length);
         } catch (err) {
             LoadingPage();
             console.error(err.response?.data?.message);
             const state = err.response?.status;
             if (state === 401 || state === 403) {
-                alert('Vui lòng đăng nhập để tiếp tục!')
+                message.error('Vui lòng đăng nhập để tiếp tục!');
             }
         }
     };
 
     const quickBuyProduct = async () => {
+        if (!optionSelected) {
+            message.error('Vui lòng chọn thuộc tính sản phẩm!')
+            return false;
+        }
+
         const userId = sessionStorage.getItem('id') || '';
         const quantity = quantityRef.current?.value || '1';
 
-        if (quantity > product.quantity) {
-            alert('Không đủ số lượng sản phẩm mong muốn!')
+        if (quantity > option.quantity) {
+            message.error('Không đủ số lượng sản phẩm mong muốn!');
             return;
         }
 
         const data = {
             product_id: product.id,
+            product_value: optionSelected,
             product_name: product.title,
             product_image: product.image,
-            product_price: product.sale_price,
+            product_price: option.sale_price,
             user_id: userId,
             quantity: quantity
         };
 
         try {
-            alert("Thành công!");
+            message.success('Thêm sản phẩm vào giỏ hàng thành công!');
             sessionStorage.setItem('quick_buy_product', JSON.stringify(data));
             window.location.href = '/checkout';
         } catch (err) {
@@ -125,7 +153,7 @@ function ProductDetail() {
             console.error(err.response?.data?.message);
             const state = err.response?.status;
             if (state === 401 || state === 403) {
-                alert('Vui lòng đăng nhập để tiếp tục!')
+                message.error('Vui lòng đăng nhập để tiếp tục!');
             }
         }
     }
@@ -152,6 +180,13 @@ function ProductDetail() {
         let val = e.target.value.replace(/\D/g, '');
         e.target.value = val;
     };
+
+    const selectOption = async (el, id) => {
+        const res = await productService.detailOptionProduct(id);
+        setOption(res.data);
+
+        setOptionSelected(id);
+    }
 
     return (
         <div className="site-wrap">
@@ -181,14 +216,41 @@ function ProductDetail() {
                         <div className="col-md-6">
                             <h2 className="text-black">
                                 {product.title}{" "}
-                                {product.quantity === 0 && <span className="text-danger ms-3 fw-bold">(ĐÃ HẾT HÀNG)</span>}
+                                {product.quantity === 0 &&
+                                    <span className="text-danger ms-3 fw-bold">(ĐÃ HẾT HÀNG)</span>}
                             </h2>
                             <p className="h6 mt-2 mb-2">Danh mục: {category?.name}</p>
                             <p>
-                                <strong className="text-danger h4">{ConvertCurrency(product.sale_price)}</strong>
-                                <strike className="text-secondary h6 ml-2">{ConvertCurrency(product.price)}</strike>
+                                <strong
+                                    className="text-danger h4">{option ? ConvertCurrency(option.sale_price) : ConvertCurrency(product.sale_price)}</strong>
+                                <strike
+                                    className="text-secondary h6 ml-2">{option ? ConvertCurrency(option.price) : ConvertCurrency(product.price)}</strike>
                             </p>
-                            <p className="mb-2">Đang sẵn: <span className="h5">{product.quantity}</span> sản phẩm</p>
+                            <p className="mb-2">Đang sẵn: <span
+                                className="h5">{option ? option.quantity : product.quantity}</span> sản phẩm</p>
+                            <div className="list_option_ mt-4">
+                                {optionsProduct.map((option, optionIndex) => (
+                                    <div className="option_item" key={optionIndex}>
+                                        <div className="mb-1 d-flex">
+                                            <label htmlFor={`option-${option.id}`} className="d-flex mb-1"
+                                                   key={optionIndex}>
+                                                                    <span className="d-inline-block mr-2"
+                                                                          style={{top: '0px', position: 'relative'}}>
+                                                                        <input type="radio"
+                                                                               onChange={(e) => selectOption(e.target, option.id)}
+                                                                               className="input_option_"
+                                                                               data-value={option.id}
+                                                                               value={option.id}
+                                                                               id={`option-${option.id}`}
+                                                                               name="option_product"/>
+                                                                    </span>
+                                                <span
+                                                    className="d-inline-block text-black">{option.attribute_id.name}</span>
+                                            </label>
+                                        </div>
+                                    </div>))}
+
+                            </div>
                             <div className="mb-2">
                                 <div className="input-group mb-3" style={{maxWidth: '150px'}}>
                                     <div className="input-group-prepend">
@@ -206,8 +268,7 @@ function ProductDetail() {
                                 </div>
                             </div>
                             <p>
-
-                                {product.quantity == 0 ? (
+                                {(option ? option.quantity : product.quantity) == 0 ? (
                                     <>
 
                                     </>
@@ -217,7 +278,8 @@ function ProductDetail() {
                                                 onClick={() => quickBuyProduct()}>Mua ngay
                                         </button>
                                         <br/>
-                                        <button type="submit" className="buy-now btn btn-sm btn-primary">Thêm vào giỏ hàng
+                                        <button type="submit" className="buy-now btn btn-sm btn-primary">Thêm vào giỏ
+                                            hàng
                                         </button>
                                     </>
                                 )}
@@ -284,28 +346,27 @@ function ProductDetail() {
                                 {productOthers.length > 0 ? productOthers.map((p, i) => (
                                     <SwiperSlide key={i}>
                                         <div className="item">
-                                            <div className="block-4 text-center">
+                                            <a href={`/products/${p.slug}`} className="block-4 text-center">
                                                 <figure className="block-4-image">
                                                     <img
-                                                        src={p.thumbnail || "/assets/clients/images/cloth_1.jpg"}
-                                                        alt={p.name || "Image placeholder"}
+                                                        src={p.image || "/assets/clients/images/no-image.jpg"}
+                                                        alt={p.title || "Image placeholder"}
                                                         className="img-fluid"
-                                                        style={{width: '100%', height: '300px'}}
+                                                        style={{width: '100%', height: '300px',}}
                                                     />
                                                 </figure>
-                                                <div className="block-4-text p-4" style={{height: '180px'}}>
+                                                <div className="block-4-text p-4">
                                                     <h3><a className="text_truncate_"
-                                                           href={`/products/${p.id}`}>{p.name || "Product Name"}</a>
+                                                           href={'/products/' + p.slug}>{p.title || "Product Name"}</a>
                                                     </h3>
-                                                    <p className="mb-0 text_truncate_2_" style={{height: '55px'}}
-                                                       dangerouslySetInnerHTML={{__html: p.short_description}}></p>
                                                     <p className="text-danger font-weight-bold">
-                                                        {ConvertCurrency(p.sale_price || 50)}
-                                                        <strike
-                                                            className="ml-2 small text-black">{ConvertCurrency(p.price || 50)}</strike>
+                                                        {ConvertCurrency(p.sale_price || 0)}
+                                                        <strike className="ml-2 small text-black">
+                                                            {ConvertCurrency(p.price || 0)}
+                                                        </strike>
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                     </SwiperSlide>
                                 )) : <p>No products available</p>}

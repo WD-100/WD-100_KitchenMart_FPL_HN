@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Button, Form, Table} from 'antd';
+import {Button, Form, message, Table} from 'antd';
 import couponService from '../../../Service/CouponService';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,12 +14,14 @@ function ListCoupon() {
         if (window.confirm('Bạn có chắc chắn muốn xóa?')) {
             await couponService.adminDeleteCoupon(id)
                 .then((res) => {
-                    alert(`Xóa thành công!`)
+                    message.success(`Xóa thành công!`)
                     getListDiscount();
                     setLoading(false)
                 })
                 .catch((err) => {
                     console.log(err)
+                    message.error(err.response.data.message)
+                    setLoading(false);
                 })
         }
     }

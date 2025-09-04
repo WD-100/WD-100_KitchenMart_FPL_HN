@@ -3,7 +3,7 @@ import {generateSlug} from "../utils/generateSlug";
 
 export interface IProduct extends mongoose.Document {
     title: string;
-    shot_description?: string;
+    short_description?: string;
     description?: string;
     slug: string;
     image?: string;
@@ -21,7 +21,7 @@ export interface IProduct extends mongoose.Document {
 const productSchema = new mongoose.Schema(
     {
         title: {type: String},
-        shot_description: {type: String},
+        short_description: {type: String},
         description: {type: String},
         slug: {type: String, unique: true},
         image: {type: String},

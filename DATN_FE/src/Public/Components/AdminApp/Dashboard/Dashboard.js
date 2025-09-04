@@ -174,7 +174,7 @@ function Dashboard() {
         },
         {
             title: 'Thời gian',
-            dataIndex: 'created_at',
+            dataIndex: 'createdAt',
             width: '60%',
             render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
         },

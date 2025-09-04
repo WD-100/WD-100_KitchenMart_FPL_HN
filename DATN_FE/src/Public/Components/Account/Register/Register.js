@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import authService from '../../Service/AuthService';
 import $ from "jquery";
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import Css from "../../Shared/Admin/Lib/StyleSheet";
 import Script from "../../Shared/Admin/Lib/Script";
 
@@ -35,12 +35,12 @@ function Register() {
         }
         await authService.registerAccount(data)
             .then((res) => {
-                alert(`Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục...`);
+                message.success(`Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục...`);
                 window.location.href = '/login';
             })
             .catch((err) => {
                 console.log(err);
-                alert(`Đăng ký thất bại! ` + err?.response?.data?.message);
+                message.error(`Đăng ký thất bại! ` + err?.response?.data?.message);
                 $('#btnRegister').prop('disabled', false).text('Đăng ký');
             })
     };

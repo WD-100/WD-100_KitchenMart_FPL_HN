@@ -1,4 +1,4 @@
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import React, {useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import Header from '../../../Shared/Admin/Header/Header';
@@ -36,7 +36,7 @@ function UpdateUser() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val() && $(inputs[i]).attr('type') !== 'file' && $(inputs[i]).attr('type') !== 'password') {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnUpdate').prop('disabled', false).text('Lưu lại');
                 return
             }
@@ -47,12 +47,12 @@ function UpdateUser() {
         await userService.adminUpdateUser(id, formData)
             .then((res) => {
                 console.log("create user", res.data)
-                alert("Lưu tài khoản thành công!")
+                message.success("Lưu tài khoản thành công!")
                 navigate("/admin/users/list")
             })
             .catch((err) => {
                 console.log(err)
-                alert(err.response.data.message)
+                message.error(err.response.data.message)
                 $('#btnUpdate').prop('disabled', false).text('Lưu lại');
             })
     };

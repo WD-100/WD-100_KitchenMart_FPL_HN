@@ -3,6 +3,8 @@ import Header from "../Shared/Client/Header/Header";
 import Footer from "../Shared/Client/Footer/Footer";
 import cartService from "../Service/CartService";
 import ConvertCurrency from "../Shared/Utils/ConvertCurrency";
+import {message} from "antd";
+import {useCart} from "../store/CartContext";
 
 /**
  * The cart page component.
@@ -16,6 +18,7 @@ import ConvertCurrency from "../Shared/Utils/ConvertCurrency";
 function Cart() {
     const [carts, setCarts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const {setCartCount} = useCart();
 
     const getListProductCart = async () => {
         try {
@@ -38,7 +41,7 @@ function Cart() {
                 )
             );
         } catch (err) {
-            alert(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật số lượng');
+            message.error(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật số lượng');
             if ([401, 444].includes(err.response?.status)) {
                 window.location.href = '/login';
             }
@@ -79,8 +82,12 @@ function Cart() {
         if (!window.confirm('Bạn chắc chắn muốn xoá sản phẩm khỏi giỏ hàng?')) return;
         try {
             await cartService.deleteCart(cartId);
-            setCarts(prev => prev.filter(item => item._id !== cartId));
-            alert('Xoá sản phẩm thành công!');
+            setCarts(prev => {
+                const updated = prev.filter(item => item._id !== cartId);
+                setCartCount(updated.length);
+                return updated;
+            });
+            message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
         } catch (err) {
             console.error('Error removing item:', err);
         }
@@ -91,14 +98,15 @@ function Cart() {
         try {
             await cartService.clearCart();
             setCarts([]);
-            alert('Đã xoá toàn bộ sản phẩm!');
+            setCartCount(0);
+            message.success('Làm trống giỏ hàng thành công!');
         } catch (err) {
             console.error('Error clearing cart:', err);
         }
     };
 
     const total = carts.reduce(
-        (sum, item) => sum + item.product_id.sale_price * item.quantity,
+        (sum, item) => sum + item.value.sale_price * item.quantity,
         0
     );
 
@@ -139,8 +147,13 @@ function Cart() {
                                     <td>
                                         <img src={cart.product_id.image} alt="" className="img-fluid"/>
                                     </td>
-                                    <td>{cart.product_id.title}</td>
-                                    <td>{ConvertCurrency(cart.product_id.sale_price)}</td>
+                                    <td>
+                                        {cart.product_id.title}
+                                        <div className="d-flex align-items-center justify-content-start">
+                                            <p>Loại: {cart.value.attribute_id.name}</p>
+                                        </div>
+                                    </td>
+                                    <td>{ConvertCurrency(cart.value.sale_price)}</td>
                                     <td>
                                         <div className="input-group">
                                             <button
@@ -165,7 +178,7 @@ function Cart() {
                                             </button>
                                         </div>
                                     </td>
-                                    <td>{ConvertCurrency(cart.product_id.sale_price * cart.quantity)}</td>
+                                    <td>{ConvertCurrency(cart.value.sale_price * cart.quantity)}</td>
                                     <td>
                                         <button
                                             className="btn btn-danger btn-sm"

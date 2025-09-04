@@ -84,7 +84,7 @@ function UpdateProduct() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val() && $(inputs[i]).attr('type') !== 'file') {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnSave').prop('disabled', false).text('Lưu thay đổi');
                 setLoading(false);
                 return;
@@ -96,7 +96,7 @@ function UpdateProduct() {
         const descriptionContent = descriptionRef.current.getContent();
 
         if (!descriptionContent) {
-            alert('Mô tả không được bỏ trống!');
+            message.error('Mô tả không được bỏ trống!');
             setLoading(false);
             return;
         }

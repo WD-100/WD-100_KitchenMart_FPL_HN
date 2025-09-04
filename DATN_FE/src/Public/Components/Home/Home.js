@@ -185,7 +185,7 @@ function Home() {
                                     {newProducts.map((product, index) => (
                                         <SwiperSlide key={index}>
                                             <div className="item">
-                                                <div className="block-4 text-center">
+                                                <a href={`/products/${product.slug}`} className="block-4 text-center">
                                                     <figure className="block-4-image">
                                                         <img
                                                             src={product.image || "/assets/clients/images/no-image.jpg"}
@@ -205,7 +205,7 @@ function Home() {
                                                             </strike>
                                                         </p>
                                                     </div>
-                                                </div>
+                                                </a>
                                             </div>
                                         </SwiperSlide>
                                     ))}
@@ -238,7 +238,7 @@ function Home() {
                                     {hotProducts.map((product, index) => (
                                         <SwiperSlide key={index}>
                                             <div className="item">
-                                                <div className="block-4 text-center">
+                                                <a href={`/products/${product.slug}`} className="block-4 text-center">
                                                     <figure className="block-4-image">
                                                         <img
                                                             src={product.image || "/assets/clients/images/no-image.jpg"}
@@ -258,7 +258,7 @@ function Home() {
                                                             </strike>
                                                         </p>
                                                     </div>
-                                                </div>
+                                                </a>
                                             </div>
                                         </SwiperSlide>
                                     ))}
@@ -295,7 +295,7 @@ function Home() {
                                             {category.products.map((product, index1) => (
                                                 <SwiperSlide key={index1}>
                                                     <div className="item border">
-                                                        <div className="block-4 text-center">
+                                                        <a href={`/products/${product.slug}`} className="block-4 text-center">
                                                             <figure className="block-4-image">
                                                                 <img
                                                                     src={product.image || "/assets/clients/images/no-image.jpg"}
@@ -315,7 +315,7 @@ function Home() {
                                                                     </strike>
                                                                 </p>
                                                             </div>
-                                                        </div>
+                                                        </a>
                                                     </div>
                                                 </SwiperSlide>
                                             ))}

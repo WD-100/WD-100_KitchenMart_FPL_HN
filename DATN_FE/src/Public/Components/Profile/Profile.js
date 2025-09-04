@@ -40,7 +40,7 @@ function Profile() {
                 console.log(err)
                 let stt = err.response.status;
                 if (stt === 444) {
-                    alert('Phiên đăng nhập đã hết hạn, đăng nhập lại...');
+                    message.error('Phiên đăng nhập hàng hết hạn, đăng nhập lại...');
                     sessionStorage.clear();
                     navigate('/login');
                 } else {
@@ -56,7 +56,7 @@ function Profile() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val() && $(inputs[i]).attr('type') !== 'file') {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnSave').prop('disabled', false).text('Lưu thay đổi');
                 return
             }
@@ -67,13 +67,13 @@ function Profile() {
         await accountService.updateAccount(formData)
             .then((res) => {
                 console.log("update", res.data)
-                alert("Thay đổi thông tin thành công!")
+                message.success('Thay đổi thông tin thành công!');
                 getUser();
                 $('#btnSave').prop('disabled', false).text('Lưu thay đổi');
             })
             .catch((err) => {
-                alert("Thay đổi thông tin thất bại! Vui lòng thử lại sau")
                 console.log(err);
+                message.error("Thay đổi thông tin thất bại!");
                 $('#btnSave').prop('disabled', false).text('Lưu thay đổi');
             })
     };
@@ -129,19 +129,19 @@ function Profile() {
         let confirmPassword = document.getElementById("renewPassword").value;
 
         if (!oldPassword) {
-            alert("Vui lòng nhập mật khẩu hiện tại!");
+            message.error('Vui lòng nhập mật khẩu hiện tại!');
             btnChangePass.prop('disabled', false).text('Lưu thay đổi');
             return;
         }
 
         if (!password) {
-            alert("Vui lòng nhập mật khẩu mới!");
+            message.error('Vui lòng nhập mật khẩu mới!');
             btnChangePass.prop('disabled', false).text('Lưu thay đổi');
             return;
         }
 
         if (!confirmPassword) {
-            alert("Vui lòng nhập mật khẩu xác nhận!");
+            message.error('Vui lòng nhập mật khẩu xác nhận!');
             btnChangePass.prop('disabled', false).text('Lưu thay đổi');
             return;
         }
@@ -155,15 +155,14 @@ function Profile() {
         try {
             const res = await accountService.changePassAccount(data);
             console.log("change pass: ", res.data);
-            alert("Đổi mật khẩu thành công!");
-
+            message.success("Đổi mật khẩu thành công!");
             $('#currentPassword').val('');
             $('#newPassword').val('');
             $('#renewPassword').val('');
 
         } catch (err) {
             console.log(err);
-            alert(err.response.data.message);
+            message.error(err.response.data.message);
         } finally {
             btnChangePass.prop('disabled', false).text('Lưu thay đổi');
         }

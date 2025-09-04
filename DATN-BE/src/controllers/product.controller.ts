@@ -171,11 +171,18 @@ export const detail = async (req: any, res: any) => {
             is_deleted: false,
         });
 
+        const other_products = await Product.find({
+            categories_id: product.categories_id,
+            _id: { $ne: product._id }, // loại trừ sản phẩm hiện tại
+            is_deleted: false,
+        }).limit(10);
+
         return res.status(200).json({
             message: "Product fetched successfully",
             data: {
                 product,
                 categories,
+                other_products,
             },
             statusCode: 200,
         });
@@ -208,9 +215,15 @@ export const getBySlug = async (req: any, res: any) => {
             is_deleted: false,
         });
 
+        const other_products = await Product.find({
+            categories_id: product.categories_id,
+            _id: { $ne: product._id },
+            is_deleted: false,
+        }).limit(10);
+
         return res.status(200).json({
             message: "Product fetched successfully",
-            data: {product, feedbacks, categories},
+            data: {product, feedbacks, categories, other_products},
             statusCode: 200,
         });
     } catch (error) {

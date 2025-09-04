@@ -41,7 +41,7 @@ function ListProduct() {
             await productService.adminDeleteProduct(id)
                 .then((res) => {
                     setLoading(false);
-                    alert(`Xóa thành công`)
+                    message.success(`Xóa thành công`)
                     getListProduct();
                 })
                 .catch((err) => {
@@ -75,7 +75,7 @@ function ListProduct() {
              * @param {string} text - The text to be rendered.
              * @returns {ReactElement} The rendered React element.
              */
-            render: (text) => <img src={text} alt="image" style={{width: '100px'}}/>,
+            render: (text) => <img src={text} alt="image" style={{width: '100px'}} loading={"lazy"}/>,
         },
         {
             title: 'Tên sản phẩm',
