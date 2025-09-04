@@ -1,47 +1,28 @@
 import { Form, message, Table, Modal, Input, Button } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import orderService from "../../../Service/OrderService";
 import Header from "../../Header/Header";
 import Sidebar from "../../Sidebar/Sidebar";
 import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
 import dayjs from "dayjs";
-import useOrderStore from "../../../store/OrderStore";
 
 function DetailOrder() {
     const { id } = useParams();
-    const {
-        order,
-        orderItems,
-        orderHistories,
-        loading,
-        fetchOrder,
-        fetchOrderHistories,
-        cancelOrder
-    } = useOrderStore();
+    const [form] = Form.useForm();
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
+    const [order, setOrder] = useState({});
+    const [orderItems, setOrderItems] = useState([]);
+    const [orderHistories, setOrderHistories] = useState([]);
 
     const [reasonCancel, setReasonCancel] = useState("");
     const [isCancelModalVisible, setCancelModalVisible] = useState(false);
 
-    useEffect(() => {
-        fetchOrder(id);
-        fetchOrderHistories(id);
-    }, [id, fetchOrder, fetchOrderHistories]);
-
-    const handleCancelOrder = async () => {
-        if (!reasonCancel.trim()) {
-            message.error("Vui lòng nhập lý do huỷ đơn hàng!");
-            return;
-        }
-        try {
-            await cancelOrder(id, reasonCancel);
-            message.success("Huỷ đơn hàng thành công!");
-            setCancelModalVisible(false);
-            setReasonCancel("");
-        } catch (err) {
-            const mess = err.response?.data?.message || "Có lỗi xảy ra";
-            message.error("Thất bại: " + mess);
-        }
-    };
+    const [tableParams, setTableParams] = useState({
+        pagination: { current: 1, pageSize: 10 },
+    });
 
     const statusMap = {
         PENDING: "CHỜ XÁC NHẬN",
@@ -58,6 +39,48 @@ function DetailOrder() {
         CARD_CREDIT: "Thanh toán qua VNPAY",
     };
 
+    const detailOrder = async () => {
+        try {
+            const res = await orderService.detailOrder(id);
+            setOrder(res.data.data);
+            setOrderItems(res.data.data.order_items || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const listOrderHistories = async () => {
+        try {
+            const res = await orderService.listOrderHistories(id);
+            setOrderHistories(res.data.data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCancelOrder = async () => {
+        if (!reasonCancel.trim()) {
+            message.error("Vui lòng nhập lý do huỷ đơn hàng!");
+            return;
+        }
+
+        try {
+            await orderService.cancelOrder(id, { reason_cancel: reasonCancel });
+            message.success("Huỷ đơn hàng thành công!");
+            setCancelModalVisible(false);
+            setReasonCancel("");
+            detailOrder();
+            listOrderHistories();
+        } catch (err) {
+            const mess = err.response?.data?.message || "Có lỗi xảy ra";
+            message.error("Thất bại: " + mess);
+        }
+    };
+
     const columns = [
         {
             title: "Trạng thái",
@@ -71,6 +94,15 @@ function DetailOrder() {
             render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm"),
         },
     ];
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({ pagination, filters, ...sorter });
+    };
+
+    useEffect(() => {
+        detailOrder();
+        listOrderHistories();
+    }, [id]);
 
     return (
         <>
@@ -197,8 +229,9 @@ function DetailOrder() {
                                                 <Table
                                                     columns={columns}
                                                     dataSource={orderHistories}
-                                                    pagination={false}
+                                                    pagination={tableParams.pagination}
                                                     loading={loading}
+                                                    onChange={handleTableChange}
                                                     rowKey="_id"
                                                 />
                                             </div>
@@ -220,9 +253,9 @@ function DetailOrder() {
                                                                     order.status === step ? "step-active" : ""
                                                                 }`}
                                                             >
-                                                                <span className="number-container">
-                                                                    <span className="number">{index + 1}</span>
-                                                                </span>
+                                <span className="number-container">
+                                  <span className="number">{index + 1}</span>
+                                </span>
                                                                 <h5>{statusMap[step]}</h5>
                                                             </div>
                                                             {index < 5 && <div className="seperator"></div>}
