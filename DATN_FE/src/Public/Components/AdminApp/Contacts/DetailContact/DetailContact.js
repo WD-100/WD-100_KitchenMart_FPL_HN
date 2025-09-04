@@ -66,13 +66,13 @@ function DetailContact() {
             .then((res) => {
                 setLoading(false)
                 console.log("data", res.data)
-                alert("Thay đổi thành công")
+                message.success("Thay đổi thành công")
                 navigate("/admin/contacts/list")
             })
             .catch((err) => {
                 setLoading(false)
                 console.log(err)
-                alert("Thay đổi thất bại")
+                message.error("Thay đổi thất bại")
             })
     };
 

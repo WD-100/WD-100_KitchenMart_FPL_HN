@@ -73,13 +73,13 @@ function DetailReview() {
             .then((res) => {
                 setLoading(false)
                 console.log("data", res.data)
-                alert("Thay đổi thành công")
+                message.success("Thay đổi thành công")
                 navigate("/admin/reviews/list")
             })
             .catch((err) => {
                 setLoading(false)
                 console.log(err)
-                alert("Thay đổi thất bại")
+                message.error("Thay đổi thất bại")
             })
     };
 
@@ -126,14 +126,14 @@ function DetailReview() {
                                         <div className="form-group col-md-6">
                                             <label htmlFor="status">Trạng thái</label>
                                             <select id="status" name="status" className="form-select">
-                                                <option selected={review.status === "CHỜ PHÊ DUYỆT"}
-                                                        value="CHỜ PHÊ DUYỆT">CHỜ PHÊ DUYỆT
+                                                <option selected={review.status === "PENDING"}
+                                                        value="PENDING">CHỜ PHÊ DUYỆT
                                                 </option>
-                                                <option selected={review.status === "ĐƯỢC CHẤP NHẬN"}
-                                                        value="ĐƯỢC CHẤP NHẬN">ĐƯỢC CHẤP NHẬN
+                                                <option selected={review.status === "APPROVED"}
+                                                        value="APPROVED">ĐƯỢC CHẤP NHẬN
                                                 </option>
-                                                <option selected={review.status === "ĐÃ TỪ CHỐI"}
-                                                        value="ĐÃ TỪ CHỐI">ĐÃ TỪ CHỐI
+                                                <option selected={review.status === "REJECTED"}
+                                                        value="REJECTED">ĐÃ TỪ CHỐI
                                                 </option>
                                             </select>
                                         </div>

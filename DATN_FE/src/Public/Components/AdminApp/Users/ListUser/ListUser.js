@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Table} from 'antd';
+import {message, Table} from 'antd';
 import userService from '../../../Service/UserService';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,12 +15,12 @@ function ListCategory() {
             await userService.adminDeleteUser(id)
                 .then((res) => {
                     console.log("delete", res.data)
-                    alert(`Xóa thành công!`)
+                    message.success(`Xóa thành công!`);
                     getListUser();
                     setLoading(false)
                 })
                 .catch((err) => {
-                    alert(err.response.data.message)
+                    message.error(err.response.data.message)
                     console.log(err);
                     setLoading(false);
                 })
@@ -110,7 +110,7 @@ function ListCategory() {
                     setData(res.data.data.users)
                     setLoading(false)
                 } else {
-                    alert('Error')
+                    message.error('Error')
                     setLoading(false)
                 }
             })

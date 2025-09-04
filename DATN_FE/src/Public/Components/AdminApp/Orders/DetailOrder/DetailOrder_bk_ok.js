@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
 import { Form, message, Table, Modal, Input, Button } from "antd";
-import { Link, useParams } from "react-router-dom";
-import dayjs from "dayjs";
-
-import useOrderStore from "../../../store/OrderStore";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import orderService from "../../../Service/OrderService";
 import Header from "../../../Shared/Admin/Header/Header";
 import Sidebar from "../../../Shared/Admin/Sidebar/Sidebar";
 import ConvertCurrency from "../../../Shared/Utils/ConvertCurrency";
+import dayjs from "dayjs";
 
-// Component hiển thị tiến trình đơn hàng
 function OrderProgress({ status }) {
     const steps = [
         { key: "PENDING", label: "CHỜ XÁC NHẬN" },
@@ -24,9 +22,9 @@ function OrderProgress({ status }) {
             {steps.map((step, index) => (
                 <React.Fragment key={step.key}>
                     <div className={`step ${status === step.key ? "step-active" : ""}`}>
-                        <span className="number-container">
-                            <span className="number">{index + 1}</span>
-                        </span>
+            <span className="number-container">
+              <span className="number">{index + 1}</span>
+            </span>
                         <h5>{step.label}</h5>
                     </div>
                     {index < steps.length - 1 && <div className="seperator"></div>}
@@ -39,19 +37,14 @@ function OrderProgress({ status }) {
 function DetailOrder() {
     const { id } = useParams();
     const [form] = Form.useForm();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [selectedValue, setSelectedValue] = useState("");
+    const [order, setOrder] = useState({});
+    const [orderItems, setOrderItems] = useState([]);
+    const [orderHistories, setOrderHistories] = useState([]);
     const [reasonCancel, setReasonCancel] = useState("");
     const [isCancelModalVisible, setCancelModalVisible] = useState(false);
-
-    const {
-        order,
-        orderItems,
-        orderHistories,
-        loading,
-        fetchOrder,
-        fetchOrderHistories,
-        updateOrderStatus,
-        cancelOrder,
-    } = useOrderStore();
 
     const statusMap = {
         PENDING: "CHỜ XÁC NHẬN",
@@ -68,41 +61,74 @@ function DetailOrder() {
         CARD_CREDIT: "Thanh toán qua VNPAY",
     };
 
-    useEffect(() => {
-        fetchOrder(id);
-        fetchOrderHistories(id);
-    }, [id, fetchOrder, fetchOrderHistories]);
+    const fetchDetailOrder = async () => {
+        try {
+            const res = await orderService.adminDetailOrder(id);
+            setOrder(res.data.data);
+            setOrderItems(res.data.data.order_items || []);
+            setSelectedValue(statusMap[res.data.data.status] || "KHÔNG XÁC ĐỊNH");
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // Xác nhận chuyển trạng thái
-    const handleUpdateOrder = () => {
+    const fetchOrderHistories = async () => {
+        try {
+            const res = await orderService.listOrderHistories(id);
+            setOrderHistories(res.data.data || []);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const updateOrder = async () => {
         Modal.confirm({
             title: "Xác nhận thay đổi trạng thái",
             onOk: async () => {
                 try {
-                    await updateOrderStatus(id, { status: null });
+                    await orderService.adminUpdateOrder(id, { status: null });
                     message.success("Thay đổi trạng thái thành công!");
+                    fetchDetailOrder();
+                    fetchOrderHistories();
                 } catch (err) {
-                    message.error("Thất bại: " + (err.message || "Lỗi không xác định"));
+                    message.error(
+                        "Thất bại: " +
+                        (err.response?.data?.message || "Lỗi không xác định")
+                    );
                 }
             },
         });
     };
 
-    // Hủy đơn hàng
     const handleCancelOrder = async () => {
         if (!reasonCancel.trim()) {
             message.error("Vui lòng nhập lý do hủy đơn hàng");
             return;
         }
+
         try {
-            await cancelOrder(id, reasonCancel);
+            await orderService.adminUpdateOrder(id, {
+                reason_cancel: reasonCancel,
+                status: "CANCELED",
+            });
+            message.success("Hủy đơn hàng thành công!");
+            fetchDetailOrder();
+            fetchOrderHistories();
             setCancelModalVisible(false);
             setReasonCancel("");
-            message.success("Hủy đơn hàng thành công!");
         } catch (err) {
-            message.error("Thất bại: " + (err.message || "Lỗi không xác định"));
+            message.error(
+                "Thất bại: " + (err.response?.data?.message || "Lỗi không xác định")
+            );
         }
     };
+
+    useEffect(() => {
+        fetchDetailOrder();
+        fetchOrderHistories();
+    }, [id]);
 
     const columns = [
         {
@@ -122,7 +148,6 @@ function DetailOrder() {
         <>
             <Header />
             <Sidebar />
-
             <main id="main" className="main" style={{ backgroundColor: "#f6f9ff" }}>
                 <div className="pagetitle">
                     <h1>Chi tiết đơn hàng</h1>
@@ -143,7 +168,6 @@ function DetailOrder() {
                             <div className="card">
                                 <div className="card-body">
                                     <h5 className="card-title">Chi tiết đơn hàng</h5>
-
                                     <div className="row mb-5">
                                         {/* Thông tin khách hàng */}
                                         <div className="col-md-4">
@@ -151,56 +175,47 @@ function DetailOrder() {
                                                 <table className="table site-block-order-table mb-5">
                                                     <tbody>
                                                     <tr>
-                                                        <td>Tên đầy đủ</td>
-                                                        <td>{order?.full_name}</td>
+                                                        <td className="text-black">Tên đầy đủ</td>
+                                                        <td className="text-black">{order.full_name}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Email</td>
-                                                        <td>{order?.email}</td>
+                                                        <td className="text-black">Email</td>
+                                                        <td className="text-black">{order.email}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>SĐT</td>
-                                                        <td>{order?.phone}</td>
+                                                        <td className="text-black">Số điện thoại</td>
+                                                        <td className="text-black">{order.phone}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Địa chỉ</td>
-                                                        <td>{order?.address}</td>
+                                                        <td className="text-black">Địa chỉ</td>
+                                                        <td className="text-black">{order.address}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Phương thức</td>
-                                                        <td>
-                                                            {methodMap[order?.order_method] ||
-                                                                "KHÔNG XÁC ĐỊNH"}
+                                                        <td className="text-black">Phương thức thanh toán</td>
+                                                        <td className="text-black">
+                                                            {methodMap[order.order_method] || "KHÔNG XÁC ĐỊNH"}
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Tổng tiền SP</td>
-                                                        <td>
-                                                            {ConvertCurrency(order?.products_price)}
-                                                        </td>
+                                                        <td className="text-black">Tổng tiền sản phẩm</td>
+                                                        <td>{ConvertCurrency(order.products_price)}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Phí vận chuyển</td>
-                                                        <td>
-                                                            {ConvertCurrency(order?.shipping_price)}
-                                                        </td>
+                                                        <td className="text-black">Phí vận chuyển</td>
+                                                        <td>{ConvertCurrency(order.shipping_price)}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Giảm giá</td>
-                                                        <td>
-                                                            {ConvertCurrency(order?.discount_price)}
-                                                        </td>
+                                                        <td className="text-black">Giảm giá</td>
+                                                        <td>{ConvertCurrency(order.discount_price)}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Tổng cộng</td>
-                                                        <td>
-                                                            {ConvertCurrency(order?.total_price)}
-                                                        </td>
+                                                        <td className="text-black">Tổng cộng</td>
+                                                        <td>{ConvertCurrency(order.total_price)}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
                                                 <h5>Ghi chú:</h5>
-                                                <div className="notes">{order?.note}</div>
+                                                <div className="notes">{order.note}</div>
                                             </div>
                                         </div>
 
@@ -221,26 +236,15 @@ function DetailOrder() {
                                                     {orderItems.map((item, index) => (
                                                         <tr key={index}>
                                                             <td>
-                                                                <img
-                                                                    src={item.image}
-                                                                    alt=""
-                                                                    width="100px"
-                                                                />
+                                                                <img src={item.image} alt="" width="100px" />
                                                             </td>
                                                             <td>
                                                                 {item.title}
-                                                                <div>
-                                                                    Loại:{" "}
-                                                                    {item.value?.attribute_id?.name}
-                                                                </div>
+                                                                <div>Loại: {item.value?.attribute_id?.name}</div>
                                                             </td>
                                                             <td>{item.quantity}</td>
                                                             <td>{ConvertCurrency(item.price)}</td>
-                                                            <td>
-                                                                {ConvertCurrency(
-                                                                    item.price * item.quantity
-                                                                )}
-                                                            </td>
+                                                            <td>{ConvertCurrency(item.price * item.quantity)}</td>
                                                         </tr>
                                                     ))}
                                                     </tbody>
@@ -258,39 +262,38 @@ function DetailOrder() {
                                             </div>
 
                                             {/* Tiến trình đơn hàng */}
-                                            <OrderProgress status={order?.status} />
+                                            <OrderProgress status={order.status} />
+
+                                            {/* Trạng thái */}
+                                            <div className="row mt-3">
+                                                <div className="form-group col-md-6">
+                                                    <label>Trạng thái</label>
+                                                    <select className="form-control" disabled value={order.status || ""}>
+                                                        <option value={order.status}>{selectedValue}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
                                             {/* Action */}
-                                            {order?.status !== "CANCELED" &&
-                                                order?.status !== "COMPLETED" && (
-                                                    <div className="d-flex gap-3 mt-3">
-                                                        <Button
-                                                            type="primary"
-                                                            onClick={handleUpdateOrder}
-                                                        >
-                                                            Chuyển trạng thái
+                                            {(order.status !== "CANCELED" && order.status !== "COMPLETED") && (
+                                                <div className="d-flex gap-3 mt-3">
+                                                    <Button type="primary" onClick={updateOrder}>
+                                                        Chuyển trạng thái
+                                                    </Button>
+                                                    {(order.status === "PENDING" ||
+                                                        order.status === "PROCESSING" ||
+                                                        order.status === "CONFIRMED") && (
+                                                        <Button danger onClick={() => setCancelModalVisible(true)}>
+                                                            Hủy đơn hàng
                                                         </Button>
-                                                        {(order?.status === "PENDING" ||
-                                                            order?.status === "PROCESSING" ||
-                                                            order?.status === "CONFIRMED") && (
-                                                            <Button
-                                                                danger
-                                                                onClick={() =>
-                                                                    setCancelModalVisible(true)
-                                                                }
-                                                            >
-                                                                Hủy đơn hàng
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                    )}
+                                                </div>
+                                            )}
 
-                                            {order?.reason_cancel && (
+                                            {order.reason_cancel && (
                                                 <>
-                                                    <h5 className="mt-2">Lý do huỷ đơn:</h5>
-                                                    <div className="text-danger">
-                                                        {order.reason_cancel}
-                                                    </div>
+                                                    <h5 className="mt-2">Lý do huỷ đơn hàng:</h5>
+                                                    <div className="text-danger">{order.reason_cancel}</div>
                                                 </>
                                             )}
                                         </div>
@@ -308,18 +311,10 @@ function DetailOrder() {
                 open={isCancelModalVisible}
                 onCancel={() => setCancelModalVisible(false)}
                 footer={[
-                    <Button
-                        key="back"
-                        onClick={() => setCancelModalVisible(false)}
-                    >
+                    <Button key="back" onClick={() => setCancelModalVisible(false)}>
                         Đóng
                     </Button>,
-                    <Button
-                        key="submit"
-                        type="primary"
-                        danger
-                        onClick={handleCancelOrder}
-                    >
+                    <Button key="submit" type="primary" danger onClick={handleCancelOrder}>
                         Xác nhận huỷ đơn hàng
                     </Button>,
                 ]}

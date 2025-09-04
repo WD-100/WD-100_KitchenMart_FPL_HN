@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../../../Shared/Admin/Header/Header'
 import Sidebar from '../../../Shared/Admin/Sidebar/Sidebar'
-import {Button, Form, Table} from 'antd';
+import {Button, Form, message, Table} from 'antd';
 import reviewService from '../../../Service/ReviewService';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,7 +40,7 @@ function ListReview() {
         if (window.confirm('Bạn có chắc chắn muốn xóa?')) {
             await reviewService.deleteReview(id)
                 .then((res) => {
-                    alert(`Xóa thành công!`)
+                    message.success(`Xóa thành công!`)
                     getListAttribute();
                 })
                 .catch((err) => {
@@ -69,6 +69,12 @@ function ListReview() {
             });
         });
     }
+
+    const statusMap = {
+        PENDING: 'CHỜ PHÊ DUYỆT',
+        APPROVED: 'ĐƯỢC CHẤP NHẬN',
+        REJECTED: 'ĐÃ TỪ CHỐI',
+    };
 
     const columns = [
         {
@@ -105,10 +111,13 @@ function ListReview() {
             title: 'Trạng thái',
             dataIndex: 'status',
             width: '10%',
+            render: (text) => {
+                return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
+            },
         },
         {
             title: 'Hành động',
-            dataIndex: 'id',
+            dataIndex: '_id',
             key: 'x',
             width: '20%',
             /**
@@ -119,14 +128,14 @@ function ListReview() {
              * @param {string} id The ID of the current row.
              * @returns {ReactElement} The JSX element to be rendered.
              */
-            render: (id) =>
+            render: (_id) =>
                 <div className="d-flex gap-2 align-items-center justify-content-center">
-                    <Link to={`/admin/reviews/detail/${id}`} className="btn btn-primary">
+                    <Link to={`/admin/reviews/detail/${_id}`} className="btn btn-primary">
                         Xem chi tiết
                     </Link>
 
-                    <button type="button" id={`btnDelete_${id}`} className="btn btn-danger"
-                            onClick={() => handleDelete(id)}>Xóa
+                    <button type="button" id={`btnDelete_${_id}`} className="btn btn-danger"
+                            onClick={() => handleDelete(_id)}>Xóa
                     </button>
                 </div>
         },
