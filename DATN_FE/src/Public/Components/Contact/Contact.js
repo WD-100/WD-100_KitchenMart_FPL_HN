@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import Header from "../Shared/Client/Header/Header";
 import Footer from "../Shared/Client/Footer/Footer";
 import $ from 'jquery';
@@ -13,7 +13,7 @@ function Contact() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val() && $(inputs[i]).attr('type') !== 'hidden') {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Gửi');
                 return
             }
@@ -23,7 +23,7 @@ function Contact() {
         data['status'] = false;
         await contactService.sendContact(data)
             .then((res) => {
-                alert('Gửi liên hệ thành công!');
+                message.success('Gửi liên hệ thành công!');
 
                 for (let i = 0; i < inputs.length; i++) {
                     $(inputs[i]).val('');

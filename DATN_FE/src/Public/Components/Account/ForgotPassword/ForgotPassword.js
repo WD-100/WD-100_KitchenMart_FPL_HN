@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import authService from '../../Service/AuthService';
 import $ from "jquery";
 import Script from "../../Shared/Admin/Lib/Script";
@@ -21,12 +21,12 @@ function ForgotPassword() {
         await authService.forgotPassword(data)
             .then((res) => {
                 localStorage.setItem("email", data.email);
-                alert('Thành công! Vui lòng kiểm tra mã xác minh gửi đến email của bạn...');
+                message.success('Thành công! Vui lòng kiểm tra má xác minh gửi đến email của baise...');
                 window.location.href = '/change-password';
             })
             .catch((err) => {
                 console.log(err.response.data);
-                alert(`Xác minh thất bại! ` + err.response.data.message);
+                message.error(`Xác minh thất bại! ` + err.response.data.message);
                 $('#btnSend').prop('disabled', false).text('Gửi');
             })
     };

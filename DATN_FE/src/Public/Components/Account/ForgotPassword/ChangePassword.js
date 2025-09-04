@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import authService from '../../Service/AuthService';
 import $ from "jquery";
 import Script from "../../Shared/Admin/Lib/Script";
@@ -24,12 +24,12 @@ function ChangePassword() {
         await authService.changePasswordForgot(data)
             .then((res) => {
                 localStorage.clear();
-                alert('Đổi mật khẩu tài khoản thành công! Vui lòng đăng nhập để tiếp tục...')
+                message.success('Đổi mật khẩu tài khoản thành công! Vui lòng đăng nhập để tiếp tục...');
                 window.location.href = '/login';
             })
             .catch((err) => {
                 console.log(err.response.data);
-                alert(`Thay đổi mật khẩu không thành công! ` + err.response.data.message);
+                message.error(`Thay đổi mật khẩu không thành công! ` + err.response.data.message);
                 $('#btnSubmit').prop('disabled', false).text('Gửi');
             })
     };

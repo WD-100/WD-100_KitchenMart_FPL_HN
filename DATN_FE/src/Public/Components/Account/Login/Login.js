@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Form} from 'antd';
+import {Form, message} from 'antd';
 import authService from '../../Service/AuthService';
 import $ from 'jquery';
 import Css from '../../Shared/Admin/Lib/StyleSheet';
@@ -28,7 +28,7 @@ function Login() {
                 sessionStorage.setItem("email", user?.email);
                 sessionStorage.setItem("name", user?.full_name);
                 sessionStorage.setItem("role", role?.code);
-                alert(`Xin chào ${user?.full_name}!`);
+                message.success(`Xin chào ${user?.full_name}!`);
                 if (data?.role === 'admin') {
                     window.location.href = '/admin/dashboard';
                 } else {
@@ -36,7 +36,7 @@ function Login() {
                 }
             })
             .catch((err) => {
-                alert(`Đăng nhập thất bại! ` + err.response.data.message);
+                message.error(`Đăng nhập thất bại! ` + err.response.data.message);
                 $('#btnLogin').prop('disabled', false).text('Đăng nhập');
             })
     };
