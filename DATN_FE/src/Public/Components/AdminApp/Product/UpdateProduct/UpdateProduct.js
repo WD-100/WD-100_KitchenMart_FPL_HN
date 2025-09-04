@@ -34,7 +34,9 @@ function UpdateProduct() {
     const [loading, setLoading] = useState(true);
     const [imageUrl, setImageUrl] = useState('');
     const [imageUrls, setImageUrls] = useState('');
+    const shortDescriptionRef = useRef(null);
     const descriptionRef = useRef(null);
+    const [hot, setHot] = useState(false);
 
     const getProduct = async () => {
         await productService.adminDetailProduct(id)
@@ -45,6 +47,7 @@ function UpdateProduct() {
                 renderImage(product.photo_library, product.title)
                 setImageUrl(product.image)
                 setImageUrls(product.photo_library)
+                setHot(product.is_hot)
             })
             .catch((err) => {
                 setLoading(false)
@@ -93,20 +96,29 @@ function UpdateProduct() {
 
         const formData = new FormData($('#formUpdate')[0]);
 
+        const shortDescriptionContent = shortDescriptionRef.current.getContent();
         const descriptionContent = descriptionRef.current.getContent();
 
+        if (!shortDescriptionContent) {
+            message.error('Mô tả ngắn không được bỏ trống!');
+            setLoading(false);
+            return;
+        }
         if (!descriptionContent) {
-            alert('Mô tả không được bỏ trống!');
+            message.error('Mô tả không được bỏ trống!');
             setLoading(false);
             return;
         }
 
+        formData.append('short_description', shortDescriptionContent);
         formData.append('description', descriptionContent);
         formData.append('image', imageUrl);
         formData.append('photo_library', imageUrls);
 
         formData.delete('gallery');
         formData.delete('thumbnail');
+
+        formData.set('is_hot', hot);
 
         await productService.adminUpdateProduct(id, formData)
             .then((res) => {
@@ -172,6 +184,10 @@ function UpdateProduct() {
         }
     };
 
+    const changeProductHot = (e) => {
+        setHot(e.target.checked);
+    };
+
     useEffect(() => {
         getListCategory();
         getProduct();
@@ -226,35 +242,35 @@ function UpdateProduct() {
                                                    required/>
                                         </div>
                                     </div>
+
+                                    <div className="form-check">
+                                        <input type="checkbox"
+                                               className="form-check-input"
+                                               name="is_hot"
+                                               id="is_hot"
+                                               checked={hot}
+                                               onChange={changeProductHot}/>
+                                        <label className="form-check-label" htmlFor="is_hot">
+                                            Sản phẩm nổi bật
+                                        </label>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="short_description">Mô tả ngắn</label>
+                                        <Editor
+                                            apiKey={API_KEY_TINYMCE}
+                                            onInit={(evt, editor) => shortDescriptionRef.current = editor}
+                                            id="short_description"
+                                            name="short_description"
+                                            initialValue={product.short_description}
+                                        />
+                                    </div>
+
                                     <div className="form-group">
                                         <label htmlFor="description">Mô tả</label>
                                         <Editor
                                             apiKey={API_KEY_TINYMCE}
                                             onInit={(evt, editor) => descriptionRef.current = editor}
-                                            init={{
-                                                plugins: ['anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount', 'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',],
-                                                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                                                tinycomments_mode: 'embedded',
-                                                tinycomments_author: 'Author name',
-                                                /**
-                                                 * The AI request function. This function is called when the AI button in the toolbar is clicked.
-                                                 * It should return a promise that resolves with a string containing the AI response.
-                                                 * The string should be a valid HTML string.
-                                                 * The function takes two parameters, `request` and `respondWith`. `request` is an object containing information about the request,
-                                                 * and `respondWith` is a function that should be called with the response string.
-                                                 * The `respondWith` function takes one parameter, a string containing the response.
-                                                 * The `respondWith` function should be called with a string containing the AI response.
-                                                 * The AI response should be a valid HTML string.
-                                                 * The function should return a promise.
-                                                 * The promise should resolve with a string containing the AI response.
-                                                 * The AI response should be a valid HTML string.
-                                                 * The AI request function should be a function.
-                                                 * @param {object} request - The request object.
-                                                 * @param {function} respondWith - The respondWith function.
-                                                 * @returns {Promise<string>} - A promise that resolves with a string containing the AI response.
-                                                 */
-                                                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                                            }}
                                             id="description"
                                             name="description"
                                             initialValue={product.description}

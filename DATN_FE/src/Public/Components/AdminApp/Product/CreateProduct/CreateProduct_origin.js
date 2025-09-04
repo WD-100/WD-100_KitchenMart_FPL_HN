@@ -43,7 +43,7 @@ function CreateProduct() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val()) {
                 let text = $(inputs[i]).prev().text();
-                alert(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
                 setLoading(false);
                 return;
@@ -56,12 +56,12 @@ function CreateProduct() {
         const descriptionContent = descriptionRef.current.getContent();
 
         if (!shortDescriptionContent) {
-            alert('Mô tả ngắn không được bỏ trống!');
+            message.error('Mô tả ngắn không được bỏ trống!');
             setLoading(false);
             return;
         }
         if (!descriptionContent) {
-            alert('Mô tả không được bỏ trống!');
+            message.error('Mô tả không được bỏ trống!');
             setLoading(false);
             return;
         }
@@ -94,7 +94,7 @@ function CreateProduct() {
             })
             .catch((err) => {
                 setLoading(false)
-                alert(err.message);
+                message.error(err.message);
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
             })
     };
