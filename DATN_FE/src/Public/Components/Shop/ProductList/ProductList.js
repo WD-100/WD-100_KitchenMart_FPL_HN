@@ -151,7 +151,7 @@ function ProductList() {
                             <div className="row mb-5">
                                 {currentProducts.map((product) => (
                                     <div className="col-sm-6 col-lg-4 mb-4 productDetail" key={product._id}>
-                                        <div className="block-4 text-center border">
+                                        <a href={`/products/${product.slug}`} className="block-4 text-center border">
                                             <figure className="block-4-image">
                                                 <img
                                                     src={product.image || "/assets/clients/images/no-image.jpg"}
@@ -169,7 +169,7 @@ function ProductList() {
                                                     </strike>
                                                 </p>
                                             </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 ))}
                             </div>
