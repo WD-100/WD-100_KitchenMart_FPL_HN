@@ -22,11 +22,15 @@ export const checkout = async (req: any, res: any) => {
             c_order_notes: notes,
             order_method,
             coupon_id = null,
+            cart_selected = [],
         } = req.body;
 
         const address = `${c_address}, ${d_address}`;
 
-        const carts = await Cart.find({user_id}).populate("product_id");
+        const carts = await Cart.find({
+            user_id,
+            _id: {$in: cart_selected}
+        }).populate("product_id");
 
         if (!carts.length) {
             return res.status(400).json({message: "Giỏ hàng trống."});
@@ -124,7 +128,10 @@ export const checkout = async (req: any, res: any) => {
             status: "PENDING",
         }]);
 
-        await Cart.deleteMany({user_id});
+        await Cart.deleteMany({
+            user_id,
+            _id: {$in: cart_selected}
+        });
 
         return res.status(201).json({
             message: "Đặt hàng thành công",
@@ -222,8 +229,13 @@ export const quickOrder = async (req: any, res: any) => {
 export const checkout_vnpay = async (req: any, res: any) => {
     try {
         const user_id = req.userId;
+        const cart_selected = req.body.cart_selected;
+        const total_price = req.body.c_total;
 
-        const carts = await Cart.find({user_id}).populate("product_id").populate({
+        const carts = await await Cart.find({
+            user_id,
+            _id: {$in: cart_selected}
+        }).populate("product_id").populate({
             path: "value",
             model: "ProductAttribute",
             populate: {
@@ -246,8 +258,6 @@ export const checkout_vnpay = async (req: any, res: any) => {
                 return res.status(400).json({message: "Số lượng sản phẩm trong kho không đủ."});
             }
         }
-
-        const total_price = req.body.c_total;
 
         if (!total_price || isNaN(total_price)) {
             return res.status(400).json({error: 'Invalid amount'});

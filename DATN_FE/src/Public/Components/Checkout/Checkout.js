@@ -42,7 +42,14 @@ function Checkout() {
     const getListProductCart = async () => {
         try {
             const res = await cartService.listCart();
-            setCarts(res.data.data);
+
+            let carts = res.data.data;
+
+            carts = carts.filter((cart) => {
+                const selected = JSON.parse(sessionStorage.getItem("cart_selected") || "[]");
+                return selected.includes(cart._id);
+            })
+            setCarts(carts);
         } catch (err) {
             console.error(err);
         } finally {
@@ -135,6 +142,8 @@ function Checkout() {
     };
 
     const handleCheckout = async () => {
+        const selected = JSON.parse(sessionStorage.getItem("cart_selected") || "[]");
+
         if (!formRef.current) return;
 
         const requiredFields = ['full_name', 'c_address', 'd_address', 'c_email_address', 'c_phone'];
@@ -151,7 +160,8 @@ function Checkout() {
             coupon_id: coupon?.id || null,
             c_total_product: totalProduct,
             c_discount_price: discountPrice,
-            c_total: total
+            c_total: total,
+            cart_selected: selected,
         };
 
         if (quick_buy_product) {

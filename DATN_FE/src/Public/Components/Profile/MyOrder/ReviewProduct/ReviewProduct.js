@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../Header/Header';
 import Sidebar from '../../Sidebar/Sidebar';
-import {Button, Form, Input, message, Radio, Spin} from 'antd';
+import {Button, Form, Input, message, Radio, Spin, Upload} from 'antd';
 import {Link, useSearchParams} from 'react-router-dom';
 import reviewService from '../../../Service/ReviewService';
 import productService from '../../../Service/ProductService';
 import LoadingPage from "../../../Shared/Utils/LoadingPage";
+import uploadService from "../../../Service/UploadService";
 
 function ReviewProduct() {
     const [searchParams] = useSearchParams();
@@ -15,6 +16,7 @@ function ReviewProduct() {
     const [order, setOrder] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
 
     const [form] = Form.useForm();
 
@@ -50,6 +52,7 @@ function ReviewProduct() {
         const payload = {
             ...values,
             order_id: or,
+            thumbnail: imageUrl,
             product_id: pro
         };
 
@@ -65,6 +68,29 @@ function ReviewProduct() {
         } finally {
             setSubmitting(false);
             LoadingPage();
+        }
+    };
+
+    const handleFileChange = async (e) => {
+        const files = Array.from(e.target.files);
+        for (let file of files) {
+            await uploadImage(file);
+        }
+    };
+
+    const uploadImage = async (file) => {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const res = await uploadService.upload(formData);
+            const imageUrl = res.data.imageUrl;
+            setImageUrl(imageUrl);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -129,33 +155,57 @@ function ReviewProduct() {
                                 >
                                     <Input.TextArea rows={5}/>
                                 </Form.Item>
+                                <Form.Item label="Hình ảnh">
+                                    <input type="file" accept="image/*" onChange={handleFileChange}/>
+                                    <div style={{display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap'}}>
+                                        <img src={imageUrl}
+                                             style={{width: 100, height: 100, objectFit: 'cover', borderRadius: 8}}
+                                        />
+                                    </div>
+                                </Form.Item>
                                 <Button type="primary" htmlType="submit" loading={submitting}>
                                     Gửi đánh giá
                                 </Button>
                             </Form>
                         </div>
                     ) : (
-                        <div className="row">
-                            <div className="verified_customer_section mb-2">
-                                <div className="image_review">
-                                    <div className="customer_name_review_status">
-                                        <div className="customer_name">Sản phẩm:
-                                            <h4><a href={`/products/${product.slug}`}>{product.title}</a></h4>
-                                        </div>
-                                        <div className="customer_review">
-                                            Số sao: {Array.from({length: 5}).map((_, i) => (
-                                            <i key={i}
-                                               className={`fa-solid fa-star ${i < review.stars ? 'filled' : ''}`}/>
-                                        ))}
-                                        </div>
-                                    </div>
-                                </div>
-                                <h5>Tiêu đề: <b>{review.title}</b></h5>
-                                <div className="customer_comment text_truncate_3_">
-                                    Nội dung: {review.content}
-                                </div>
-                            </div>
-                        </div>
+                        <table className="table table-bordered">
+                            <tbody>
+                            <tr>
+                                <td><b>Sản phẩm</b></td>
+                                <td>
+                                    <a href={`/products/${product.slug}`}>{product.title}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Số sao</b></td>
+                                <td>
+                                    {Array.from({length: 5}).map((_, i) => (
+                                        <i
+                                            key={i}
+                                            className={`fa-solid fa-star ${i < review.stars ? 'filled' : ''}`}
+                                        />
+                                    ))}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Tiêu đề</b></td>
+                                <td>{review.title}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Nội dung</b></td>
+                                <td className="text_truncate_3_">{review.content}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Ảnh đính kèm</b></td>
+                                <td>
+                                    <img src={review.thumbnail}
+                                         style={{width: 100, height: 100, objectFit: 'cover', borderRadius: 8}}
+                                    />
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     )}
                 </div>
             </main>

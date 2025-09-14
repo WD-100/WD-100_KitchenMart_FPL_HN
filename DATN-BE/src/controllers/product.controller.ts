@@ -7,28 +7,23 @@ export const list = async (req: any, res: any) => {
     try {
         const keyword = (req.query.keyword as string)?.trim() || "";
         const category = req.query.category as string;
-        const size = req.query.size as string;
+        const size = req.query.size ? parseInt(req.query.size as string, 10) : null;
         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice as string) : null;
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : null;
         const sort = req.query.sort as string || "";
 
-        const filter: any = {is_deleted: false, is_active: true};
+        const filter: any = { is_deleted: false, is_active: true };
 
         if (keyword) {
             const regex = new RegExp(keyword, "i");
             filter.$or = [
-                {title: {$regex: regex}},
-                {description: {$regex: regex}},
-                {slug: {$regex: regex}},
+                { title: { $regex: regex } },
+                { slug: { $regex: regex } },
             ];
         }
 
         if (category) {
-            filter.category = category;
-        }
-
-        if (size) {
-            filter["options.size"] = size;
+            filter.categories_id = category;
         }
 
         if (minPrice !== null || maxPrice !== null) {
@@ -39,29 +34,41 @@ export const list = async (req: any, res: any) => {
 
         let sortField = "_id";
         let sortOrder: mongoose.SortOrder = -1;
-        if (sort === "price_asc") {
-            sortField = "price";
-            sortOrder = 1;
-        } else if (sort === "price_desc") {
-            sortField = "price";
-            sortOrder = -1;
-        } else if (sort === "title_asc") {
-            sortField = "title";
-            sortOrder = 1;
-        } else if (sort === "title_desc") {
-            sortField = "title";
-            sortOrder = -1;
+
+        switch (sort) {
+            case "price_asc":
+                sortField = "sale_price";
+                sortOrder = 1;
+                break;
+            case "price_desc":
+                sortField = "sale_price";
+                sortOrder = -1;
+                break;
+            case "title_asc":
+                sortField = "title";
+                sortOrder = 1;
+                break;
+            case "title_desc":
+                sortField = "title";
+                sortOrder = -1;
+                break;
         }
 
-        const products = await Product.find(filter).sort({[sortField]: sortOrder}).exec();
+        let query = Product.find(filter).sort({ [sortField]: sortOrder });
+
+        if (size && size > 0) {
+            query = query.limit(size);
+        }
+
+        const products = await query.exec();
 
         return res.status(200).json({
             message: "success",
-            data: {products}
+            data: { products },
         });
     } catch (error) {
         console.error("Error listing products:", error);
-        return res.status(500).json({message: "Server error"});
+        return res.status(500).json({ message: "Server error" });
     }
 };
 

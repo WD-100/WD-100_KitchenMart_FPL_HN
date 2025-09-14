@@ -163,8 +163,8 @@ function HeaderClient() {
                         <li className="has-children">
                             <a href="/products">Danh mục</a>
                             <ul className="dropdown">
-                                {categories.map((category) => (<li className="mb-1" key={category.id}>
-                                    <a href={'/products?category=' + category.id} data-id={category.id}
+                                {categories.map((category) => (<li className="mb-1" key={category._id}>
+                                    <a href={'/products?category=' + category._id} data-id={category._id}
                                        className="d-flex categoryID" onClick={handleClick}>
                                         <span>{category.name}</span>
                                     </a>

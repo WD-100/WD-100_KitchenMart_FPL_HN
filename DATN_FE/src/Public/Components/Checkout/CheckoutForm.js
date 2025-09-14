@@ -175,9 +175,15 @@ function CheckoutForm({
                                             </td>
                                         </tr>
                                     ) : (
-                                        carts.map((cart, index) => (
+                                        carts.filter((cart) => {
+                                            const selected = JSON.parse(sessionStorage.getItem("cart_selected") || "[]");
+                                            return selected.includes(cart._id);
+                                        }).map((cart, index) => (
                                             <tr key={index}>
-                                                <td><strong>{cart.product_id.title}</strong></td>
+                                                <td>
+                                                    <strong>{cart.product_id.title}</strong>
+                                                    <p>Loại: {cart.value.attribute_id.name}</p>
+                                                </td>
                                                 <td>
                                                     <strong>{ConvertCurrency(cart.value.sale_price * cart.quantity)}</strong>
                                                 </td>
