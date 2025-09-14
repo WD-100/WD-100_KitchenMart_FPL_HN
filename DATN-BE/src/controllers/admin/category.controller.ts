@@ -9,7 +9,6 @@ export const list = async (req: any, res: any) => {
       data: categories,
     });
   } catch (error) {
-    console.log(error);
   }
 };
 
@@ -32,7 +31,6 @@ export const detail = async (req: any, res: any) => {
       data: categories,
     });
   } catch (error) {
-    console.log(error);
   }
 };
 
@@ -47,7 +45,6 @@ export const create = async (req: any, res: any) => {
       statusCode: 201,
     });
   } catch (error) {
-    console.log(error);
   }
 };
 export const update = async (req: any, res: any) => {
@@ -97,6 +94,5 @@ export const destroy = async (req: any, res: any) => {
       statusCode: 201,
     });
   } catch (error) {
-    console.log(error);
   }
 };

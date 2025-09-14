@@ -7,15 +7,6 @@ import {message} from "antd";
 import {useCart} from "../store/CartContext";
 import {useNavigate} from "react-router-dom";
 
-/**
- * The cart page component.
- *
- * This component displays the cart page, showing all the products in the cart
- * and the total price. It also allows the user to update the cart, apply a coupon
- * and proceed to checkout.
- *
- * @returns {JSX.Element} The cart page component.
- */
 function Cart() {
     const [carts, setCarts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +19,6 @@ function Cart() {
             const res = await cartService.listCart();
             setCarts(res.data.data);
         } catch (err) {
-            console.error('Error fetching cart:', err);
         } finally {
             setLoading(false);
         }
@@ -106,7 +96,6 @@ function Cart() {
             });
             message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
         } catch (err) {
-            console.error('Error removing item:', err);
         }
     };
 
@@ -118,7 +107,6 @@ function Cart() {
             setCartCount(0);
             message.success('Làm trống giỏ hàng thành công!');
         } catch (err) {
-            console.error('Error clearing cart:', err);
         }
     };
 
