@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {useSearchParams} from 'react-router-dom';
 import Header from "../../Shared/Client/Header/Header";
 import Footer from "../../Shared/Client/Footer/Footer";
 import productService from "../../Service/ProductService";
@@ -63,7 +63,7 @@ function ProductList() {
 
     const buildSearchUrl = (
         categoryID = category_param,
-        keywordID = keywordRef.current?.value,
+        keywordID = keywordRef.current?.value ?? '',
         sizeID = size_param,
         sortID = sort_param,
         minPriceID = minPriceRef.current?.value ?? '',
@@ -90,7 +90,7 @@ function ProductList() {
         document.querySelectorAll('.property_val:checked').forEach((el) => {
             option += el.value + ',';
         });
-        window.location.href = buildSearchUrl(undefined, undefined, undefined, undefined, undefined, undefined, option);
+        window.location.href = buildSearchUrl('', '', '', '', '', '', option);
     };
 
     const goCategory = (event, id) => {
@@ -99,7 +99,7 @@ function ProductList() {
         document.querySelectorAll('.property_val:checked').forEach((el) => {
             option += el.value + ',';
         });
-        window.location.href = buildSearchUrl(id, undefined, undefined, undefined, undefined, undefined, option);
+        window.location.href = buildSearchUrl(id, '', '', '', '', '', option);
     };
 
     useEffect(() => {
@@ -109,12 +109,13 @@ function ProductList() {
 
     return (
         <div className="site-wrap">
-            <Header />
+            <Header/>
             <div className="bg-light py-3">
                 <div className="container">
                     <div className="row">
                         <div className="col-md-12 mb-0">
-                            <a href="/">Trang chủ</a> <span className="mx-2 mb-0">/</span> <strong className="text-black">Cửa hàng</strong>
+                            <a href="/">Trang chủ</a> <span className="mx-2 mb-0">/</span> <strong
+                            className="text-black">Cửa hàng</strong>
                         </div>
                     </div>
                 </div>
@@ -131,7 +132,8 @@ function ProductList() {
                                     </div>
                                     <div className="d-flex justify-content-end">
                                         <div className="btn-group">
-                                            <select ref={sizeSelectRef} id="size" className="form-select" onChange={sortProduct}>
+                                            <select ref={sizeSelectRef} id="size" className="form-select"
+                                                    onChange={sortProduct}>
                                                 <option value="">Tất cả</option>
                                                 <option value="3">3</option>
                                                 <option value="6">6</option>
@@ -139,7 +141,8 @@ function ProductList() {
                                             </select>
                                         </div>
                                         <div className="btn-group ms-3">
-                                            <select ref={sortSelectRef} id="sort" className="form-select" onChange={sortProduct}>
+                                            <select ref={sortSelectRef} id="sort" className="form-select"
+                                                    onChange={sortProduct}>
                                                 <option value="desc">Từ cao đến thấp</option>
                                                 <option value="asc">Từ thấp đến cao</option>
                                             </select>
@@ -157,11 +160,12 @@ function ProductList() {
                                                     src={product.image || "/assets/clients/images/no-image.jpg"}
                                                     alt={product.title || "Image placeholder"}
                                                     className="img-fluid"
-                                                    style={{ width: '100%', height: '300px' }}
+                                                    style={{width: '100%', height: '300px'}}
                                                 />
                                             </figure>
                                             <div className="block-4-text p-4">
-                                                <h3><a className="text_truncate_" href={`/products/${product.slug}`}>{product.title}</a></h3>
+                                                <h3><a className="text_truncate_"
+                                                       href={`/products/${product.slug}`}>{product.title}</a></h3>
                                                 <p className="text-danger font-weight-bold">
                                                     {ConvertCurrency(product.sale_price || 0)}
                                                     <strike className="ml-2 small text-black">
@@ -179,7 +183,7 @@ function ProductList() {
                                     <div className="site-block-27">
                                         <ul>
                                             <li><a href="#" onClick={() => handleClick(currentPage - 1)}>&lt;</a></li>
-                                            {Array.from({ length: totalPages }, (_, i) => (
+                                            {Array.from({length: totalPages}, (_, i) => (
                                                 <li key={i + 1} className={currentPage === i + 1 ? "active" : ""}>
                                                     <a href="#" onClick={() => handleClick(i + 1)}>{i + 1}</a>
                                                 </li>
@@ -196,8 +200,10 @@ function ProductList() {
                                 <h3 className="mb-3 h6 text-uppercase text-black d-block">Danh mục</h3>
                                 <ul className="list-unstyled mb-0">
                                     {categories.map((category) => (
-                                        <li className="mb-1" key={category.id}>
-                                            <a href={`/products?category=${category.id}`} className={`d-flex category${category_param}`} onClick={(e) => goCategory(e, category.id)}>
+                                        <li className="mb-1" key={category._id}>
+                                            <a href={`/products?category=${category._id}`}
+                                               className={`d-flex category${category_param}`}
+                                               onClick={(e) => goCategory(e, category._id)}>
                                                 <span>{category.name}</span>
                                             </a>
                                         </li>
@@ -208,24 +214,29 @@ function ProductList() {
                             <div className="border p-4 rounded mb-4">
                                 <div className="mb-4">
                                     <h3 className="mb-3 h6 text-uppercase text-black d-block">Lọc theo giá</h3>
-                                    <div className="form-group flex-column d-flex align-items-start justify-content-between gap-3">
+                                    <div
+                                        className="form-group flex-column d-flex align-items-start justify-content-between gap-3">
                                         {/*<p>Từ: </p>*/}
-                                        <input type="number" name="min-price" id="min-price" min="0" className="form-control border"
-                                               placeholder="Từ" ref={minPriceRef} />
+                                        <input type="number" name="min-price" id="min-price" min="0"
+                                               className="form-control border"
+                                               placeholder="Từ" ref={minPriceRef}/>
                                         {/*<p>Đến: </p>*/}
-                                        <input type="number" name="max-price" id="max-price" min="1" className="form-control border"
-                                               placeholder="Đến" ref={maxPriceRef} />
+                                        <input type="number" name="max-price" id="max-price" min="1"
+                                               className="form-control border"
+                                               placeholder="Đến" ref={maxPriceRef}/>
                                     </div>
                                 </div>
                                 <div className="mb-4">
-                                    <button className="btn btn-primary w-100" type="button" onClick={searchProduct}>Áp dụng</button>
+                                    <button className="btn btn-primary w-100" type="button" onClick={searchProduct}>Áp
+                                        dụng
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

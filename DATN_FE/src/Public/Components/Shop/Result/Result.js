@@ -33,7 +33,7 @@ function Result() {
             const res = await productService.searchProduct(
                 category_param,
                 keyword_param,
-                size_param,
+                '',
                 sort_param,
                 minPrice_param,
                 maxPrice_param,
@@ -207,8 +207,8 @@ function Result() {
                                 <h3 className="mb-3 h6 text-uppercase text-black d-block">Danh mục</h3>
                                 <ul className="list-unstyled mb-0">
                                     {categories.map((category) => (
-                                        <li className="mb-1" key={category.id}>
-                                            <a href={`/products?category=${category.id}`} onClick={(e) => goCategory(e, category.id)}>
+                                        <li className="mb-1" key={category._id}>
+                                            <a href={`/products?category=${category._id}`} onClick={(e) => goCategory(e, category._id)}>
                                                 <span>{category.name}</span>
                                             </a>
                                         </li>
@@ -231,23 +231,6 @@ function Result() {
                                 <button className="btn btn-primary w-100 mt-3" type="button" onClick={searchProduct}>
                                     Áp dụng
                                 </button>
-                            </div>
-
-                            <div className="border p-4 rounded mb-4">
-                                <h3 className="mb-3 h6 text-uppercase text-black d-block">Tùy chọn</h3>
-                                <div>
-                                    {[1, 2, 3].map(val => (
-                                        <div key={val}>
-                                            <input
-                                                type="checkbox"
-                                                value={val}
-                                                ref={(el) => (checkboxRefs.current[val] = el)}
-                                                className="me-2"
-                                            />
-                                            Option {val}
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </div>
                     </div>

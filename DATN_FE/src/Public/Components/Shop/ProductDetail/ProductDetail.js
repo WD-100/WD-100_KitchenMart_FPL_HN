@@ -319,6 +319,9 @@ function ProductDetail() {
                                     <div className="review-body">
                                         <div className="review-title">{review.title}</div>
                                         <div className="review-content">{review.content}</div>
+                                        <img src={review.thumbnail}
+                                             style={{width: 100, height: 100, objectFit: 'cover', borderRadius: 8}}
+                                        />
                                     </div>
                                 </div>
                             ))}

@@ -5,6 +5,7 @@ import cartService from "../Service/CartService";
 import ConvertCurrency from "../Shared/Utils/ConvertCurrency";
 import {message} from "antd";
 import {useCart} from "../store/CartContext";
+import {useNavigate} from "react-router-dom";
 
 /**
  * The cart page component.
@@ -18,7 +19,9 @@ import {useCart} from "../store/CartContext";
 function Cart() {
     const [carts, setCarts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selected, setSelected] = useState([]);
     const {setCartCount} = useCart();
+    const navigate = useNavigate();
 
     const getListProductCart = async () => {
         try {
@@ -29,6 +32,20 @@ function Cart() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelected(carts.map((c) => c._id)); // chọn hết
+        } else {
+            setSelected([]); // bỏ hết
+        }
+    };
+
+    const handleSelectOne = (id) => {
+        setSelected((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
     };
 
     const updateQuantity = async (cartId, newQty) => {
@@ -110,9 +127,30 @@ function Cart() {
         0
     );
 
+    const isAllSelected = carts.length > 0 && selected.length === carts.length;
+
+    const handleCheckout = () => {
+        if (selected.length === 0) {
+            message.warning("Vui lòng chọn ít nhất 1 sản phẩm để thanh toán!");
+            return;
+        }
+        navigate("/checkout");
+    };
+
     useEffect(() => {
         getListProductCart();
     }, []);
+
+    useEffect(() => {
+        const saved = sessionStorage.getItem("cart_selected");
+        if (saved) {
+            setSelected(JSON.parse(saved));
+        }
+    }, []);
+
+    useEffect(() => {
+        sessionStorage.setItem("cart_selected", JSON.stringify(selected));
+    }, [selected]);
 
     return (
         <div className="site-wrap">
@@ -124,6 +162,7 @@ function Cart() {
                     ) : (
                         <table className="table table-bordered">
                             <colgroup>
+                                <col width="5%"/>
                                 <col width="15%"/>
                                 <col width="x"/>
                                 <col width="10%"/>
@@ -133,6 +172,11 @@ function Cart() {
                             </colgroup>
                             <thead>
                             <tr>
+                                <th>
+                                    <input type="checkbox" name="selected_all" id="selected_all"
+                                           checked={isAllSelected}
+                                           onChange={handleSelectAll}/>
+                                </th>
                                 <th>Hình ảnh</th>
                                 <th>Sản phẩm</th>
                                 <th>Giá</th>
@@ -144,6 +188,12 @@ function Cart() {
                             <tbody>
                             {carts.map(cart => (
                                 <tr key={cart._id}>
+                                    <td>
+                                        <input type="checkbox" name="cart_select"
+                                               checked={selected.includes(cart._id)}
+                                               onChange={() => handleSelectOne(cart._id)}
+                                               id={`cart_select_` + cart._id} value={cart._id}/>
+                                    </td>
                                     <td>
                                         <img src={cart.product_id.image} alt="" className="img-fluid"/>
                                     </td>
@@ -206,9 +256,10 @@ function Cart() {
                             </div>
                             <div className="col-md-6 text-right">
                                 <h4>Tổng cộng: {ConvertCurrency(total)}</h4>
-                                <a href="/checkout" className="btn btn-primary btn-lg mt-2">
+                                <button onClick={handleCheckout}
+                                        className="btn btn-primary btn-lg mt-2">
                                     Tiến hành thanh toán
-                                </a>
+                                </button>
                             </div>
                         </div>
                     )}
