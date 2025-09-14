@@ -8,6 +8,5 @@ export const create = async (req: any, res: any) => {
       statusCode: 201,
     });
   } catch (error) {
-    console.log(error);
   }
 };
