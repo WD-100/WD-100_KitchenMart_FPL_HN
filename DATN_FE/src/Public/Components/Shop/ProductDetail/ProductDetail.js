@@ -93,7 +93,11 @@ function ProductDetail() {
         LoadingPage();
         const userId = sessionStorage.getItem('id') || '';
         const quantity = quantityRef.current?.value || '1';
-
+        if (quantity > option.quantity) {
+            LoadingPage();
+            message.error('Không đủ số lượng sản phẩm mong muốn!');
+            return false;
+        }
         const data = {
             product_id: product.id,
             value: optionSelected,
@@ -113,6 +117,7 @@ function ProductDetail() {
             if (state === 401 || state === 403) {
                 message.error('Vui lòng đăng nhập để tiếp tục!');
             }
+            message.error(err.response?.message ?? 'Đã xảy ra lỗi!');
         }
     };
 
