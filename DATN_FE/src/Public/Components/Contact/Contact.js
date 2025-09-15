@@ -15,7 +15,7 @@ function Contact() {
                 let text = $(inputs[i]).prev().text();
                 message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Gửi');
-                return
+                return false;
             }
             data[$(inputs[i]).attr('id')] = $(inputs[i]).val();
         }
@@ -33,7 +33,6 @@ function Contact() {
             })
             .catch((err) => {
                 $('#btnCreate').prop('disabled', false).text('Gửi');
-                console.log(err)
             })
     }
 
@@ -92,7 +91,7 @@ function Contact() {
 
                                     <div className="form-group row">
                                         <div className="col-md-12">
-                                            <label htmlFor="message" className="text-black">Nội chung </label>
+                                            <label htmlFor="message" className="text-black">Nội dung </label>
                                             <textarea name="message" id="message" cols="30" rows="7"
                                                       className="form-control"></textarea>
                                         </div>

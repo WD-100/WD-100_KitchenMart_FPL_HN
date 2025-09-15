@@ -1,5 +1,6 @@
 import {Cart, ICart} from "../models/cart.model";
 import {IProduct, Product} from "../models/product.model";
+import { IProductAttribute, ProductAttribute } from "../models/product_attribute.model";
 
 export const addToCart = async (req: any, res: any) => {
     try {
@@ -20,9 +21,15 @@ export const addToCart = async (req: any, res: any) => {
         const currentQtyInCart = cartItem?.quantity ?? 0;
         const totalRequestedQty = currentQtyInCart + requestedQty;
 
-        if (totalRequestedQty > product.quantity) {
+        const attribute: IProductAttribute | null = await ProductAttribute.findById(value);
+
+        if (!attribute) {
+            return res.status(404).json({message: "Attribute not found"});
+        }
+
+        if (totalRequestedQty > attribute.quantity) {
             return res.status(400).json({
-                message: `Chỉ còn lại ${product.quantity - currentQtyInCart} sản phẩm trong kho`,
+                message: `Chỉ còn lại ${attribute.quantity} sản phẩm trong kho`,
             });
         }
 
@@ -90,7 +97,23 @@ export const updateCartQuantity = async (req: any, res: any) => {
         if (quantity < 1) {
             return res.status(400).json({message: "Quantity must be >= 1"});
         }
+const cart: ICart | null = await Cart.findById(cart_id);
 
+        if (!cart) {
+            return res.status(404).json({message: "Cart not found"});
+        }
+
+        const attribute: IProductAttribute | null = await ProductAttribute.findById(cart.value);
+
+        if (!attribute) {
+            return res.status(404).json({message: "Attribute not found"});
+        }
+
+        if (quantity > attribute.quantity) {
+            return res.status(400).json({
+                message: `Chỉ còn lại ${attribute.quantity} sản phẩm trong kho`,
+            });
+        }
         const cartItem = await Cart.findByIdAndUpdate(
             cart_id,
             {quantity},

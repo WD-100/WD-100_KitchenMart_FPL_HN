@@ -112,7 +112,7 @@ export const checkout = async (req: any, res: any) => {
             if (product) {
                 const productQty = product.quantity as number;
                 product.quantity = productQty - cart.quantity;
-                await product.save();
+                //await product.save();
             }
 
             if (option) {
@@ -207,7 +207,7 @@ export const quickOrder = async (req: any, res: any) => {
 
         product.quantity -= quantity;
         option.quantity -= quantity;
-        await product.save();
+        //await product.save();
         await option.save();
 
         await OrderHistory.create([{
