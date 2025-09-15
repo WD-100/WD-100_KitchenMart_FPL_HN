@@ -17,7 +17,7 @@ const useOrderStore = create((set) => ({
                 orderItems: res.data.data.order_items || [],
             });
         } catch (err) {
-            console.error("fetchOrder error:", err);
+            
         } finally {
             set({ loading: false });
         }
@@ -29,7 +29,7 @@ const useOrderStore = create((set) => ({
             const res = await orderService.listOrderHistories(id);
             set({ orderHistories: res.data.data || [] });
         } catch (err) {
-            console.error("fetchOrderHistories error:", err);
+           
         }
     },
 
@@ -42,12 +42,10 @@ const useOrderStore = create((set) => ({
                 useOrderStore.getState().fetchOrderHistories(id),
             ]);
         } catch (err) {
-            console.error("cancelOrder error:", err);
+         
             throw err;
         }
     },
-
-  
     updateOrderStatus: async (id, payload) => {
         try {
             await orderService.adminUpdateOrder(id, payload);
@@ -56,7 +54,6 @@ const useOrderStore = create((set) => ({
                 useOrderStore.getState().fetchOrderHistories(id),
             ]);
         } catch (err) {
-            console.error("updateOrderStatus error:", err);
             throw err;
         }
     },
