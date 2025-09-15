@@ -8,7 +8,7 @@ import {Link, useNavigate} from 'react-router-dom'
 import $ from 'jquery';
 
 function CreateCoupon() {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
     const [loading, setLoading] = useState(true);
     const [imageUrl, setImageUrl] = useState('');
 
@@ -19,22 +19,32 @@ function CreateCoupon() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val()) {
                 let text = $(inputs[i]).prev().text();
-                message.error(text + ' không được bỏ trống!');
+               message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
-                return
+                return false;
             }
         }
 
+const date1 = new Date($("#start_date").val());
+const date2 = new Date($("#end_date").val());
+
+if (date1.getTime() > date2.getTime()) {
+    $('#btnCreate').prop('disabled', false).text('Tạo mới');
+     message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
+    return false;
+  
+}
+
         const formData = new FormData($('#formCreate')[0]);
         formData.append('thumbnail', imageUrl);
+        formData.append('value',1);
         await couponService.adminCreateCoupon(formData)
             .then((res) => {
-                console.log("create property", res.data)
                 message.success("Tạo mã giảm giá thành công!")
                 navigate("/admin/coupons/list")
             })
             .catch((err) => {
-                console.log(err)
+                message.error(err.response?.message ?? 'Đã xảy ra lỗi');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
             })
     };
@@ -78,7 +88,7 @@ function CreateCoupon() {
                     <nav>
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item"><Link to="/admin/dashboard">Trang quản trị</Link></li>
-                            <li className="breadcrumb-item">Giá trị thuộc tính</li>
+                            <li className="breadcrumb-item">Mã giảm giá</li>
                             <li className="breadcrumb-item active">Tạo mã giảm giá</li>
                         </ol>
                     </nav>
@@ -96,32 +106,15 @@ function CreateCoupon() {
                                         </div>
 
                                         <div className="row">
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="discount_percent">Phần trăm giảm giá</label>
                                                 <input type="number" name="discount_percent" className="form-control"
                                                        id="discount_percent" min="0" required/>
                                             </div>
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="max_discount">Số tiền giảm giá tối đa</label>
                                                 <input type="number" name="max_discount" className="form-control"
                                                        id="max_discount" min="0" required/>
-                                            </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="value">Giá trị giảm</label>
-                                                <input type="number" name="value" className="form-control"
-                                                       id="value" min="1" required/>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="used_count">Số lần mã đã được sử dụng</label>
-                                                <input type="number" name="used_count" className="form-control"
-                                                       id="used_count" min="0" required/>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="usage_limit">Số lần mã được sử dụng tối đa</label>
-                                                <input type="number" name="usage_limit" className="form-control"
-                                                       id="usage_limit" min="1" required/>
                                             </div>
                                         </div>
                                         <div className="row">
@@ -153,7 +146,6 @@ function CreateCoupon() {
                                                 <label htmlFor="type">Loại mã giảm giá</label>
                                                 <select id="type" name="type" className="form-select">
                                                     <option value="percent">Theo phần trăm</option>
-                                                    <option value="fixed">Số tiền cố định</option>
                                                 </select>
                                             </div>
                                             <div className="form-group col-md-4">

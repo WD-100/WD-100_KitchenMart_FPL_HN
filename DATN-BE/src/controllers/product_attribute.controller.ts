@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import mongoose from "mongoose";
 import {ProductAttribute, IProductAttribute} from "../models/product_attribute.model";
 
-export const detail = async (req: Request, res: Response) => {
+export const detail = async (req: any, res: any) => {
     try {
         const {id} = req.params;
 
@@ -23,7 +23,7 @@ export const detail = async (req: Request, res: Response) => {
     }
 };
 
-export const listByProductId = async (req: Request, res: Response) => {
+export const listByProductId = async (req: any, res: any) => {
     try {
         const {id} = req.params;
 
