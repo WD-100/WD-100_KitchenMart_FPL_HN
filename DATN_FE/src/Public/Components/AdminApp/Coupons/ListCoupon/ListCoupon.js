@@ -72,11 +72,6 @@ function ListCoupon() {
             width: '10%',
         },
         {
-            title: 'Giá trị giảm giá',
-            dataIndex: 'value',
-            width: '10%',
-        },
-        {
             title: 'Giảm tối đa',
             dataIndex: 'max_discount',
             width: '10%',

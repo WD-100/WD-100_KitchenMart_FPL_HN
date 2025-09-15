@@ -50,9 +50,18 @@ function DetailCoupon() {
                 return
             }
         }
+const date1 = new Date($("#start_date").val());
+const date2 = new Date($("#end_date").val());
 
+if (date1.getTime() > date2.getTime()) {
+    $('#btnUpdate').prop('disabled', false).text('Lưu thay đổi');
+     message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
+    return false;
+  
+}
         const formData = new FormData($('#formUpdate')[0]);
         formData.append('thumbnail', imageUrl);
+        formData.append('value',1);
         await couponService.adminUpdateCoupon(id, formData)
             .then((res) => {
                 message.success("Thay đổi thành công")
@@ -123,37 +132,19 @@ function DetailCoupon() {
                                         </div>
 
                                         <div className="row">
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="discount_percent">Phần trăm giảm giá</label>
                                                 <input type="number" name="discount_percent" className="form-control"
                                                        id="discount_percent" min="0"
                                                        defaultValue={coupon.discount_percent} required/>
                                             </div>
-                                            <div className="form-group col-md-4">
+                                            <div className="form-group col-md-6">
                                                 <label htmlFor="max_discount">Số tiền giảm giá tối đa</label>
                                                 <input type="number" name="max_discount" className="form-control"
                                                        id="max_discount" min="0" defaultValue={coupon.max_discount}
                                                        required/>
                                             </div>
-                                            <div className="form-group col-md-4">
-                                                <label htmlFor="value">Giá trị giảm</label>
-                                                <input type="number" name="value" className="form-control"
-                                                       id="value" min="1" defaultValue={coupon.value} required/>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="used_count">Số lần mã đã được sử dụng</label>
-                                                <input type="number" name="used_count" className="form-control"
-                                                       id="used_count" min="0" defaultValue={coupon.used_count}
-                                                       required/>
-                                            </div>
-                                            <div className="form-group col-md-6">
-                                                <label htmlFor="usage_limit">Số lần mã được sử dụng tối đa</label>
-                                                <input type="number" name="usage_limit" className="form-control"
-                                                       id="usage_limit" min="1" defaultValue={coupon.usage_limit}
-                                                       required/>
-                                            </div>
+
                                         </div>
                                         <div className="row">
                                             <div className="form-group col-md-4">
@@ -191,9 +182,6 @@ function DetailCoupon() {
                                                 <select id="type" name="type" className="form-select">
                                                     <option selected={coupon.type === "percent"} value="percent">Theo
                                                         phần trăm
-                                                    </option>
-                                                    <option selected={coupon.type === "fixed"} value="fixed">Số tiền cố
-                                                        định
                                                     </option>
                                                 </select>
                                             </div>

@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
 import {Attribute} from "../../models/attribute.model";
 
-export const create = async (req: Request, res: Response) => {
+export const create = async (req: any, res: any) => {
     try {
         const {name} = req.body;
 
@@ -18,7 +18,7 @@ export const create = async (req: Request, res: Response) => {
     }
 };
 
-export const list = async (req: Request, res: Response) => {
+export const list = async (req: any, res: any) => {
     try {
         const attributes = await Attribute.find().sort({createdAt: -1});
         res.json(attributes);
@@ -27,7 +27,7 @@ export const list = async (req: Request, res: Response) => {
     }
 };
 
-export const detail = async (req: Request, res: Response) => {
+export const detail = async (req: any, res: any) => {
     try {
         const attribute = await Attribute.findById(req.params.id);
 
@@ -41,7 +41,7 @@ export const detail = async (req: Request, res: Response) => {
     }
 };
 
-export const update = async (req: Request, res: Response) => {
+export const update = async (req: any, res: any) => {
     try {
         const {name} = req.body;
 
@@ -61,7 +61,7 @@ export const update = async (req: Request, res: Response) => {
     }
 };
 
-export const destroy = async (req: Request, res: Response) => {
+export const destroy = async (req: any, res: any) => {
     try {
         const attribute = await Attribute.findByIdAndDelete(req.params.id);
 
