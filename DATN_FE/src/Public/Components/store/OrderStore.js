@@ -7,7 +7,7 @@ const useOrderStore = create((set) => ({
     orderHistories: [],
     loading: false,
 
-    // Lấy chi tiết đơn hàng
+    
     fetchOrder: async (id) => {
         set({ loading: true });
         try {
@@ -23,7 +23,7 @@ const useOrderStore = create((set) => ({
         }
     },
 
-    // Lấy lịch sử đơn hàng
+   
     fetchOrderHistories: async (id) => {
         try {
             const res = await orderService.listOrderHistories(id);
@@ -33,7 +33,7 @@ const useOrderStore = create((set) => ({
         }
     },
 
-    // Hủy đơn hàng (User/Admin đều dùng được)
+    
     cancelOrder: async (id, reason) => {
         try {
             await orderService.cancelOrder(id, { reason_cancel: reason });
@@ -47,7 +47,7 @@ const useOrderStore = create((set) => ({
         }
     },
 
-    // Cập nhật trạng thái đơn hàng (Admin)
+  
     updateOrderStatus: async (id, payload) => {
         try {
             await orderService.adminUpdateOrder(id, payload);
