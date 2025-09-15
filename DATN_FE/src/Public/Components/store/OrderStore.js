@@ -46,8 +46,6 @@ const useOrderStore = create((set) => ({
             throw err;
         }
     },
-
-  
     updateOrderStatus: async (id, payload) => {
         try {
             await orderService.adminUpdateOrder(id, payload);
@@ -56,7 +54,6 @@ const useOrderStore = create((set) => ({
                 useOrderStore.getState().fetchOrderHistories(id),
             ]);
         } catch (err) {
-           
             throw err;
         }
     },
