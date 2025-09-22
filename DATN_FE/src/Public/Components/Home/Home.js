@@ -93,7 +93,7 @@ function Home() {
                 </SwiperSlide>
                 <SwiperSlide>
                     <div className="site-blocks-cover"
-                         style={{backgroundImage: `url('/assets/clients/images/giadungsatos.jpg')`}}>
+                         style={{backgroundImage: `url('/assets/clients/images/banner-thiet-bi-bep.png')`}}>
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-start">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
@@ -105,7 +105,7 @@ function Home() {
                 </SwiperSlide>
                 <SwiperSlide>
                     <div className="site-blocks-cover"
-                         style={{backgroundImage: `url('/assets/clients/images/banner1.jpg')`}}>
+                         style={{backgroundImage: `url('/assets/clients/images/banner-thiet-bi-nha-bep1.jpg')`}}>
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-end">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
