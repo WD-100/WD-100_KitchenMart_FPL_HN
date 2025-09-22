@@ -136,7 +136,7 @@ function ReviewProduct() {
                                                         className={`fa-solid fa-star ${i < star ? '' : 'none_active'}`}
                                                     ></i>
                                                 ))}
-                                                {[' (Rất Tệ)', ' (Tệ)', ' (Bình thường)', ' (Tốt)', ' (Rất Tốt)'][star - 1]}
+                                                {[' (Rất Tệ)', ' (Tệ)', ' (Bình thường)', ' (Tốt)', ' (Rất Tốt)'][star]}
                                             </Radio>
                                         ))}
                                     </Radio.Group>
@@ -180,10 +180,11 @@ function ReviewProduct() {
                             <tr>
                                 <td><b>Số sao</b></td>
                                 <td>
-                                    {Array.from({length: 5}).map((_, i) => (
+                                   {Array.from({ length: 5 }).map((_, i) => (
                                         <i
                                             key={i}
-                                            className={`fa-solid fa-star ${i < review.stars ? 'filled' : ''}`}
+                                            className={`${i < review.stars ? 'fa-solid' : 'fa-regular'} fa-star`}
+                                            style={{ color: i < review.stars ? 'gold' : '#ccc' }}
                                         />
                                     ))}
                                 </td>
