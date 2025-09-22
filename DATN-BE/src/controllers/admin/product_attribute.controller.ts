@@ -1,8 +1,9 @@
 import {Request, Response} from "express";
 import mongoose from "mongoose";
 import {ProductAttribute, IProductAttribute} from "../../models/product_attribute.model";
+import {Product} from "../../models/product.model";
 
-export const list = async (req: any, res: any) => {
+export const list = async (req: Request, res: Response) => {
     try {
         const attributes = await ProductAttribute.find()
             .populate("product_id", "title")
@@ -14,7 +15,7 @@ export const list = async (req: any, res: any) => {
     }
 };
 
-export const detail = async (req: any, res: any) => {
+export const detail = async (req: Request, res: Response) => {
     try {
         const {id} = req.params;
 
@@ -35,7 +36,7 @@ export const detail = async (req: any, res: any) => {
     }
 };
 
-export const listByProductId = async (req: any, res: any) => {
+export const listByProductId = async (req: Request, res: Response) => {
     try {
         const {product_id} = req.params;
 
@@ -54,7 +55,7 @@ export const listByProductId = async (req: any, res: any) => {
 };
 
 
-export const create = async (req: any, res: any) => {
+export const create = async (req: Request, res: Response) => {
     try {
         const {product_id, attribute_id, quantity, price, sale_price} = req.body;
 
@@ -78,6 +79,21 @@ export const create = async (req: any, res: any) => {
         });
 
         const saved = await newProductAttribute.save();
+
+        const attributes = await ProductAttribute.find({product_id})
+
+        const product = await Product.findById({_id: product_id, is_deleted: false});
+
+        let qty = 0;
+        for (const attribute of attributes) {
+            qty += attribute.quantity;
+        }
+
+        if (product) {
+            product.quantity = qty;
+            await product.save();
+        }
+
         return res.status(201).json(saved);
     } catch (err) {
         console.error(err);
@@ -85,7 +101,7 @@ export const create = async (req: any, res: any) => {
     }
 };
 
-export const update = async (req: any, res: any) => {
+export const update = async (req: Request, res: Response) => {
     try {
         const {id} = req.params;
         const updateData = req.body;
@@ -112,6 +128,22 @@ export const update = async (req: any, res: any) => {
 
         if (!updated) return res.status(404).json({message: "Not found"});
 
+        const product_id = updateData.product_id;
+
+        const attributes = await ProductAttribute.find({product_id})
+
+        const product = await Product.findById({_id: product_id, is_deleted: false});
+
+        let qty = 0;
+        for (const attribute of attributes) {
+            qty += attribute.quantity;
+        }
+
+        if (product) {
+            product.quantity = qty;
+            await product.save();
+        }
+
         return res.json(updated);
     } catch (err) {
         console.error(err);
@@ -119,7 +151,7 @@ export const update = async (req: any, res: any) => {
     }
 };
 
-export const destroy = async (req: any, res: any) => {
+export const destroy = async (req: Request, res: Response) => {
     try {
         const {id} = req.params;
 

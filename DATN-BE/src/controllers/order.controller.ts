@@ -4,6 +4,7 @@ import {toNumber} from "../utils/number_formater";
 import {returnMessage} from "../utils/response";
 import {Product} from "../models/product.model";
 import {OrderHistory} from "../models/order_history.model";
+import {IProductAttribute, ProductAttribute} from "../models/product_attribute.model";
 
 export const list = async (req: any, res: any) => {
     try {
@@ -122,6 +123,14 @@ export const cancel = async (req: any, res: any) => {
                 if (product && typeof product.quantity === "number" && typeof item.quantity === "number") {
                     product.quantity += item.quantity;
                     await product.save();
+                }
+            }
+
+            const option: IProductAttribute | null = await ProductAttribute.findById(item.value);
+            if (option) {
+                if (typeof item.quantity === "number") {
+                    option.quantity += item.quantity;
+                    await option.save();
                 }
             }
         }

@@ -85,7 +85,6 @@ export const create = async (req: any, res: any) => {
             title,
             description,
             image,
-            quantity,
             price,
             sale_price,
             photo_library,
@@ -95,9 +94,7 @@ export const create = async (req: any, res: any) => {
             is_hot,
         } = req.body;
 
-        console.log(is_hot);
-
-        if (!title || !sale_price || !quantity || !categories_id) {
+        if (!title || !sale_price || !categories_id) {
             return res.status(400).json({
                 message:
                     "Vui lòng cung cấp đầy đủ: title, sale_price, quantity, categories_id",
@@ -112,7 +109,7 @@ export const create = async (req: any, res: any) => {
             description: description || "",
             image: image || "",
             code,
-            quantity: parseInt(quantity),
+            quantity: 0,
             price,
             sale_price: sale_price || null,
             photo_library: photo_library || [],
@@ -137,7 +134,6 @@ export const update = async (req: any, res: any) => {
     const {
         title,
         description,
-        quantity,
         price,
         categories_id,
         sale_price,
@@ -187,7 +183,6 @@ export const update = async (req: any, res: any) => {
             product.price = mongoose.Types.Decimal128.fromString(price.toString());
         }
         if (categories_id !== undefined) product.categories_id = categories_id;
-        if (quantity !== undefined) product.quantity = quantity;
         if (image !== undefined) product.image = image;
         if (is_active !== undefined) product.is_active = is_active;
         if (short_description !== undefined) product.short_description = short_description;

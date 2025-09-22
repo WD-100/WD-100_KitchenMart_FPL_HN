@@ -221,24 +221,17 @@ function UpdateProduct() {
                                                defaultValue={product.title} required/>
                                     </div>
                                     <div className="row">
-                                        <div className="form-group col-md-4">
+                                        <div className="form-group col-md-6">
                                             <label htmlFor="price">Giá cũ</label>
                                             <input type="number" min="1" className="form-control form_input_"
                                                    id="price"
                                                    defaultValue={product.price} name="price" required/>
                                         </div>
-                                        <div className="form-group col-md-4">
+                                        <div className="form-group col-md-6">
                                             <label htmlFor="sale_price">Giá mới</label>
                                             <input type="number" className="form-control form_input_"
                                                    id="sale_price" min="1"
                                                    name="sale_price" defaultValue={product.sale_price}
-                                                   required/>
-                                        </div>
-                                        <div className="form-group col-md-4">
-                                            <label htmlFor="quantity">Số lượng</label>
-                                            <input type="number" min="1" className="form-control form_input_"
-                                                   id="quantity"
-                                                   name="quantity" defaultValue={product.quantity}
                                                    required/>
                                         </div>
                                     </div>
