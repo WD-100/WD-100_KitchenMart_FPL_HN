@@ -34,6 +34,7 @@ function Checkout() {
             const res = await accountService.getInfo();
             setUser(res.data);
         } catch (err) {
+            console.error(err);
             navigate('/login');
         }
     };
@@ -50,6 +51,7 @@ function Checkout() {
             })
             setCarts(carts);
         } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -68,6 +70,7 @@ function Checkout() {
                 message.error('Không tìm thấy mã giảm giá hợp lệ');
             }
         } catch (err) {
+            console.error(err);
             message.error('Không tìm thấy mã giảm giá hợp lệ');
         } finally {
             setLoading(false);
@@ -97,9 +100,17 @@ function Checkout() {
         }, 0);
 
         const totalAfterDiscount = totalProductCost - discountPrice;
-        console.log(totalAfterDiscount, discountPrice, totalProductCost);
-        setTotalProduct(totalProductCost);
-        setTotal(totalAfterDiscount);
+
+        if (quick_buy_product) {
+            const totalQuick = quick_buy_product.quantity * quick_buy_product.product_price ;
+            const totalAfterDiscountQuick = totalQuick - discountPrice;
+
+            setTotalProduct(totalQuick);
+            setTotal(totalAfterDiscountQuick);
+        } else {
+            setTotalProduct(totalProductCost);
+            setTotal(totalAfterDiscount);
+        }
     };
 
     useEffect(() => {
@@ -177,23 +188,28 @@ function Checkout() {
                 if (quick_buy_product) {
                     const res = await orderService.createQuickOrder(data);
                     sessionStorage.removeItem('quick_buy_product');
+                    console.log('Đặt hàng thành công:', res.data);
                 } else {
                     const res = await orderService.createOrder(data);
+                    console.log('Đặt hàng thành công:', res.data);
                 }
                 message.success('Đặt hàng thành công!');
                 navigate('/thanks-you');
             } else {
                 if (quick_buy_product) {
                     const res = await orderService.createQuickOrderVnpay(data);
+                    console.log('Đặt hàng thành công:', res.data);
                     localStorage.setItem('order_info', JSON.stringify(data));
                     window.location.href = res.data.data;
                 } else {
                     const res = await orderService.createOrderVnpay(data);
+                    console.log('Đặt hàng thành công:', res.data);
                     localStorage.setItem('order_info', JSON.stringify(data));
                     window.location.href = res.data.data;
                 }
             }
         } catch (err) {
+            console.error('Lỗi đặt hàng:', err);
             message.error('Xây ra lỗi trong qua trình đặt hàng!');
         } finally {
             setLoading(false);
