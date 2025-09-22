@@ -1,6 +1,6 @@
 import {Cart, ICart} from "../models/cart.model";
 import {IProduct, Product} from "../models/product.model";
-import { IProductAttribute, ProductAttribute } from "../models/product_attribute.model";
+import {IProductAttribute, ProductAttribute} from "../models/product_attribute.model";
 
 export const addToCart = async (req: any, res: any) => {
     try {
@@ -97,7 +97,8 @@ export const updateCartQuantity = async (req: any, res: any) => {
         if (quantity < 1) {
             return res.status(400).json({message: "Quantity must be >= 1"});
         }
-const cart: ICart | null = await Cart.findById(cart_id);
+
+        const cart: ICart | null = await Cart.findById(cart_id);
 
         if (!cart) {
             return res.status(404).json({message: "Cart not found"});
@@ -114,6 +115,7 @@ const cart: ICart | null = await Cart.findById(cart_id);
                 message: `Chỉ còn lại ${attribute.quantity} sản phẩm trong kho`,
             });
         }
+
         const cartItem = await Cart.findByIdAndUpdate(
             cart_id,
             {quantity},
