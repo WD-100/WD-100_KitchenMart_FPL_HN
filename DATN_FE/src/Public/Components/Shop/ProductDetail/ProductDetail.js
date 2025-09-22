@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Form, message } from 'antd';
+import React, {useEffect, useRef, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {Form, message} from 'antd';
 import cartService from '../../Service/CartService';
 import Header from "../../Shared/Client/Header/Header";
 import Footer from "../../Shared/Client/Footer/Footer";
 import productService from "../../Service/ProductService";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Pagination} from "swiper/modules";
 import LoadingPage from "../../Shared/Utils/LoadingPage";
 import ConvertCurrency from "../../Shared/Utils/ConvertCurrency";
 import reviewService from "../../Service/ReviewService";
-import { useCart } from "../../store/CartContext";
+import {useCart} from "../../store/CartContext";
 
 function ProductDetail() {
-    const { setCartCount } = useCart();
+    const {setCartCount} = useCart();
 
-    const { slug } = useParams();
+    const {slug} = useParams();
     const [product, setProduct] = useState({});
     const [reviews, setReviews] = useState([]);
     const [category, setCategory] = useState(null);
@@ -23,6 +23,7 @@ function ProductDetail() {
     const [optionsProduct, setOptionsProduct] = useState([]);
     const [option, setOption] = useState(null);
     const [optionSelected, setOptionSelected] = useState(null);
+    const [optionNameSelected, setOptionNameSelected] = useState(null);
     const quantityRef = useRef(null);
     const productImageRef = useRef(null);
     const listImagesRef = useRef(null);
@@ -47,6 +48,7 @@ function ProductDetail() {
                 await fetchReviews(product.id);
                 await fetchProductOptions(product.id);
             } catch (err) {
+                console.error(err);
             }
         };
 
@@ -55,6 +57,7 @@ function ProductDetail() {
                 const res = await reviewService.getReviewByProduct(productId);
                 setReviews(res.data.data);
             } catch (err) {
+                console.error(err);
             }
         };
 
@@ -63,6 +66,7 @@ function ProductDetail() {
                 const res = await productService.listOptionProduct(productId);
                 setOptionsProduct(res.data);
             } catch (err) {
+                console.error(err);
             }
         };
 
@@ -93,11 +97,7 @@ function ProductDetail() {
         LoadingPage();
         const userId = sessionStorage.getItem('id') || '';
         const quantity = quantityRef.current?.value || '1';
-        if (quantity > option.quantity) {
-            LoadingPage();
-            message.error('Không đủ số lượng sản phẩm mong muốn!');
-            return false;
-        }
+
         const data = {
             product_id: product.id,
             value: optionSelected,
@@ -113,11 +113,11 @@ function ProductDetail() {
             setCartCount(res.data.data.length);
         } catch (err) {
             LoadingPage();
+            console.error(err.response?.data?.message);
             const state = err.response?.status;
             if (state === 401 || state === 403) {
                 message.error('Vui lòng đăng nhập để tiếp tục!');
             }
-            message.error(err.response?.message ?? 'Đã xảy ra lỗi!');
         }
     };
 
@@ -138,6 +138,7 @@ function ProductDetail() {
         const data = {
             product_id: product.id,
             product_value: optionSelected,
+            product_option_name: optionNameSelected,
             product_name: product.title,
             product_image: product.image,
             product_price: option.sale_price,
@@ -151,6 +152,7 @@ function ProductDetail() {
             window.location.href = '/checkout';
         } catch (err) {
             LoadingPage();
+            console.error(err.response?.data?.message);
             const state = err.response?.status;
             if (state === 401 || state === 403) {
                 message.error('Vui lòng đăng nhập để tiếp tục!');
@@ -181,16 +183,17 @@ function ProductDetail() {
         e.target.value = val;
     };
 
-    const selectOption = async (el, id) => {
+    const selectOption = async (el, id, name) => {
         const res = await productService.detailOptionProduct(id);
         setOption(res.data);
 
         setOptionSelected(id);
+        setOptionNameSelected(name);
     }
 
     return (
         <div className="site-wrap">
-            <Header />
+            <Header/>
             <div className="bg-light py-3">
                 <div className="container">
                     <div className="row">
@@ -205,12 +208,12 @@ function ProductDetail() {
             <div className="site-section">
                 <div className="container">
                     <Form className="row" onFinish={addToCart}>
-                        <input type="text" className="d-none" id="product_option" />
+                        <input type="text" className="d-none" id="product_option"/>
                         <div className="col-md-6">
                             <img ref={productImageRef} src={product.image} alt="Image" className="img-fluid"
-                                style={{ width: '100%', height: '500px' }} />
+                                 style={{width: '100%', height: '500px'}}/>
                             <div ref={listImagesRef}
-                                className="d-flex align-items-center justify-content-start flex-wrap gap-2 mt-3"></div>
+                                 className="d-flex align-items-center justify-content-start flex-wrap gap-2 mt-3"></div>
                         </div>
 
                         <div className="col-md-6">
@@ -233,17 +236,17 @@ function ProductDetail() {
                                     <div className="option_item" key={optionIndex}>
                                         <div className="mb-1 d-flex">
                                             <label htmlFor={`option-${option.id}`} className="d-flex mb-1"
-                                                key={optionIndex}>
-                                                <span className="d-inline-block mr-2"
-                                                    style={{ top: '0px', position: 'relative' }}>
-                                                    <input type="radio"
-                                                        onChange={(e) => selectOption(e.target, option.id)}
-                                                        className="input_option_"
-                                                        data-value={option.id}
-                                                        value={option.id}
-                                                        id={`option-${option.id}`}
-                                                        name="option_product" />
-                                                </span>
+                                                   key={optionIndex}>
+                                                                    <span className="d-inline-block mr-2"
+                                                                          style={{top: '0px', position: 'relative'}}>
+                                                                        <input type="radio"
+                                                                               onChange={(e) => selectOption(e.target, option.id, option.attribute_id.name)}
+                                                                               className="input_option_"
+                                                                               data-value={option.id}
+                                                                               value={option.id}
+                                                                               id={`option-${option.id}`}
+                                                                               name="option_product"/>
+                                                                    </span>
                                                 <span
                                                     className="d-inline-block text-black">{option.attribute_id.name}</span>
                                             </label>
@@ -252,17 +255,17 @@ function ProductDetail() {
 
                             </div>
                             <div className="mb-2">
-                                <div className="input-group mb-3" style={{ maxWidth: '150px' }}>
+                                <div className="input-group mb-3" style={{maxWidth: '150px'}}>
                                     <div className="input-group-prepend">
                                         <button type="button" className="btn btn-outline-primary"
-                                            onClick={minusQuantity}>-
+                                                onClick={minusQuantity}>-
                                         </button>
                                     </div>
                                     <input ref={quantityRef} defaultValue="1" min="0" max={product.quantity} type="text"
-                                        className="form-control text-center" onInput={checkInput} />
+                                           className="form-control text-center" onInput={checkInput}/>
                                     <div className="input-group-append">
                                         <button type="button" className="btn btn-outline-primary"
-                                            onClick={plusQuantity}>+
+                                                onClick={plusQuantity}>+
                                         </button>
                                     </div>
                                 </div>
@@ -275,9 +278,9 @@ function ProductDetail() {
                                 ) : (
                                     <>
                                         <button type="button" className="btn btn-sm btn-danger mb-2 mt-4"
-                                            onClick={() => quickBuyProduct()}>Mua ngay
+                                                onClick={() => quickBuyProduct()}>Mua ngay
                                         </button>
-                                        <br />
+                                        <br/>
                                         <button type="submit" className="buy-now btn btn-sm btn-primary">Thêm vào giỏ
                                             hàng
                                         </button>
@@ -288,9 +291,9 @@ function ProductDetail() {
 
                         <div className="col-md-12" id="product_description_area_">
                             <p ref={descriptionRef} className="product_description_"
-                                dangerouslySetInnerHTML={{ __html: product.description }}></p>
+                               dangerouslySetInnerHTML={{__html: product.description}}></p>
                             <button ref={btnReadmoreRef} type="button" onClick={handleShowDescription}
-                                className="btn btn-outline-primary">Xem thêm
+                                    className="btn btn-outline-primary">Xem thêm
                             </button>
                         </div>
                     </Form>
@@ -302,11 +305,11 @@ function ProductDetail() {
                             {reviews.map((review, index) => (
                                 <div key={index} className="review-card">
                                     <div className="review-header">
-                                        <img src={review.user.avatar} alt="Avatar" className="review-avatar" />
+                                        <img src={review.user.avatar} alt="Avatar" className="review-avatar"/>
                                         <div className="review-user-info">
                                             <span className="review-user-email">{review.user.email}</span>
                                             <div className="review-stars">
-                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                {Array.from({length: 5}).map((_, i) => (
                                                     <i
                                                         key={i}
                                                         className={`fa-solid fa-star ${i < review.stars ? 'filled-star' : 'empty-star'}`}
@@ -320,7 +323,7 @@ function ProductDetail() {
                                         <div className="review-title">{review.title}</div>
                                         <div className="review-content">{review.content}</div>
                                         <img src={review.thumbnail}
-                                            style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8 }}
+                                             style={{width: 100, height: 100, objectFit: 'cover', borderRadius: 8}}
                                         />
                                     </div>
                                 </div>
@@ -342,7 +345,7 @@ function ProductDetail() {
                             <Swiper
                                 slidesPerView={3}
                                 spaceBetween={30}
-                                pagination={{ clickable: true }}
+                                pagination={{clickable: true}}
                                 modules={[Pagination]}
                                 className="mySwiper"
                             >
@@ -355,12 +358,12 @@ function ProductDetail() {
                                                         src={p.image || "/assets/clients/images/no-image.jpg"}
                                                         alt={p.title || "Image placeholder"}
                                                         className="img-fluid"
-                                                        style={{ width: '100%', height: '300px', }}
+                                                        style={{width: '100%', height: '300px',}}
                                                     />
                                                 </figure>
                                                 <div className="block-4-text p-4">
                                                     <h3><a className="text_truncate_"
-                                                        href={'/products/' + p.slug}>{p.title || "Product Name"}</a>
+                                                           href={'/products/' + p.slug}>{p.title || "Product Name"}</a>
                                                     </h3>
                                                     <p className="text-danger font-weight-bold">
                                                         {ConvertCurrency(p.sale_price || 0)}
@@ -372,13 +375,13 @@ function ProductDetail() {
                                             </a>
                                         </div>
                                     </SwiperSlide>
-                                )) : <p>Không tìm thấy sản phẩm liên quan</p>}
+                                )) : <p>No products available</p>}
                             </Swiper>
                         </div>
                     </div>
                 </div>
             </div>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

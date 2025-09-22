@@ -157,6 +157,7 @@ export const quickOrder = async (req: any, res: any) => {
             c_order_notes: notes,
             order_method,
             product_value,
+            coupon_id = null,
         } = req.body;
 
         const address = `${c_address}, ${d_address}`;
@@ -171,11 +172,30 @@ export const quickOrder = async (req: any, res: any) => {
             return res.status(400).json({message: "Sản phẩm không đủ số lượng."});
         }
 
+        if (coupon_id) {
+            const coupon = await Coupon.findById(coupon_id);
+            if (coupon) {
+                coupon.used_count = (coupon.used_count || 0) + 1;
+                await coupon.save();
+            }
+
+            const myCoupon = await MyCoupon.findOne({
+                user_id,
+                coupon_id,
+                status: "UNUSED",
+            });
+
+            if (myCoupon) {
+                myCoupon.status = MyCouponStatus.USED;
+                await myCoupon.save();
+            }
+        }
+
         const unit_price = Number(option.sale_price || 0);
         const products_price = Decimal128.fromString(String(unit_price * quantity));
-        const shipping_price = Decimal128.fromString("0");
-        const discount_price = Decimal128.fromString("0");
-        const total_price = Decimal128.fromString(String(unit_price * quantity));
+        const shipping_price = Decimal128.fromString(String(req.body.c_shipping_price || "0"));
+        const discount_price = Decimal128.fromString(String(req.body.c_discount_price || "0"));
+        const total_price = Decimal128.fromString(String(unit_price * quantity - req.body.c_discount_price));
 
         const order = new Order({
             full_name,
@@ -190,6 +210,7 @@ export const quickOrder = async (req: any, res: any) => {
             order_method,
             status: "PENDING",
             user_id,
+            coupon_id: coupon_id || null,
         });
 
         await order.save();
@@ -205,10 +226,17 @@ export const quickOrder = async (req: any, res: any) => {
             image: product.image ?? null,
         }]);
 
-        product.quantity -= quantity;
-        option.quantity -= quantity;
-        await product.save();
-        await option.save();
+        if (product) {
+            const productQty = product.quantity as number;
+            product.quantity = productQty - quantity;
+            await product.save();
+        }
+
+        if (option) {
+            const oldQty = option.quantity as number;
+            option.quantity = oldQty - quantity;
+            await option.save();
+        }
 
         await OrderHistory.create([{
             order_id: order._id,

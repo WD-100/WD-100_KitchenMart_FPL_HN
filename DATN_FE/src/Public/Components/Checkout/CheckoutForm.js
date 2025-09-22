@@ -21,7 +21,7 @@ function CheckoutForm({
                       }) {
 
     if (!carts) {
-        totalProduct = total = quickProduct.quantity * quickProduct.product_price;
+        totalProduct = quickProduct.quantity * quickProduct.product_price;
     }
 
     return (
@@ -121,39 +121,34 @@ function CheckoutForm({
                 {/* RIGHT SIDE - Coupon + Cart Summary */}
                 <div className="col-md-6">
 
-                    {!carts ? (
-                        <>
-                        </>
-                    ) : (
-                        <div className="row mb-5">
-                            <div className="col-md-12">
-                                <h2 className="h3 mb-3 text-black">Mã giảm giá</h2>
-                                <div className="p-3 p-lg-5 border">
-                                    <label htmlFor="coupon_code" className="text-black mb-3">Nhập mã giảm giá của
-                                        bạn...</label>
-                                    <div className="input-group w-75">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="coupon_code"
-                                            value={couponCode}
-                                            onChange={(e) => setCouponCode(e.target.value)}
-                                            placeholder="Nhập mã giảm giá"
-                                        />
-                                        <div className="input-group-append">
-                                            <button
-                                                className="btn btn-primary btn-sm"
-                                                type="button"
-                                                onClick={getCoupon}
-                                            >
-                                                Xác nhận
-                                            </button>
-                                        </div>
+                    <div className="row mb-5">
+                        <div className="col-md-12">
+                            <h2 className="h3 mb-3 text-black">Mã giảm giá</h2>
+                            <div className="p-3 p-lg-5 border">
+                                <label htmlFor="coupon_code" className="text-black mb-3">Nhập mã giảm giá của
+                                    bạn...</label>
+                                <div className="input-group w-75">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="coupon_code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        placeholder="Nhập mã giảm giá"
+                                    />
+                                    <div className="input-group-append">
+                                        <button
+                                            className="btn btn-primary btn-sm"
+                                            type="button"
+                                            onClick={getCoupon}
+                                        >
+                                            Xác nhận
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     <div className="row mb-5">
                         <div className="col-md-12">
@@ -169,7 +164,10 @@ function CheckoutForm({
                                     <tbody>
                                     {!carts ? (
                                         <tr>
-                                            <td><strong>{quickProduct.product_name}</strong></td>
+                                            <td>
+                                                <strong>{quickProduct.product_name}</strong>
+                                                <p>Loại: {quickProduct.product_option_name}</p>
+                                            </td>
                                             <td>
                                                 <strong>{ConvertCurrency(quickProduct.quantity * quickProduct.product_price)}</strong>
                                             </td>
