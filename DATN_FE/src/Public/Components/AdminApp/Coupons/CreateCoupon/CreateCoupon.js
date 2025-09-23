@@ -8,7 +8,7 @@ import {Link, useNavigate} from 'react-router-dom'
 import $ from 'jquery';
 
 function CreateCoupon() {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [imageUrl, setImageUrl] = useState('');
 
@@ -19,24 +19,32 @@ function CreateCoupon() {
         for (let i = 0; i < inputs.length; i++) {
             if (!$(inputs[i]).val()) {
                 let text = $(inputs[i]).prev().text();
-               message.error(text + ' không được bỏ trống!');
+                message.error(text + ' không được bỏ trống!');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
                 return false;
             }
         }
 
-const date1 = new Date($("#start_date").val());
-const date2 = new Date($("#end_date").val());
+        const date1 = new Date($("#start_date").val());
+        const date2 = new Date($("#end_date").val());
 
-if (date1.getTime() > date2.getTime()) {
-    $('#btnCreate').prop('disabled', false).text('Tạo mới');
-     message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
-    return false;
-  
-}
+        if (date1.getTime() > date2.getTime()) {
+            $('#btnCreate').prop('disabled', false).text('Tạo mới');
+            message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
+            return false;
+
+        }
 
         const formData = new FormData($('#formCreate')[0]);
         formData.append('thumbnail', imageUrl);
+        let discount = formData.get("discount_percent");
+        if(discount >100 ){
+           message.error('Phần trăm Giảm giá Không Hợp Lệ');
+        return false;}
+        let min_order = formData.get("min_order_value");
+        if(min_order <10000 ){
+           message.error('đơn hàng tối thiếu phải lớn hơn 10000');
+        return false;}
         formData.append('value',1);
         await couponService.adminCreateCoupon(formData)
             .then((res) => {
@@ -44,7 +52,8 @@ if (date1.getTime() > date2.getTime()) {
                 navigate("/admin/coupons/list")
             })
             .catch((err) => {
-                message.error(err.response?.message ?? 'Đã xảy ra lỗi');
+                console.log(err.response)
+                message.error(err.response?.data?.message ?? 'Đã xảy ra lỗi');
                 $('#btnCreate').prop('disabled', false).text('Tạo mới');
             })
     };
@@ -109,12 +118,12 @@ if (date1.getTime() > date2.getTime()) {
                                             <div className="form-group col-md-6">
                                                 <label htmlFor="discount_percent">Phần trăm giảm giá</label>
                                                 <input type="number" name="discount_percent" className="form-control"
-                                                       id="discount_percent" min="0" required/>
+                                                       id="discount_percent" min="1" max="100" required/>
                                             </div>
                                             <div className="form-group col-md-6">
                                                 <label htmlFor="max_discount">Số tiền giảm giá tối đa</label>
                                                 <input type="number" name="max_discount" className="form-control"
-                                                       id="max_discount" min="0" required/>
+                                                       id="max_discount" min="1" required/>
                                             </div>
                                         </div>
                                         <div className="row">
@@ -131,7 +140,7 @@ if (date1.getTime() > date2.getTime()) {
                                             <div className="form-group col-md-4">
                                                 <label htmlFor="min_order_value">Giá trị đơn hàng tối thiểu</label>
                                                 <input type="number" name="min_order_value" className="form-control"
-                                                       id="min_order_value" min="0" required/>
+                                                       id="min_order_value" min="10000" required/>
                                             </div>
                                         </div>
                                         <div className="row">

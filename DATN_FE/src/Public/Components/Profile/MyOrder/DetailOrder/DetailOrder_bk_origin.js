@@ -52,7 +52,7 @@ function DetailOrder() {
                 message.success('Hủy đơn hàng thành công!');
                 detailOrder();
             } catch (err) {
-                const mess = err.response?.data?.message || 'Có lỗi xảy ra';
+                const mess = err.response?.data?.data?.message || 'Có lỗi xảy ra';
                 message.error('Thất bại ' + mess);
             }
         }

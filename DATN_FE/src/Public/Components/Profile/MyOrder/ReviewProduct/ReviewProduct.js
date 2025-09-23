@@ -180,7 +180,7 @@ function ReviewProduct() {
                             <tr>
                                 <td><b>Số sao</b></td>
                                 <td>
-                                   {Array.from({ length: 5 }).map((_, i) => (
+                                    {Array.from({ length: 5 }).map((_, i) => (
                                         <i
                                             key={i}
                                             className={`${i < review.stars ? 'fa-solid' : 'fa-regular'} fa-star`}

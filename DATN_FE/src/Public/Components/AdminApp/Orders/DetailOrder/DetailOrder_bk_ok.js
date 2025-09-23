@@ -95,7 +95,7 @@ function DetailOrder() {
                 } catch (err) {
                     message.error(
                         "Thất bại: " +
-                        (err.response?.data?.message || "Lỗi không xác định")
+                        (err.response?.data?.data?.message || "Lỗi không xác định")
                     );
                 }
             },
@@ -120,7 +120,7 @@ function DetailOrder() {
             setReasonCancel("");
         } catch (err) {
             message.error(
-                "Thất bại: " + (err.response?.data?.message || "Lỗi không xác định")
+                "Thất bại: " + (err.response?.data?.data?.message || "Lỗi không xác định")
             );
         }
     };

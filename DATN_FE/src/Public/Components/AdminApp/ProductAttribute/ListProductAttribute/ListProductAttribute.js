@@ -103,7 +103,7 @@ function ListProductAttribute() {
             render: (product) => product?.title || "",
         },
         {
-            title: 'Tên thuộc tính',
+            title: 'Tên Biến Thể',
             dataIndex: 'attribute_id',
             width: '20%',
             render: (attribute) => attribute?.name || "",
@@ -221,19 +221,19 @@ function ListProductAttribute() {
 
             <main id="main" className="main">
                 <div className="pagetitle">
-                    <h1>Danh sách thuộc tính sản phẩm</h1>
+                    <h1>Danh sách Biến Thể sản phẩm</h1>
                     <nav>
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item"><Link to="/admin/dashboard">Trang quản trị</Link></li>
-                            <li className="breadcrumb-item">Thuộc tính</li>
-                            <li className="breadcrumb-item active">Danh sách thuộc tính</li>
+                            <li className="breadcrumb-item">Biến Thể</li>
+                            <li className="breadcrumb-item active">Danh sách Biến Thể</li>
                         </ol>
                     </nav>
                 </div>
                 {/* End Page Title */}
                 <div className="row">
                     <div className="mb-3 col-md-3">
-                        <h5>Tìm kiếm thuộc tính</h5>
+                        <h5>Tìm kiếm Biến Thể</h5>
                         <input className="form-control" id="inputSearchCategory" type="text"
                                placeholder="Nhập từ khóa..."/>
                         <br/>

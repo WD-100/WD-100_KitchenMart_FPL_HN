@@ -10,7 +10,7 @@ import {IProductAttribute, ProductAttribute} from "../../models/product_attribut
 
 export const list = async (req: any, res: any) => {
     try {
-        const {status, user_id} = req.query;
+        const { status, user_id, limit } = req.query;
 
         const filter: any = {};
 
@@ -24,7 +24,13 @@ export const list = async (req: any, res: any) => {
             filter.user_id = user_id;
         }
 
-        const orders = await Order.find(filter).sort({_id: -1});
+        let query = Order.find(filter).sort({ _id: -1 });
+
+        if (limit) {
+            query = query.limit(parseInt(limit as string, 10));
+        }
+
+        const orders = await query;
 
         const enrichedOrders = await Promise.all(
             orders.map(async (order) => {

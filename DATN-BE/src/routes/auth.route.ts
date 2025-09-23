@@ -80,6 +80,10 @@ router.post(
                 return res.status(500).json({message: "Định dạng mật khẩu không hợp lệ"});
             }
 
+            if (user.is_deleted) {
+                return res.status(400).json({message: "Tài khoản đã bị xoá"});
+            }
+
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch)
                 return res

@@ -112,13 +112,13 @@ function DetailProductAttribute() {
             <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
-                    <h1>Chỉnh sửa thuộc tính sản phẩm</h1>
+                    <h1>Chỉnh sửa Biến Thể sản phẩm</h1>
                     <nav>
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item">
                                 <Link to="/admin/dashboard">Trang quản trị</Link>
                             </li>
-                            <li className="breadcrumb-item">Thuộc tính sản phẩm</li>
+                            <li className="breadcrumb-item">Biến Thể sản phẩm</li>
                             <li className="breadcrumb-item active">Chỉnh sửa</li>
                         </ol>
                     </nav>
@@ -129,7 +129,7 @@ function DetailProductAttribute() {
                         <div className="col-lg-12">
                             <div className="card">
                                 <div className="card-body">
-                                    <h5 className="card-title">Chỉnh sửa thuộc tính sản phẩm</h5>
+                                    <h5 className="card-title">Chỉnh sửa Biến Thể sản phẩm</h5>
 
                                     <form onSubmit={handleSubmit}>
                                         <div className="row">
@@ -152,7 +152,7 @@ function DetailProductAttribute() {
                                             </div>
 
                                             <div className="form-group col-md-6">
-                                                <label htmlFor="attribute_id">Lựa chọn thuộc tính</label>
+                                                <label htmlFor="attribute_id">Lựa chọn Biến Thể</label>
                                                 <select
                                                     id="attribute_id"
                                                     name="attribute_id"
@@ -160,7 +160,7 @@ function DetailProductAttribute() {
                                                     value={formData.attribute_id}
                                                     onChange={handleChange}
                                                 >
-                                                    <option value="">Lựa chọn thuộc tính</option>
+                                                    <option value="">Lựa chọn Biến Thể</option>
                                                     {attributes.map((a) => (
                                                         <option key={a._id} value={a._id}>
                                                             {a.name}
