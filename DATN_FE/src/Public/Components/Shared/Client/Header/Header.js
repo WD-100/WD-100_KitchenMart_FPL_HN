@@ -99,7 +99,7 @@ function HeaderClient() {
         let maxPrice = $('#max-price').val() ?? '';
         let optionVal = option_param ?? '';
 
-        let searchUrl = `${baseurl}?keyword=${keyword}&size=${size}&category=${category}&sort=${sort}&minPrice=${minPrice}&maxPrice=${maxPrice}&option=${optionVal}`;
+        let searchUrl = `${baseurl}?keyword=${keyword}&size=${size}&category=${categoryID}&sort=${sort}&minPrice=${minPrice}&maxPrice=${maxPrice}&option=${optionVal}`;
         console.log(searchUrl);
         window.location.href = searchUrl;
     }
