@@ -93,7 +93,7 @@ function Home() {
                 </SwiperSlide>
                 <SwiperSlide>
                     <div className="site-blocks-cover"
-                         style={{backgroundImage: `url('/assets/clients/images/giadungsatos.jpg')`}}>
+                         style={{backgroundImage: `url('/assets/clients/images/banner-thiet-bi-bep1.png')`}}>
                         <div className="container">
                             <div className="row align-items-start align-items-md-center justify-content-start">
                                 <div className="col-md-5 text-center text-md-left pt-5 pt-md-0">
