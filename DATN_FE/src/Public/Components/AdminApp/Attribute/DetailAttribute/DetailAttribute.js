@@ -50,14 +50,14 @@ function DetailAttribute() {
             <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
-                    <h1>Chỉnh sửa thuộc tính</h1>
+                    <h1>Chỉnh sửa Biến Thể</h1>
                     <nav>
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item">
                                 <Link to="/admin/dashboard">Trang quản trị</Link>
                             </li>
-                            <li className="breadcrumb-item">Thuộc tính</li>
-                            <li className="breadcrumb-item active">Chỉnh sửa thuộc tính</li>
+                            <li className="breadcrumb-item">Biến Thể</li>
+                            <li className="breadcrumb-item active">Chỉnh sửa Biến Thể</li>
                         </ol>
                     </nav>
                 </div>
@@ -67,7 +67,7 @@ function DetailAttribute() {
                         <div className="col-lg-12">
                             <div className="card">
                                 <div className="card-body">
-                                    <h5 className="card-title">Chỉnh sửa thuộc tính</h5>
+                                    <h5 className="card-title">Chỉnh sửa Biến Thể</h5>
 
                                     <Form
                                         form={form}
@@ -76,11 +76,11 @@ function DetailAttribute() {
                                         initialValues={{ name: '' }}
                                     >
                                         <Form.Item
-                                            label="Tên thuộc tính"
+                                            label="Tên Biến Thể"
                                             name="name"
-                                            rules={[{ required: true, message: 'Vui lòng nhập tên thuộc tính!' }]}
+                                            rules={[{ required: true, message: 'Vui lòng nhập tên Biến Thể!' }]}
                                         >
-                                            <Input placeholder="Nhập tên thuộc tính" />
+                                            <Input placeholder="Nhập tên Biến Thể" />
                                         </Form.Item>
 
                                         <Button

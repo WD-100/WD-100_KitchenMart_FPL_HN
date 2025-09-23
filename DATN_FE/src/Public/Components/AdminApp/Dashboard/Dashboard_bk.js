@@ -9,7 +9,7 @@ import ECharts from "echarts";
 import * as echarts from 'echarts';
 import $ from "jquery";
 import revenueService from "../../Service/RevenueService";
-import {Input, Table} from "antd";
+import {Table} from "antd";
 import dayjs from "dayjs";
 import orderService from "../../Service/OrderService";
 
@@ -19,13 +19,6 @@ function Dashboard() {
     const [data, setData] = useState([]);
     const [dataOrder, setDataOrder] = useState([]);
     const [revenues, setRevenue] = useState([]);
-    const [searchOrder, setSearchOrder] = useState("");
-
-    const filteredOrders = dataOrder.filter((item) =>
-        Object.values(item).some((val) =>
-            String(val).toLowerCase().includes(searchOrder.toLowerCase())
-        )
-    );
 
     const chartRevenus = (xData, yData) => {
         let chartDom = document.getElementById('reportRevenuesChart');
@@ -177,6 +170,7 @@ function Dashboard() {
     const getListOrder = async () => {
         await orderService.adminListOrder('', 10)
             .then((res) => {
+                console.log(res.data.data)
                 setDataOrder(res.data.data)
                 setLoading(false)
             })
@@ -197,27 +191,91 @@ function Dashboard() {
     };
 
     const columnOrders = [
-        { title: "STT", render: (_, __, i) => i + 1 },
-        { title: "Tên đầy đủ", dataIndex: "full_name" },
-        { title: "Số điện thoại", dataIndex: "phone" },
-        { title: "Email", dataIndex: "email" },
-        { title: "Địa chỉ", dataIndex: "address" },
-        { title: "Tổng tiền", dataIndex: "total_price", render: ConvertCurrency },
-        { title: "Trạng thái", dataIndex: "status", render: (t) => statusMap[t] || "KHÔNG XÁC ĐỊNH" },
         {
-            title: "Hành động",
-            render: (_, record) => (
-                <Link to={`/admin/orders/detail/${record._id}`} className="btn btn-primary">
-                    Xem chi tiết
-                </Link>
-            )
-        }
+            title: 'STT',
+            dataIndex: 'key',
+            width: '10%',
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: 'Tên đầy đủ',
+            dataIndex: 'full_name',
+            width: '15%',
+        },
+        {
+            title: 'Số điện thoại',
+            dataIndex: 'phone',
+            width: '12%',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            width: '12%',
+        },
+        {
+            title: 'Địa chỉ',
+            dataIndex: 'address',
+            width: '20%',
+        },
+        {
+            title: 'Tổng tiền ',
+            dataIndex: 'total_price',
+            width: '10%',
+            render: (text) => {
+                return ConvertCurrency(text)
+            }
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            width: '10%',
+            render: (text) => {
+                return statusMap[text] || 'KHÔNG XÁC ĐỊNH';
+            },
+        },
+        {
+            title: 'Hành động',
+            dataIndex: '_id',
+            key: 'x',
+            render: (text, record, index) => {
+                const {_id} = data[index];
+                return (
+                    <>
+                        <Link to={`/admin/orders/detail/${_id}`} className="btn btn-primary">
+                            Xem chi tiết
+                        </Link>
+                    </>
+                );
+            },
+        },
     ];
 
-    const revenueColumns = [
-        { title: "STT", render: (_, __, i) => i + 1 },
-        { title: "Thời gian", dataIndex: "createdAt", render: (t) => dayjs(t).format("DD/MM/YYYY HH:mm") },
-        { title: "Tổng tiền", dataIndex: "total", render: ConvertCurrency }
+    const columns = [
+        {
+            title: 'STT',
+            dataIndex: 'key',
+            width: '10%',
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: 'Thời gian',
+            dataIndex: 'createdAt',
+            width: '60%',
+            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
+        },
+        {
+            title: 'Tổng tiền ',
+            dataIndex: 'total',
+            width: 'x',
+            key: 'x',
+            render: (text, record, index) => {
+                return (
+                    <>
+                        {ConvertCurrency(text)}
+                    </>
+                );
+            },
+        },
     ];
 
     const getListRevenue = async () => {
@@ -428,38 +486,74 @@ function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="col-12 mb-5">
-                                    <div className="card">
-                                        <h5 className="card-title">Đơn hàng gần đây</h5>
-                                        <div className="card-body p-3">
-                                            <Input.Search
-                                                placeholder="Tìm kiếm đơn hàng"
-                                                allowClear
-                                                style={{ marginBottom: 12, maxWidth: 300 }}
-                                                onChange={(e) => setSearchOrder(e.target.value)}
-                                            />
-                                            <Table
-                                                columns={columnOrders}
-                                                dataSource={filteredOrders}
-                                                rowKey="_id"
-                                                pagination={{ pageSize: 10 }}
-                                                loading={loading}
-                                            />
-                                        </div>
-                                    </div>
+                                <div className="col-12">
+                                    <Table
+                                        style={{margin: "auto"}}
+                                        columns={columns}
+                                        dataSource={revenues}
+                                        pagination={tableParams.pagination}
+                                        loading={loading}
+                                        onChange={handleTableChange}
+                                    />
                                 </div>
 
                                 <div className="col-12">
-                                    <div className="card">
-                                        <h5 className="card-title">Doanh thu gần đây</h5>
-                                        <div className="card-body p-3">
-                                            <Table
-                                                columns={revenueColumns}
-                                                dataSource={revenues}
-                                                rowKey="_id"
-                                                pagination={{ pageSize: 10 }}
-                                                loading={loading}
-                                            />
+                                    <Table
+                                        style={{margin: "auto"}}
+                                        columns={columnOrders}
+                                        dataSource={dataOrder}
+                                        pagination={tableParamOrders.pagination}
+                                        loading={loading}
+                                        onChange={handleTableChangeOrders}
+                                    />
+                                </div>
+
+                                <div className="col-12">
+                                    <div className="card top-selling overflow-auto">
+                                        <div className="filter">
+                                            <Link className="icon" to="#" data-bs-toggle="dropdown"><i
+                                                className="bi bi-three-dots"/></Link>
+                                            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                <li className="dropdown-header text-start">
+                                                    <h6>Bộ lọc</h6>
+                                                </li>
+                                                <li><Link className="dropdown-item" to="#">Hôm nay</Link></li>
+                                                <li><Link className="dropdown-item" to="#">Trong tháng</Link></li>
+                                                <li><Link className="dropdown-item" to="#">Trong năm</Link></li>
+                                            </ul>
+                                        </div>
+                                        <div className="card-body pb-0">
+                                            <h5 className="card-title">Bán chạy nhất <span>| Hôm nay</span></h5>
+                                            <table className="table table-borderless">
+                                                <colgroup>
+                                                    <col style={{width: "10%"}}/>
+                                                    <col style={{width: "x"}}/>
+                                                    <col style={{width: "10%"}}/>
+                                                    <col style={{width: "10%"}}/>
+                                                </colgroup>
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">Hình ảnh</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Giá mới</th>
+                                                    <th scope="col">Số lượng đã mua</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {data.product_action ? data.product_action.top_products.map((item, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <th scope="row"><img
+                                                                src={item.image}
+                                                                alt=""/></th>
+                                                            <td>{item.title}</td>
+                                                            <td>{ConvertCurrency(item.sale_price)}</td>
+                                                            <td>{item.total_sold}</td>
+                                                        </tr>
+                                                    )
+                                                }) : ''}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>

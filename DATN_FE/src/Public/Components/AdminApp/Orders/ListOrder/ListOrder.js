@@ -38,6 +38,11 @@ function ListOrder() {
         COMPLETED: 'ĐÃ HOÀN THÀNH',
     };
 
+    const orderMethodMap = {
+        CARD_CREDIT: 'Thanh toán qua VNPAY',
+        IMMEDIATE: 'Thanh toán khi nhận hàng',
+    };
+
     const columns = [
         {
             title: 'STT',
@@ -61,9 +66,12 @@ function ListOrder() {
             width: '12%',
         },
         {
-            title: 'Địa chỉ',
-            dataIndex: 'address',
+            title: 'Phương thức thanh toán',
+            dataIndex: 'order_method',
             width: '20%',
+            render: (text) => {
+                return orderMethodMap[text] || 'KHÔNG XÁC ĐỊNH';
+            },
         },
         {
             title: 'Tổng tiền ',

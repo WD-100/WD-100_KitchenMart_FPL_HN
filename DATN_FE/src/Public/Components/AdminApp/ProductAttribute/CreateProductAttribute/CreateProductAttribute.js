@@ -93,14 +93,14 @@ function CreateProductAttribute() {
             <Sidebar />
             <main id="main" className="main">
                 <div className="pagetitle">
-                    <h1>Tạo thuộc tính</h1>
+                    <h1>Tạo Biến Thể</h1>
                     <nav>
                         <ol className="breadcrumb">
                             <li className="breadcrumb-item">
                                 <Link to="/admin/dashboard">Trang quản trị</Link>
                             </li>
-                            <li className="breadcrumb-item">Thuộc tính</li>
-                            <li className="breadcrumb-item active">Tạo thuộc tính</li>
+                            <li className="breadcrumb-item">Biến Thể</li>
+                            <li className="breadcrumb-item active">Tạo Biến Thể</li>
                         </ol>
                     </nav>
                 </div>
@@ -110,7 +110,7 @@ function CreateProductAttribute() {
                         <div className="col-lg-12">
                             <div className="card">
                                 <div className="card-body">
-                                    <h5 className="card-title">Tạo thuộc tính</h5>
+                                    <h5 className="card-title">Tạo Biến Thể</h5>
 
                                     <form onSubmit={handleSubmit}>
                                         <div className="row">
@@ -133,7 +133,7 @@ function CreateProductAttribute() {
                                             </div>
 
                                             <div className="form-group col-md-6">
-                                                <label htmlFor="attribute_id">Lựa chọn thuộc tính</label>
+                                                <label htmlFor="attribute_id">Lựa chọn Biến Thể</label>
                                                 <select
                                                     id="attribute_id"
                                                     name="attribute_id"
@@ -141,7 +141,7 @@ function CreateProductAttribute() {
                                                     value={formData.attribute_id}
                                                     onChange={handleChange}
                                                 >
-                                                    <option value="">Lựa chọn thuộc tính</option>
+                                                    <option value="">Lựa chọn Biến Thể</option>
                                                     {attributes.map((a) => (
                                                         <option key={a._id} value={a._id}>
                                                             {a.name}

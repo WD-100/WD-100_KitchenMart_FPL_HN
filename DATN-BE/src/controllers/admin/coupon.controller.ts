@@ -21,6 +21,13 @@ export const create = async (req: any, res: any) => {
             return res.status(400).json({message: "Invalid request body"});
         }
 
+        if (data.name) {
+            const existing = await Coupon.findOne({ name: data.name });
+            if (existing) {
+                return res.status(400).json({ message: "Tên Mã Giảm Giá Đã Tồn Tại" });
+            }
+        }
+
         if (!data.code) {
             data.code = generateRandomString(10);
         }
@@ -38,15 +45,31 @@ export const create = async (req: any, res: any) => {
 
 export const update = async (req: any, res: any) => {
     try {
-        const coupon = await Coupon.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-        });
-        if (!coupon) {
-            return res.status(404).json({message: "Coupon not found"});
+        const { id } = req.params;
+        const data = req.body;
+
+        if (data.name) {
+            const existing = await Coupon.findOne({
+                name: data.name,
+                _id: { $ne: id }
+            });
+            if (existing) {
+                return res.status(400).json({ message: "Tên phiếu giảm giá đã tồn tại!" });
+            }
         }
-        res.json({message: "Coupon updated", data: coupon.toJSON()});
+
+        const coupon = await Coupon.findByIdAndUpdate(id, data, { new: true });
+        if (!coupon) {
+            return res.status(404).json({ message: "Coupon not found" });
+        }
+
+        return res.json({
+            message: "Coupon updated",
+            data: coupon.toJSON()
+        });
     } catch (err) {
-        res.status(400).json({message: "Update failed", error: err});
+        console.error("Update coupon error:", err);
+        return res.status(400).json({ message: "Update failed", error: err });
     }
 };
 

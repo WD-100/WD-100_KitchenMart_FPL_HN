@@ -50,15 +50,15 @@ function DetailCoupon() {
                 return
             }
         }
-const date1 = new Date($("#start_date").val());
-const date2 = new Date($("#end_date").val());
+        const date1 = new Date($("#start_date").val());
+        const date2 = new Date($("#end_date").val());
 
-if (date1.getTime() > date2.getTime()) {
-    $('#btnUpdate').prop('disabled', false).text('Lưu thay đổi');
-     message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
-    return false;
-  
-}
+        if (date1.getTime() > date2.getTime()) {
+            $('#btnUpdate').prop('disabled', false).text('Lưu thay đổi');
+            message.error('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!');
+            return false;
+
+        }
         const formData = new FormData($('#formUpdate')[0]);
         formData.append('thumbnail', imageUrl);
         formData.append('value',1);

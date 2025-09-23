@@ -5,7 +5,11 @@ export const listUsers = async (req: any, res: any) => {
   try {
     const searchValue = (req.query.value as string)?.trim() || "";
 
-    const filter: any = { is_deleted: false };
+    const userId = req.userId;
+
+    console.log(userId);
+
+    const filter: any = { is_deleted: false, _id: { $ne: userId }  };
 
     if (searchValue) {
       const regex = new RegExp(searchValue, "i");
@@ -16,7 +20,7 @@ export const listUsers = async (req: any, res: any) => {
     }
 
     const users = await User.find(filter)
-      .populate("role_id") // Lấy đầy đủ thông tin role
+      .populate("role_id")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

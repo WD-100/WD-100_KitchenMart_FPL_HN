@@ -91,14 +91,14 @@ class OrderService {
 
 
     // ADMIN
-    adminListOrder = (status) => {
+    adminListOrder = (status, limit) => {
         const config = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${sessionStorage.getItem("accessToken")}`
             }
         };
-        return axios.get(BASE_URL_SERVER + API_ENDPOINT.ADMIN_LIST_ORDER + '?status=' + status, config);
+        return axios.get(BASE_URL_SERVER + API_ENDPOINT.ADMIN_LIST_ORDER + '?status=' + status + '&limit=' + limit, config);
     }
 
     adminDetailOrder = (id) => {

@@ -9,23 +9,14 @@ import ECharts from "echarts";
 import * as echarts from 'echarts';
 import $ from "jquery";
 import revenueService from "../../Service/RevenueService";
-import {Input, Table} from "antd";
+import {Table} from "antd";
 import dayjs from "dayjs";
-import orderService from "../../Service/OrderService";
 
 function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
     const [data, setData] = useState([]);
-    const [dataOrder, setDataOrder] = useState([]);
     const [revenues, setRevenue] = useState([]);
-    const [searchOrder, setSearchOrder] = useState("");
-
-    const filteredOrders = dataOrder.filter((item) =>
-        Object.values(item).some((val) =>
-            String(val).toLowerCase().includes(searchOrder.toLowerCase())
-        )
-    );
 
     const chartRevenus = (xData, yData) => {
         let chartDom = document.getElementById('reportRevenuesChart');
@@ -174,50 +165,32 @@ function Dashboard() {
         }
     }
 
-    const getListOrder = async () => {
-        await orderService.adminListOrder('', 10)
-            .then((res) => {
-                setDataOrder(res.data.data)
-                setLoading(false)
-            })
-            .catch((err) => {
-                setLoading(false)
-                console.log(err)
-            })
-    }
-
-    const statusMap = {
-        PENDING: 'CHỜ XÁC NHẬN',
-        PROCESSING: 'ĐANG XỬ LÝ',
-        CONFIRMED: 'ĐÃ XÁC NHẬN',
-        SHIPPING: 'ĐANG VẬN CHUYỂN',
-        CANCELED: 'ĐÃ HỦY',
-        DELIVERED: 'ĐÃ GIAO HÀNG',
-        COMPLETED: 'ĐÃ HOÀN THÀNH',
-    };
-
-    const columnOrders = [
-        { title: "STT", render: (_, __, i) => i + 1 },
-        { title: "Tên đầy đủ", dataIndex: "full_name" },
-        { title: "Số điện thoại", dataIndex: "phone" },
-        { title: "Email", dataIndex: "email" },
-        { title: "Địa chỉ", dataIndex: "address" },
-        { title: "Tổng tiền", dataIndex: "total_price", render: ConvertCurrency },
-        { title: "Trạng thái", dataIndex: "status", render: (t) => statusMap[t] || "KHÔNG XÁC ĐỊNH" },
+    const columns = [
         {
-            title: "Hành động",
-            render: (_, record) => (
-                <Link to={`/admin/orders/detail/${record._id}`} className="btn btn-primary">
-                    Xem chi tiết
-                </Link>
-            )
-        }
-    ];
-
-    const revenueColumns = [
-        { title: "STT", render: (_, __, i) => i + 1 },
-        { title: "Thời gian", dataIndex: "createdAt", render: (t) => dayjs(t).format("DD/MM/YYYY HH:mm") },
-        { title: "Tổng tiền", dataIndex: "total", render: ConvertCurrency }
+            title: 'STT',
+            dataIndex: 'key',
+            width: '10%',
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: 'Thời gian',
+            dataIndex: 'createdAt',
+            width: '60%',
+            render: (text) => dayjs(text).format('DD/MM/YYYY HH:mm')
+        },
+        {
+            title: 'Tổng tiền ',
+            dataIndex: 'total',
+            width: 'x',
+            key: 'x',
+            render: (text, record, index) => {
+                return (
+                    <>
+                        {ConvertCurrency(text)}
+                    </>
+                );
+            },
+        },
     ];
 
     const getListRevenue = async () => {
@@ -263,27 +236,11 @@ function Dashboard() {
         },
     });
 
-    const handleTableChangeOrders = (pagination, filters, sorter) => {
-        setTableParamOrders({
-            pagination,
-            filters,
-            ...sorter,
-        });
-    };
-
-    const [tableParamOrders, setTableParamOrders] = useState({
-        pagination: {
-            current: 1,
-            pageSize: 10,
-        },
-    });
-
     useEffect(() => {
         homeDashboard();
         renderChart('');
         filterRevenueChart();
         getListRevenue();
-        getListOrder();
         loadFn();
     }, []);
 
@@ -411,8 +368,7 @@ function Dashboard() {
                                 <div className="col-12 sale_details_ mb-5">
                                     <div className="card">
                                         <div className="card-body p-3">
-                                            <h6 className="text-start mb-2">Tổng doanh
-                                                thu: {ConvertCurrency(total)}</h6>
+                                            <h6 className="text-start mb-2">Tổng doanh thu: {ConvertCurrency(total)}</h6>
                                             <div className="mb-1 col-md-3">
                                                 <label htmlFor="type">Lọc theo:</label>
                                                 <select name="type" id="type" className="form-select"
@@ -428,38 +384,71 @@ function Dashboard() {
                                     </div>
                                 </div>
 
-                                <div className="col-12 mb-5">
-                                    <div className="card">
-                                        <h5 className="card-title">Đơn hàng gần đây</h5>
-                                        <div className="card-body p-3">
-                                            <Input.Search
-                                                placeholder="Tìm kiếm đơn hàng"
-                                                allowClear
-                                                style={{ marginBottom: 12, maxWidth: 300 }}
-                                                onChange={(e) => setSearchOrder(e.target.value)}
-                                            />
-                                            <Table
-                                                columns={columnOrders}
-                                                dataSource={filteredOrders}
-                                                rowKey="_id"
-                                                pagination={{ pageSize: 10 }}
-                                                loading={loading}
-                                            />
+                                <div className="col-12">
+                                    <div className="d-flex align-items-center justify-content-between row col-md-12">
+                                        <div className="mb-3 col-md-3">
+                                            <h5>Tìm kiếm</h5>
+                                            <input className="form-control" id="inputSearchOrder" type="text"
+                                                   placeholder="Nhập thông tin.."/>
+                                            <br/>
                                         </div>
                                     </div>
+                                    <Table
+                                        style={{margin: "auto"}}
+                                        columns={columns}
+                                        dataSource={revenues}
+                                        pagination={tableParams.pagination}
+                                        loading={loading}
+                                        onChange={handleTableChange}
+                                    />
                                 </div>
 
                                 <div className="col-12">
-                                    <div className="card">
-                                        <h5 className="card-title">Doanh thu gần đây</h5>
-                                        <div className="card-body p-3">
-                                            <Table
-                                                columns={revenueColumns}
-                                                dataSource={revenues}
-                                                rowKey="_id"
-                                                pagination={{ pageSize: 10 }}
-                                                loading={loading}
-                                            />
+                                    <div className="card top-selling overflow-auto">
+                                        <div className="filter">
+                                            <Link className="icon" to="#" data-bs-toggle="dropdown"><i
+                                                className="bi bi-three-dots"/></Link>
+                                            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                <li className="dropdown-header text-start">
+                                                    <h6>Bộ lọc</h6>
+                                                </li>
+                                                <li><Link className="dropdown-item" to="#">Hôm nay</Link></li>
+                                                <li><Link className="dropdown-item" to="#">Trong tháng</Link></li>
+                                                <li><Link className="dropdown-item" to="#">Trong năm</Link></li>
+                                            </ul>
+                                        </div>
+                                        <div className="card-body pb-0">
+                                            <h5 className="card-title">Bán chạy nhất <span>| Hôm nay</span></h5>
+                                            <table className="table table-borderless">
+                                                <colgroup>
+                                                    <col style={{width: "10%"}}/>
+                                                    <col style={{width: "x"}}/>
+                                                    <col style={{width: "10%"}}/>
+                                                    <col style={{width: "10%"}}/>
+                                                </colgroup>
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">Hình ảnh</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Giá mới</th>
+                                                    <th scope="col">Số lượng đã mua</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {data.product_action ? data.product_action.top_products.map((item, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <th scope="row"><img
+                                                                src={item.image}
+                                                                alt=""/></th>
+                                                            <td>{item.title}</td>
+                                                            <td>{ConvertCurrency(item.sale_price)}</td>
+                                                            <td>{item.total_sold}</td>
+                                                        </tr>
+                                                    )
+                                                }) : ''}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -480,7 +469,7 @@ function Dashboard() {
                                     </ul>
                                 </div>
                                 <div className="card-body">
-                                    <h5 className="card-title">Tỉ lệ đơn hàng <span>| Hôm nay</span></h5>
+                                <h5 className="card-title">Tỉ lệ đơn hàng <span>| Hôm nay</span></h5>
                                     <div id="reportsChart" style={{height: '600px'}}/>
                                 </div>
                             </div>

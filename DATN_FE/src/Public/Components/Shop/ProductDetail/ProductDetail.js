@@ -113,8 +113,8 @@ function ProductDetail() {
             setCartCount(res.data.data.length);
         } catch (err) {
             LoadingPage();
-            console.error(err.response?.data?.message);
-            const state = err.response?.status;
+            console.error(err.response?.data?.data?.message);
+            const state = err.response?.data?.status;
             if (state === 401 || state === 403) {
                 message.error('Vui lòng đăng nhập để tiếp tục!');
             }
@@ -152,8 +152,8 @@ function ProductDetail() {
             window.location.href = '/checkout';
         } catch (err) {
             LoadingPage();
-            console.error(err.response?.data?.message);
-            const state = err.response?.status;
+            console.error(err.response?.data?.data?.message);
+            const state = err.response?.data?.status;
             if (state === 401 || state === 403) {
                 message.error('Vui lòng đăng nhập để tiếp tục!');
             }
