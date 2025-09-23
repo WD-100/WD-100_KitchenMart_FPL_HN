@@ -118,12 +118,12 @@ function CreateCoupon() {
                                             <div className="form-group col-md-6">
                                                 <label htmlFor="discount_percent">Phần trăm giảm giá</label>
                                                 <input type="number" name="discount_percent" className="form-control"
-                                                       id="discount_percent" min="1" max="100" required/>
+                                                       id="discount_percent" min="1" max="80" required/>
                                             </div>
                                             <div className="form-group col-md-6">
                                                 <label htmlFor="max_discount">Số tiền giảm giá tối đa</label>
                                                 <input type="number" name="max_discount" className="form-control"
-                                                       id="max_discount" min="1" required/>
+                                                       id="max_discount" min="10000" required/>
                                             </div>
                                         </div>
                                         <div className="row">

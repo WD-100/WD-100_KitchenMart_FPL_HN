@@ -73,7 +73,7 @@ function DetailReview() {
             .then((res) => {
                 setLoading(false)
                 console.log("data", res.data)
-                message.success("Thay đổi thành công")
+                message.success(  "đã thay đổi ")
                 navigate("/admin/reviews/list")
             })
             .catch((err) => {
@@ -107,28 +107,26 @@ function DetailReview() {
                                 <Form onFinish={onFinish}>
                                     <div className="form-group">
                                         <label htmlFor="title">Tiêu đề</label>
-                                        <input type="text" className="form-control" defaultValue={review.title}
+                                        <input type="text" className="form-control"disabled defaultValue={review.title}
                                                id="title" name="title"/>
                                     </div>
                                     <div className="form-group">
                                         <label htmlFor="content">Nội dung</label>
-                                        <textarea className="form-control" id="content" name="content"
+                                        <textarea className="form-control" id="content" name="content" disabled
                                                   defaultValue={review.content}
                                                   rows="5"></textarea>
                                     </div>
                                     <div className="row">
                                         <div className="form-group col-md-6">
                                             <label htmlFor="stars">Số sao</label>
-                                            <input type="number" min="1" className="form-control"
+                                            <input type="number" min="1"max ="5" className="form-control"disabled
                                                    defaultValue={review.stars}
                                                    id="stars" name="stars"/>
                                         </div>
                                         <div className="form-group col-md-6">
                                             <label htmlFor="status">Trạng thái</label>
                                             <select id="status" name="status" className="form-select">
-                                                <option selected={review.status === "PENDING"}
-                                                        value="PENDING">CHỜ PHÊ DUYỆT
-                                                </option>
+
                                                 <option selected={review.status === "APPROVED"}
                                                         value="APPROVED">ĐƯỢC CHẤP NHẬN
                                                 </option>
